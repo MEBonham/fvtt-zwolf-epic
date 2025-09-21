@@ -1,0 +1,4162 @@
+/* Z-Wolf Epic System Styles */
+
+/* ----------------------------------------- */
+/*  Sheet Structure                          */
+/* ----------------------------------------- */
+
+.zwolf-epic.sheet {
+  min-width: 880px;
+  min-height: 560px;
+}
+
+.zwolf-epic .window-content {
+  padding: 10px;
+  background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+  font-family: "Signika", sans-serif;
+}
+
+/* ----------------------------------------- */
+/*  Header                                   */
+/* ----------------------------------------- */
+
+.zwolf-epic .sheet-header-wrapper {
+  border-bottom: 3px solid #782e22;
+  margin-bottom: 10px;
+}
+
+.zwolf-epic .sheet-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 10px;
+}
+
+.zwolf-epic .sheet-header .profile-img {
+  flex: 0 0 120px;
+  height: 120px;
+  border: 2px solid #782e22;
+  border-radius: 5px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.zwolf-epic .sheet-header .header-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.zwolf-epic .sheet-header h1.charname {
+  margin: 0;
+  border: none;
+  padding: 5px;
+  font-size: 1.5em;
+  font-weight: bold;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.zwolf-epic .sheet-header h1.charname input {
+  width: 100%;
+  font-size: 1em;
+  font-weight: bold;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+
+/* Header Line 2: Level, Size, Tags */
+.zwolf-epic .header-line-2 {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.zwolf-epic .header-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.zwolf-epic .header-field label {
+  font-weight: bold;
+  font-size: 0.9em;
+  color: #782e22;
+}
+
+.zwolf-epic .level-field input {
+  width: 50px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 3px;
+}
+
+.zwolf-epic .size-field select {
+  width: 100px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 3px;
+  background: white;
+}
+
+.zwolf-epic .tags-field input {
+  width: 150px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding: 3px;
+}
+
+/* Header Resources (Line 3) */
+.zwolf-epic .header-resources {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.zwolf-epic .header-resources .resource {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.zwolf-epic .header-resources .resource label {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #782e22;
+  margin-bottom: 3px;
+}
+
+.zwolf-epic .header-resources .resource-values {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.zwolf-epic .header-resources .resource-values input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: white;
+  padding: 3px;
+}
+
+.zwolf-epic .header-resources .max-value,
+.zwolf-epic .header-resources .static-value {
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+  font-weight: bold;
+  color: #782e22;
+  background: rgba(120, 46, 34, 0.05);
+  padding: 3px 8px;
+  border-radius: 3px;
+}
+
+.zwolf-epic .header-resources .resource-value-single {
+  display: flex;
+  align-items: center;
+}
+
+.zwolf-epic .header-resources .sep {
+  font-weight: bold;
+  color: #782e22;
+}
+
+/* Header Target Numbers (Line 4) */
+.zwolf-epic .header-tns {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: rgba(120, 46, 34, 0.05);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+}
+
+.zwolf-epic .tn-group {
+  display: flex;
+  gap: 15px;
+}
+
+.zwolf-epic .tn-group-primary {
+  flex: 0 0 auto;
+}
+
+.zwolf-epic .tn-group-secondary {
+  flex: 1;
+  justify-content: space-around;
+}
+
+.zwolf-epic .tn-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(120, 46, 34, 0.25);
+  margin: 0 15px;
+  align-self: center;
+}
+
+.zwolf-epic .header-tns .tn-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.zwolf-epic .header-tns .tn-item label {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #782e22;
+}
+
+.zwolf-epic .header-tns .tn-value {
+  padding: 3px 8px;
+  background: white;
+  border: 1px solid #782e22;
+  border-radius: 3px;
+  font-weight: bold;
+  min-width: 30px;
+  text-align: center;
+  color: #782e22;
+}
+
+/* Legacy resource styles (keeping for backward compatibility) */
+.zwolf-epic .sheet-header .resources {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.zwolf-epic .sheet-header .resource {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #782e22;
+  border-radius: 3px;
+  padding: 5px;
+}
+
+.zwolf-epic .sheet-header .resource label {
+  font-weight: bold;
+  margin-right: 5px;
+  color: #782e22;
+}
+
+.zwolf-epic .sheet-header .resource input {
+  width: 40px;
+  text-align: center;
+  border: 1px solid #ccc;
+  background: white;
+}
+
+.zwolf-epic .sheet-header .resource span.sep {
+  margin: 0 3px;
+}
+
+/* ----------------------------------------- */
+/*  Navigation Tabs                         */
+/* ----------------------------------------- */
+
+.zwolf-epic .sheet-tabs.tabs {
+  display: flex;
+  gap: 5px;
+  border-bottom: 2px solid #782e22;
+  margin: 0 0 10px 0;
+  padding: 5px 0 0;
+}
+
+.zwolf-epic .sheet-tabs.tabs .item {
+  padding: 8px 15px !important;
+  background: rgba(120, 46, 34, 0.1) !important; /* Consistent tan background for all tabs */
+  border: 1px solid #782e22 !important;
+  border-bottom: none !important;
+  border-radius: 5px 5px 0 0 !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  transition: all 0.3s !important;
+  color: #782e22 !important; /* Ensure consistent text color */
+  text-decoration: none !important;
+}
+
+.zwolf-epic .sheet-tabs.tabs a.item {
+  background: rgba(120, 46, 34, 0.1) !important; /* Extra specificity for anchor elements */
+  color: #782e22 !important;
+}
+
+.zwolf-epic .sheet-tabs.tabs .item:hover,
+.zwolf-epic .sheet-tabs.tabs a.item:hover {
+  background: rgba(120, 46, 34, 0.2) !important; /* Darker tan on hover */
+  color: #782e22 !important;
+}
+
+.zwolf-epic .sheet-tabs.tabs .item.active,
+.zwolf-epic .sheet-tabs.tabs a.item.active {
+  background: #782e22 !important; /* Dark background for active tab */
+  color: white !important;
+}
+
+/* ----------------------------------------- */
+/*  Sheet Body with Progressions            */
+/* ----------------------------------------- */
+
+.zwolf-epic .sheet-container {
+  display: flex;
+  flex: 1;
+  height: calc(100% - 150px);
+  overflow: hidden;
+}
+
+.zwolf-epic .sheet-main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zwolf-epic .sheet-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.zwolf-epic .sheet-body .tab {
+  display: none;
+  padding: 10px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.zwolf-epic .sheet-body .tab.active {
+  display: block;
+}
+
+/* ----------------------------------------- */
+/*  Character Foundation (NEW)              */
+/* ----------------------------------------- */
+
+.zwolf-epic .character-foundation {
+  border-bottom: 2px solid #782e22;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.zwolf-epic .foundation-row {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.zwolf-epic .foundation-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.zwolf-epic .foundation-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #782e22;
+  font-size: 0.9rem;
+}
+
+/* Drop Zone Styles */
+.zwolf-epic .foundation-drop-zone {
+  min-height: 80px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.zwolf-epic .foundation-drop-zone:hover {
+  border-color: #999;
+  background: #f0f0f0;
+}
+
+.zwolf-epic .foundation-drop-zone.drag-over {
+  border-color: #782e22;
+  background: rgba(120, 46, 34, 0.1);
+  border-style: solid;
+}
+
+.zwolf-epic .foundation-drop-zone.invalid-drop {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.zwolf-epic .drop-zone {
+  min-height: 80px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 0.75rem;
+  background: #fafafa;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.zwolf-epic .drop-zone:hover {
+  border-color: #999;
+  background: #f0f0f0;
+}
+
+.zwolf-epic .drop-zone.drag-over {
+  border-color: #782e22;
+  background: rgba(120, 46, 34, 0.1);
+  border-style: solid;
+}
+
+.zwolf-epic .drop-zone.invalid-drop {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+/* Drop Prompt (when empty) */
+.zwolf-epic .drop-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  text-align: center;
+  pointer-events: none;
+}
+
+.zwolf-epic .drop-prompt i {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+}
+
+.zwolf-epic .drop-prompt span {
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* Slotted Item Styles */
+.zwolf-epic .slotted-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.5rem;
+  min-height: 60px;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .slotted-item:hover {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-color: #782e22;
+}
+
+.zwolf-epic .slotted-item .item-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.zwolf-epic .slotted-item .item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.zwolf-epic .slotted-item .item-name {
+  font-weight: bold;
+  color: #782e22;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.zwolf-epic .slotted-item .item-details {
+  font-size: 0.8rem;
+  color: #666;
+  line-height: 1.3;
+}
+
+.zwolf-epic .slotted-item .item-controls {
+  display: flex;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.zwolf-epic .slotted-item .item-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  color: #666;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .slotted-item .item-control:hover {
+  background: #e9ecef;
+  color: #782e22;
+}
+
+.zwolf-epic .slotted-item .item-control.item-remove:hover {
+  background: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+.zwolf-epic .slotted-item .item-control i {
+  font-size: 0.7rem;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .zwolf-epic .foundation-row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .zwolf-epic .foundation-item {
+    width: 100%;
+  }
+}
+
+/* ----------------------------------------- */
+/*  Progressions Sidebar (NEW)              */
+/* ----------------------------------------- */
+
+.zwolf-epic .progressions-sidebar {
+  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 2px solid #782e22;
+  overflow-y: auto;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.zwolf-epic .progressions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.zwolf-epic .progression-group {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #782e22;
+  border-radius: 5px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.zwolf-epic .progression-group.mediocre {
+  border-color: #888;
+}
+
+.zwolf-epic .progression-group.mediocre.expanded {
+  box-shadow: 0 0 10px rgba(136, 136, 136, 0.3);
+}
+
+.zwolf-epic .progression-group.moderate {
+  border-color: #4a90e2;
+}
+
+.zwolf-epic .progression-group.moderate.expanded {
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+}
+
+.zwolf-epic .progression-group.specialty {
+  border-color: #9b59b6;
+}
+
+.zwolf-epic .progression-group.specialty.expanded {
+  box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
+}
+
+.zwolf-epic .progression-group.awesome {
+  border-color: #f39c12;
+}
+
+.zwolf-epic .progression-group.awesome.expanded {
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+.zwolf-epic .progression-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(120, 46, 34, 0.1);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.zwolf-epic .progression-header:hover {
+  background: rgba(120, 46, 34, 0.15);
+}
+
+.zwolf-epic .progression-header::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  font-size: 0.8em;
+  color: #782e22;
+  transition: transform 0.3s;
+}
+
+.zwolf-epic .progression-group.expanded .progression-header::after {
+  transform: rotate(180deg);
+}
+
+.zwolf-epic .progression-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #782e22;
+}
+
+.zwolf-epic .progression-bonus {
+  background: #782e22;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-weight: bold;
+  min-width: 35px;
+  text-align: center;
+  margin-right: 20px;
+}
+
+.zwolf-epic .mediocre .progression-bonus {
+  background: #888;
+}
+
+.zwolf-epic .moderate .progression-bonus {
+  background: #4a90e2;
+}
+
+.zwolf-epic .specialty .progression-bonus {
+  background: #9b59b6;
+}
+
+.zwolf-epic .awesome .progression-bonus {
+  background: #f39c12;
+}
+
+.zwolf-epic .progression-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.zwolf-epic .progression-group.expanded .progression-content {
+  max-height: 500px;
+}
+
+.zwolf-epic .progression-stats {
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.zwolf-epic .stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 8px;
+  margin: 3px 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.zwolf-epic .stat-item:hover {
+  background: rgba(120, 46, 34, 0.05);
+  transform: translateX(3px);
+  border-color: #782e22;
+}
+
+.zwolf-epic .stat-rollable {
+  cursor: pointer;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zwolf-epic .stat-rollable:hover .stat-name {
+  color: #782e22;
+  text-decoration: underline;
+}
+
+.zwolf-epic .stat-icon {
+  width: 20px;
+  text-align: center;
+  color: #782e22;
+}
+
+.zwolf-epic .stat-icon.attribute::before {
+  content: '◆';
+}
+
+.zwolf-epic .stat-icon.skill::before {
+  content: '●';
+}
+
+.zwolf-epic .stat-icon.speed::before {
+  content: '➤';
+}
+
+.zwolf-epic .stat-name {
+  flex: 1;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.zwolf-epic .stat-value {
+  background: #782e22;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.zwolf-epic .stat-placeholder {
+  padding: 20px;
+  color: #999;
+  text-align: center;
+  font-style: italic;
+  border: 2px dashed #ddd;
+  border-radius: 3px;
+  margin: 5px;
+}
+
+/* Main content area adjustment for progressions */
+.zwolf-epic .main-content {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* ----------------------------------------- */
+/*  Attributes & Skills (Original)          */
+/* ----------------------------------------- */
+
+.zwolf-epic .attributes-skills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.zwolf-epic .attributes,
+.zwolf-epic .skills {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.zwolf-epic .attribute,
+.zwolf-epic .skill {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  margin-bottom: 5px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+
+.zwolf-epic .attribute:hover,
+.zwolf-epic .skill:hover {
+  background: rgba(120, 46, 34, 0.1);
+}
+
+.zwolf-epic .attribute label,
+.zwolf-epic .skill label {
+  flex: 1;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.zwolf-epic .attribute label.rollable,
+.zwolf-epic .skill label.rollable {
+  color: #782e22;
+  text-decoration: underline;
+}
+
+.zwolf-epic .attribute input,
+.zwolf-epic .skill input {
+  width: 40px;
+  text-align: center;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: white;
+}
+
+.zwolf-epic .skill .skill-total {
+  width: 40px;
+  text-align: center;
+  font-weight: bold;
+  padding: 2px;
+  background: #782e22;
+  color: white;
+  border-radius: 3px;
+}
+
+/* ----------------------------------------- */
+/*  Target Numbers Section (NEW)            */
+/* ----------------------------------------- */
+
+.zwolf-epic .tns-section {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.zwolf-epic .tns-section h3 {
+  color: #782e22;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #782e22;
+  padding-bottom: 5px;
+}
+
+.zwolf-epic .tns-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.zwolf-epic .tn-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 3px;
+}
+
+.zwolf-epic .tn-item:hover {
+  background: rgba(120, 46, 34, 0.1);
+}
+
+.zwolf-epic .tn-label {
+  font-weight: bold;
+  color: #782e22;
+}
+
+.zwolf-epic .tn-value {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.zwolf-epic .tn-value input {
+  width: 50px;
+  background: white;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 3px 5px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+/* ----------------------------------------- */
+/*  Configuration Tab (NEW)                 */
+/* ----------------------------------------- */
+
+.zwolf-epic .config-section {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.zwolf-epic .config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.zwolf-epic .config-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 3px;
+}
+
+.zwolf-epic .config-label {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zwolf-epic .config-select {
+  background: white;
+  border: 1px solid #ccc;
+  color: #333;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.zwolf-epic .config-select:hover {
+  border-color: #782e22;
+}
+
+/* ----------------------------------------- */
+/*  Items List                              */
+/* ----------------------------------------- */
+
+.zwolf-epic .items-list {
+  margin-top: 10px;
+}
+
+.zwolf-epic .items-header {
+  display: flex;
+  padding: 5px 10px;
+  background: #782e22;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px 5px 0 0;
+}
+
+.zwolf-epic .item {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.zwolf-epic .item:nth-child(even) {
+  background: rgba(240, 240, 240, 0.9);
+}
+
+.zwolf-epic .item:hover {
+  background: rgba(120, 46, 34, 0.1);
+}
+
+.zwolf-epic .item img {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  border: 1px solid #782e22;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.zwolf-epic .item-name {
+  flex: 1;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.zwolf-epic .item-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.zwolf-epic .item-controls a {
+  color: #782e22;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.zwolf-epic .item-controls a:hover {
+  color: #a04030;
+}
+
+/* ----------------------------------------- */
+/*  Biography Tab                           */
+/* ----------------------------------------- */
+
+.zwolf-epic .biography {
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  min-height: 300px;
+}
+
+.zwolf-epic .biography .editor {
+  min-height: 280px;
+}
+
+/* ----------------------------------------- */
+/*  Effects Tab                             */
+/* ----------------------------------------- */
+
+.zwolf-epic .effects .effect-list {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.zwolf-epic .effects .effect-header {
+  font-weight: bold;
+  color: #782e22;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #782e22;
+}
+
+.zwolf-epic .effects .effect {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  margin-bottom: 5px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 3px;
+}
+
+.zwolf-epic .effects .effect img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  border-radius: 3px;
+}
+
+.zwolf-epic .effects .effect-name {
+  flex: 1;
+}
+
+.zwolf-epic .effects .effect-controls {
+  display: flex;
+  gap: 5px;
+}
+
+/* ----------------------------------------- */
+/*  Roll Messages                           */
+/* ----------------------------------------- */
+
+.zwolf-roll {
+  padding: 10px;
+  background: linear-gradient(135deg, #f5f5f5, #e8e8e8);
+  border: 2px solid #782e22;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.zwolf-roll .roll-formula {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #782e22;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.zwolf-roll .boost-jinx-info {
+  padding: 5px;
+  margin-bottom: 8px;
+  border-radius: 3px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.zwolf-roll .boost-jinx-info.boost {
+  background: rgba(74, 144, 226, 0.1);
+  color: #4a90e2;
+  border: 1px solid #4a90e2;
+}
+
+.zwolf-roll .boost-jinx-info.jinx {
+  background: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+}
+
+.zwolf-roll .dice-results {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+}
+
+.zwolf-roll .die-result {
+  display: inline-block;
+  padding: 5px 10px;
+  margin: 0 3px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-weight: bold;
+}
+
+.zwolf-roll .die-result.key-die {
+  background: #782e22;
+  color: white;
+  border: 2px solid #5a1f17;
+  box-shadow: 0 0 5px rgba(120, 46, 34, 0.5);
+}
+
+.zwolf-roll .die-result.crit-trigger {
+  border-color: #ffa500;
+  background: rgba(255, 165, 0, 0.2);
+}
+
+.zwolf-roll .original-order {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+.zwolf-roll .key-die-info {
+  margin-bottom: 8px;
+  padding: 8px;
+  background: rgba(120, 46, 34, 0.1);
+  border-radius: 3px;
+}
+
+.zwolf-roll .final-result {
+  font-size: 1.3em;
+  color: #782e22;
+}
+
+.zwolf-roll .crit-chances {
+  margin-top: 10px;
+  padding: 8px;
+  text-align: center;
+  border-radius: 3px;
+}
+
+.zwolf-roll .crit-success {
+  color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+  padding: 5px;
+  border-radius: 3px;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  font-weight: bold;
+}
+
+.zwolf-roll .crit-failure {
+  color: #ff0000;
+  background: rgba(255, 0, 0, 0.1);
+  padding: 5px;
+  border-radius: 3px;
+  text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  font-weight: bold;
+}
+
+.zwolf-roll .crit-both {
+  color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  padding: 5px;
+  border-radius: 3px;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+  font-weight: bold;
+}
+
+.zwolf-roll.crit-success-chance {
+  border-color: #00ff00;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.zwolf-roll.crit-failure-chance {
+  border-color: #ff0000;
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+}
+
+.zwolf-roll.crit-both {
+  border-color: #ffd700;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
+.zwolf-roll .roll-target {
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+  margin-bottom: 5px;
+}
+
+.zwolf-roll .roll-outcome {
+  padding: 10px;
+  text-align: center;
+  font-size: 1.2em;
+  border-radius: 3px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.zwolf-roll .roll-outcome.success {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+.zwolf-roll .roll-outcome.failure {
+  background: linear-gradient(135deg, #f44336, #da190b);
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+}
+
+/* ----------------------------------------- */
+/*  Utility Classes                         */
+/* ----------------------------------------- */
+
+.zwolf-epic .flexrow {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.zwolf-epic .flexcol {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.zwolf-epic .flex-1 {
+  flex: 1;
+}
+
+.zwolf-epic .flex-2 {
+  flex: 2;
+}
+
+.zwolf-epic .text-center {
+  text-align: center;
+}
+
+.zwolf-epic h2 {
+  border-bottom: 2px solid #782e22;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: #782e22;
+}
+
+/* ----------------------------------------- */
+/*  Damage & Conditions                    */
+/* ----------------------------------------- */
+
+.zwolf-damage-applied {
+  padding: 10px;
+  background: linear-gradient(135deg, #fff5f5, #ffe0e0);
+  border: 2px solid #d32f2f;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.zwolf-damage-applied h3 {
+  margin: 0 0 10px 0;
+  color: #d32f2f;
+  text-align: center;
+}
+
+.damage-details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.damage-type {
+  font-weight: bold;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 3px;
+}
+
+.resistance-info {
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  border-left: 3px solid #ff9800;
+  font-style: italic;
+}
+
+.damage-final {
+  padding: 8px;
+  background: rgba(211, 47, 47, 0.1);
+  border-radius: 3px;
+  font-size: 1.1em;
+}
+
+.health-remaining {
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Condition indicators on character sheet */
+.zwolf-epic .conditions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+}
+
+.zwolf-epic .condition-badge {
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zwolf-epic .condition-badge.active {
+  background: #782e22;
+  color: white;
+}
+
+.zwolf-epic .condition-badge.inactive {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.zwolf-epic .condition-badge:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Resistance display */
+.zwolf-epic .resistances-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+}
+
+.zwolf-epic .resistance-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 3px;
+}
+
+.zwolf-epic .resistance-item label {
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.9em;
+}
+
+.zwolf-epic .resistance-item select {
+  width: 100px;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: white;
+}
+
+/* Swarm-specific styles */
+.zwolf-epic .swarm-details {
+  padding: 10px;
+  background: linear-gradient(135deg, #f0f4ff, #e8ecff);
+  border: 2px solid #4169e1;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.zwolf-epic .swarm-details h3 {
+  margin: 0 0 10px 0;
+  color: #4169e1;
+  border-bottom: 1px solid #4169e1;
+  padding-bottom: 5px;
+}
+
+.zwolf-epic .swarm-count {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.zwolf-epic .swarm-count .count-display {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #4169e1;
+}
+
+.zwolf-epic .swarm-count button {
+  padding: 5px 10px;
+  border: 1px solid #4169e1;
+  background: white;
+  color: #4169e1;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zwolf-epic .swarm-count button:hover {
+  background: #4169e1;
+  color: white;
+}
+
+/* Progression Dice Icons */
+.progression-die {
+  font-size: 1.2em;
+  margin-right: 6px;
+  margin-left: -2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.progression-die:hover {
+  opacity: 1;
+  transform: rotate(15deg) scale(1.15);
+}
+
+.progression-die:active {
+  transform: rotate(360deg) scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+/* Mediocre Progression Dice - Gray/Silver */
+.mediocre .progression-die {
+  color: #8a8a8a;
+  text-shadow: 0 0 3px rgba(138, 138, 138, 0.5);
+}
+
+.mediocre .progression-die:hover {
+  color: #a8a8a8;
+  text-shadow: 0 0 6px rgba(168, 168, 168, 0.8);
+}
+
+/* Moderate Progression Dice - Blue */
+.moderate .progression-die {
+  color: #4a90e2;
+  text-shadow: 0 0 3px rgba(74, 144, 226, 0.5);
+}
+
+.moderate .progression-die:hover {
+  color: #5ba0f2;
+  text-shadow: 0 0 6px rgba(91, 160, 242, 0.8);
+}
+
+/* Specialty Progression Dice - Purple */
+.specialty .progression-die {
+  color: #9b59b6;
+  text-shadow: 0 0 3px rgba(155, 89, 182, 0.5);
+}
+
+.specialty .progression-die:hover {
+  color: #a869c6;
+  text-shadow: 0 0 6px rgba(168, 105, 198, 0.8);
+}
+
+/* Awesome Progression Dice - Gold/Orange */
+.awesome .progression-die {
+  color: #f39c12;
+  text-shadow: 0 0 3px rgba(243, 156, 18, 0.5);
+}
+
+.awesome .progression-die:hover {
+  color: #ffac22;
+  text-shadow: 0 0 6px rgba(255, 172, 34, 0.8);
+}
+
+/* Adjust header layout to accommodate the dice icon */
+.progression-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  background: linear-gradient(to right, rgba(0,0,0,0.1), transparent);
+  transition: background 0.3s ease;
+}
+
+.progression-header:hover {
+  background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+}
+
+.progression-name {
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Move the dice icon to be part of the name */
+.progression-name .progression-die {
+  margin-right: 6px;
+}
+
+.progression-bonus {
+  font-weight: bold;
+  margin-left: auto;
+}
+
+/* ----------------------------------------- */
+/*  Scrollbar Styling                       */
+/* ----------------------------------------- */
+
+.zwolf-epic .progressions-sidebar::-webkit-scrollbar,
+.zwolf-epic .main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.zwolf-epic .progressions-sidebar::-webkit-scrollbar-track,
+.zwolf-epic .main-content::-webkit-scrollbar-track {
+  background: rgba(120, 46, 34, 0.1);
+}
+
+.zwolf-epic .progressions-sidebar::-webkit-scrollbar-thumb,
+.zwolf-epic .main-content::-webkit-scrollbar-thumb {
+  background: rgba(120, 46, 34, 0.3);
+  border-radius: 3px;
+}
+
+.zwolf-epic .progressions-sidebar::-webkit-scrollbar-thumb:hover,
+.zwolf-epic .main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 46, 34, 0.5);
+}
+
+/* Locked Item Styles */
+
+.locked {
+    opacity: 0.6;
+    background-color: #f5f5f5;
+}
+
+.item.locked {
+    border-left: 3px solid #cc0000;
+}
+
+/* ----------------------------------------- */
+/*  Item Sheet Specific Overrides           */
+/* ----------------------------------------- */
+
+/* Complete reset for item sheet spacing */
+.zwolf-epic.sheet.item .sheet-header-wrapper {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.zwolf-epic.sheet.item .header-resources,
+.zwolf-epic.sheet.item .header-tns {
+  display: none !important; /* These probably don't exist on item sheets anyway */
+}
+
+.zwolf-epic.sheet.item .sheet-tabs {
+  margin: 0 !important;
+  padding: 0 10px !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+/* Reset and fix item sheet header layout */
+.zwolf-epic.sheet.item .sheet-header {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 10px 10px 5px 10px !important;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+/* Fix item portrait to be properly square */
+.zwolf-epic.sheet.item .sheet-header .profile-img {
+  width: 80px !important;
+  height: 80px !important;
+  min-width: 80px !important;
+  min-height: 80px !important;
+  max-width: 80px !important;
+  max-height: 80px !important;
+  flex: none !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  border: 2px solid #782e22 !important;
+  border-radius: 5px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  cursor: pointer !important;
+}
+
+/* Fix header fields container */
+.zwolf-epic.sheet.item .sheet-header .header-fields {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  min-width: 0 !important;
+}
+
+/* Fix title field */
+.zwolf-epic.sheet.item .sheet-header h1.charname {
+  margin: 0 !important;
+  padding: 5px !important;
+  font-size: 1.5em !important;
+  font-weight: bold !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid #ccc !important;
+  border-radius: 3px !important;
+}
+
+.zwolf-epic.sheet.item .sheet-header .item-subtitle {
+  margin: 0 !important;
+  padding: 0 5px !important;
+  font-size: 0.9em !important;
+  color: #666 !important;
+}
+
+/* Remove any wrapper padding/margins that might be causing gaps */
+.zwolf-epic.sheet.item .sheet-header-wrapper {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Fix tab navigation positioning and spacing */
+.zwolf-epic.sheet.item .sheet-tabs.tabs {
+  display: flex !important;
+  gap: 2px !important;
+  border-bottom: 2px solid #782e22 !important;
+  margin: 0 !important;
+  padding: 5px 10px 0 !important;
+  background: rgba(120, 46, 34, 0.05) !important;
+  justify-content: flex-start !important;
+  min-height: auto !important;
+  align-items: flex-end !important;
+}
+
+/* Individual tab styling */
+.zwolf-epic.sheet.item .sheet-tabs.tabs .item {
+  padding: 8px 16px 6px 16px !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #782e22 !important;
+  border-bottom: none !important;
+  border-radius: 5px 5px 0 0 !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  font-size: 0.9em !important;
+  color: #782e22 !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  min-width: 100px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  margin-bottom: -1px !important;
+}
+
+/* Active tab state */
+.zwolf-epic.sheet.item .sheet-tabs.tabs .item.active {
+  background: #782e22 !important;
+  border-color: #782e22 !important;
+  color: white !important;
+  z-index: 10 !important;
+}
+
+/* Sheet body with no gap */
+.zwolf-epic.sheet.item .sheet-body {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid #782e22 !important;
+  border-top: none !important;
+  border-radius: 0 0 5px 5px !important;
+  padding: 15px !important;
+  margin: 0 !important;
+}
+
+/* Override any conflicting window-content padding for items */
+.zwolf-epic.sheet.item .window-content {
+  padding: 10px !important;
+  background: linear-gradient(to bottom, #f5f5f5, #e8e8e8) !important;
+  font-family: "Signika", sans-serif !important;
+}
+
+/* Ensure no extra spacing between sections */
+.zwolf-epic.sheet.item .sheet-header + .sheet-tabs.tabs {
+  margin-top: 0 !important;
+}
+
+.zwolf-epic.sheet.item .sheet-tabs.tabs + .sheet-body {
+  margin-top: 0 !important;
+}
+
+/* ----------------------------------------- */
+/*  Fundament-specific Styles               */
+/* ----------------------------------------- */
+
+.zwolf-epic .mechanics-section {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.zwolf-epic .mechanics-section h3 {
+  color: #782e22;
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #782e22;
+  padding-bottom: 5px;
+}
+
+.zwolf-epic .mechanics-section h4 {
+  color: #782e22;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1em;
+}
+
+.zwolf-epic .mechanics-section textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+  background: #f9f9f9;
+  resize: vertical;
+}
+
+.zwolf-epic .function-test-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 3px;
+}
+
+.zwolf-epic .function-test-controls label {
+  font-weight: bold;
+  color: #782e22;
+}
+
+.zwolf-epic .function-test-controls input {
+  width: 60px;
+  padding: 3px 6px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.zwolf-epic .function-test-controls button {
+  padding: 6px 12px;
+  background: #782e22;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.zwolf-epic .function-test-controls button:hover {
+  background: #5a1f17;
+}
+
+.zwolf-epic .test-results {
+  padding: 10px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  min-height: 40px;
+}
+
+.zwolf-epic .test-result {
+  padding: 5px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.zwolf-epic .test-result:last-child {
+  border-bottom: none;
+}
+
+.zwolf-epic .test-result.vitality {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.zwolf-epic .test-result.coast {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.zwolf-epic .test-result.error {
+  color: #dc3545;
+  font-weight: bold;
+  background: rgba(220, 53, 69, 0.1);
+  padding: 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+/* ----------------------------------------- */
+/*  Rich Editors                             */
+/* ----------------------------------------- */
+
+.zwolf-epic.sheet.item .editor .editor-content,
+.zwolf-epic.sheet.item .editor .ProseMirror {
+    min-height: 150px !important;
+    height: auto !important;
+    max-height: 300px !important;
+}
+
+/* Ensure the editor container has proper sizing */
+.zwolf-epic.sheet.item .form-fields .editor {
+    min-height: 150px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 3px !important;
+}
+
+/* Fix for TinyMCE if it's being used instead of ProseMirror */
+.zwolf-epic.sheet.item .editor .mce-edit-area,
+.zwolf-epic.sheet.item .editor .mce-content-body {
+    min-height: 150px !important;
+}
+
+/* Alternative approach - target by editor wrapper */
+.zwolf-epic.sheet.item .tab[data-tab="abilities"] .editor,
+.zwolf-epic.sheet.item .tab[data-tab="details"] .editor {
+    min-height: 150px !important;
+}
+
+.zwolf-epic.sheet.item .tab[data-tab="abilities"] .editor .editor-content,
+.zwolf-epic.sheet.item .tab[data-tab="details"] .editor .editor-content {
+    min-height: 150px !important;
+    background: white !important;
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+}
+
+/* Force visibility of the editor interface */
+.zwolf-epic.sheet.item .editor .editor-edit {
+    display: block !important;
+    position: absolute !important;
+    top: 5px !important;
+    right: 5px !important;
+    z-index: 20 !important;
+    background: rgba(120, 46, 34, 0.8) !important;
+    color: white !important;
+    padding: 4px 8px !important;
+    border-radius: 3px !important;
+    font-size: 12px !important;
+}
+
+/* ----------------------------------------- */
+/*  Progression Assignment Interface        */
+/* ----------------------------------------- */
+
+/* Progression Assignment Section */
+.zwolf-epic .progression-assignments {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 5px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.zwolf-epic .progression-assignments .progression-help {
+  color: #666;
+  font-style: italic;
+  margin-bottom: 1rem;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+/* Configuration Sections */
+.zwolf-epic .config-section {
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px;
+}
+
+.zwolf-epic .config-section h5 {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #782e22;
+  color: #782e22;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Configuration List Layout */
+.zwolf-epic .config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 15px;
+}
+
+/* Configuration Row Items */
+.zwolf-epic .config-row {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-top: none;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .config-row:first-child {
+  border-top: 1px solid #ddd;
+  border-radius: 5px 5px 0 0;
+}
+
+.zwolf-epic .config-row:last-child {
+  border-radius: 0 0 5px 5px;
+}
+
+.zwolf-epic .config-row:only-child {
+  border-radius: 5px;
+}
+
+.zwolf-epic .config-row:hover {
+  background: rgba(120, 46, 34, 0.1);
+  border-color: #782e22;
+}
+
+/* Alternating row backgrounds */
+.zwolf-epic .config-row-alt {
+  background: rgba(248, 249, 250, 0.8);
+}
+
+.zwolf-epic .config-row-alt:hover {
+  background: rgba(120, 46, 34, 0.15);
+}
+
+.zwolf-epic .stat-label {
+  font-weight: bold;
+  color: #782e22;
+  min-width: 100px;
+  margin-right: 1rem;
+  font-size: 1em;
+}
+
+/* Progression Slider Styling - Compact Version */
+.zwolf-epic .progression-slider-container {
+  flex: 1;
+  position: relative;
+  max-width: 300px;
+}
+
+.zwolf-epic .progression-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  margin-bottom: 0.25rem;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .progression-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #782e22;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(120, 46, 34, 0.3);
+  transition: all 0.2s ease;
+  margin-top: -6px; /* Move thumb up 2px (was -5px, now -6px) */
+}
+
+.zwolf-epic .progression-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(120, 46, 34, 0.4);
+}
+
+.zwolf-epic .progression-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #782e22;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(120, 46, 34, 0.3);
+  transition: all 0.2s ease;
+  margin-top: -6px; /* Move thumb up 2px for Firefox */
+}
+
+.zwolf-epic .progression-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 6px rgba(120, 46, 34, 0.4);
+}
+
+/* Color the slider track based on value */
+.zwolf-epic .progression-slider[value="1"] { 
+  background: linear-gradient(to right, #8B4513 0%, #8B4513 25%, #ddd 25%, #ddd 100%); 
+}
+
+.zwolf-epic .progression-slider[value="2"] { 
+  background: linear-gradient(to right, #4a90e2 0%, #4a90e2 50%, #ddd 50%, #ddd 100%); 
+}
+
+.zwolf-epic .progression-slider[value="3"] { 
+  background: linear-gradient(to right, #9b59b6 0%, #9b59b6 75%, #ddd 75%, #ddd 100%); 
+}
+
+.zwolf-epic .progression-slider[value="4"] { 
+  background: linear-gradient(to right, #f39c12 0%, #f39c12 100%); 
+}
+
+.zwolf-epic .slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65em;
+  color: #666;
+  padding: 0 8px;
+}
+
+/* Responsive design for progression assignments */
+@media (max-width: 768px) {
+  .zwolf-epic .config-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .zwolf-epic .stat-label {
+    min-width: auto;
+    margin-right: 0;
+  }
+  
+  .zwolf-epic .progression-slider-container {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+/* Build Points Display Styling */
+.build-points-header {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 8px;
+  border: 2px solid #3498db;
+  text-align: center;
+}
+
+.build-points-display {
+  color: black;
+}
+
+.bp-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.bp-total {
+  font-size: 32px;
+  font-weight: 700;
+  color: #3498db;
+  text-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+  margin-bottom: 8px;
+}
+
+.bp-breakdown {
+  font-size: 12px;
+  opacity: 0.8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.bp-breakdown-item {
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.bp-breakdown-divider {
+  font-weight: bold;
+  opacity: 0.6;
+}
+
+/* Alternative styling for negative/positive totals */
+.bp-total.negative {
+  color: #e74c3c;
+  text-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+.bp-total.over-max {
+  color: #f39c12;
+  text-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+}
+
+.bp-total.at-max {
+  color: #27ae60;
+  text-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+}
+
+/* Styling for Item Drop areas lower in Configure Tab */
+
+  .knacks-section, .tracks-section, .talents-section {
+    margin-top: 20px;
+    border: 1px solid var(--color-border-light-tertiary);
+    border-radius: 6px;
+    padding: 15px;
+    background: var(--color-bg-option);
+  }
+
+  .knacks-grid, .tracks-grid, .talents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .compact-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .knack-slot, .track-slot, .talent-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .compact-slot {
+    gap: 3px;
+  }
+
+  .slot-label {
+    font-weight: bold;
+    font-size: 11px;
+    color: var(--color-text-dark-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .knack-drop-zone, .track-drop-zone, .talent-drop-zone {
+    min-height: 80px;
+    border: 2px dashed var(--color-border-light-tertiary);
+    border-radius: 4px;
+    background: var(--color-bg-alt);
+    transition: all 0.2s ease;
+  }
+
+  .compact-drop-zone {
+    min-height: 60px;
+  }
+
+  .knack-drop-zone:hover, .track-drop-zone:hover, .talent-drop-zone:hover {
+    border-color: var(--color-border-light-primary);
+    background: var(--color-bg-option);
+  }
+
+  .knack-drop-zone.dragover, .track-drop-zone.dragover, .talent-drop-zone.dragover {
+    border-color: var(--color-text-light-primary);
+    background: var(--color-bg-option);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .compact-slotted-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    background: var(--color-bg-alt);
+    border-radius: 3px;
+    min-height: 52px;
+  }
+
+  .compact-item-image {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    object-fit: cover;
+  }
+
+  .compact-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .compact-item-info .item-name {
+    font-size: 11px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .compact-item-controls {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .compact-item-controls .item-control {
+    font-size: 10px;
+    padding: 2px;
+    min-width: 16px;
+    min-height: 16px;
+  }
+
+  .compact-drop-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px;
+    color: var(--color-text-dark-secondary);
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .compact-drop-prompt i {
+    font-size: 16px;
+  }
+
+  .no-slots-message {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px;
+    background: var(--color-bg-alt);
+    border: 1px dashed var(--color-border-light-tertiary);
+    border-radius: 4px;
+    color: var(--color-text-dark-secondary);
+    font-style: italic;
+  }
+
+  .build-category h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--color-text-dark-primary);
+    border-bottom: 1px solid var(--color-border-light-tertiary);
+    padding-bottom: 8px;
+  }
+
+  .build-category h4 i {
+    color: var(--color-text-light-primary);
+  }
+
+/* ----------------------------------------- */
+/*  Abilities Accordion (Main Tab)           */
+/* ----------------------------------------- */
+
+.zwolf-epic .abilities-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 10px;
+}
+
+.zwolf-epic .ability-category {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #782e22;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.zwolf-epic .ability-category[open] {
+  box-shadow: 0 4px 8px rgba(120, 46, 34, 0.2);
+}
+
+.zwolf-epic .ability-category-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  background: linear-gradient(135deg, #782e22, #5a1f17);
+  color: white;
+  font-weight: bold;
+  font-size: 1.1em;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.zwolf-epic .ability-category-header:hover {
+  background: linear-gradient(135deg, #8a342a, #6a241d);
+}
+
+.zwolf-epic .ability-category-header i {
+  font-size: 1.2em;
+  width: 20px;
+  text-align: center;
+}
+
+.zwolf-epic .ability-count {
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.9em;
+  font-weight: normal;
+}
+
+.zwolf-epic .ability-list {
+  background: rgba(248, 249, 250, 0.95);
+  border-top: 1px solid rgba(120, 46, 34, 0.3);
+}
+
+.zwolf-epic .ability-item {
+  border-bottom: 1px solid rgba(120, 46, 34, 0.1);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .ability-item:last-child {
+  border-bottom: none;
+}
+
+.zwolf-epic .ability-item:hover {
+  background: rgba(120, 46, 34, 0.05);
+}
+
+.zwolf-epic .ability-item[open] {
+  background: rgba(120, 46, 34, 0.08);
+}
+
+.zwolf-epic .ability-name {
+  padding: 12px 18px;
+  font-weight: 600;
+  color: #782e22;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+  font-size: 1em;
+}
+
+.zwolf-epic .ability-name:hover {
+  color: #5a1f17;
+  background: rgba(120, 46, 34, 0.1);
+}
+
+.zwolf-epic .ability-description {
+  padding: 0 18px 15px 18px;
+  color: #555;
+  line-height: 1.6;
+  border-top: 1px solid rgba(120, 46, 34, 0.1);
+  background: rgba(248, 249, 250, 0.8);
+  font-size: 0.95em;
+}
+
+.zwolf-epic .ability-description p {
+  margin: 0 0 10px 0;
+}
+
+.zwolf-epic .ability-description p:last-child {
+  margin-bottom: 0;
+}
+
+.zwolf-epic .no-abilities {
+  padding: 20px 18px;
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  background: rgba(248, 249, 250, 0.5);
+}
+
+/* Styling for different ability categories */
+.zwolf-epic .ability-category:nth-child(1) .ability-category-header {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+}
+
+.zwolf-epic .ability-category:nth-child(1) .ability-category-header:hover {
+  background: linear-gradient(135deg, #7c858d, #6a7278);
+}
+
+.zwolf-epic .ability-category:nth-child(2) .ability-category-header {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.zwolf-epic .ability-category:nth-child(2) .ability-category-header:hover {
+  background: linear-gradient(135deg, #e24555, #d23343);
+}
+
+.zwolf-epic .ability-category:nth-child(3) .ability-category-header {
+  background: linear-gradient(135deg, #28a745, #228b3c);
+}
+
+.zwolf-epic .ability-category:nth-child(3) .ability-category-header:hover {
+  background: linear-gradient(135deg, #38b755, #329b4c);
+}
+
+.zwolf-epic .ability-category:nth-child(4) .ability-category-header {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+}
+
+.zwolf-epic .ability-category:nth-child(4) .ability-category-header:hover {
+  background: linear-gradient(135deg, #ffcd39, #eab800);
+}
+
+.zwolf-epic .ability-category:nth-child(5) .ability-category-header {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+}
+
+.zwolf-epic .ability-category:nth-child(5) .ability-category-header:hover {
+  background: linear-gradient(135deg, #27b2c8, #1494a6);
+}
+
+/* Build Points Lock Button Styles */
+.build-points-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.build-points-controls {
+  display: flex;
+  align-items: center;
+}
+
+.build-points-lock-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f8f8f8;
+  color: #333;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 80px;
+  justify-content: center;
+}
+
+.build-points-lock-btn:hover {
+  background: #e8e8e8;
+  border-color: #999;
+}
+
+.build-points-lock-btn.locked {
+  background: #ffebee;
+  border-color: #f44336;
+  color: #c62828;
+}
+
+.build-points-lock-btn.locked:hover {
+  background: #ffcdd2;
+  border-color: #d32f2f;
+}
+
+.build-points-lock-btn.unlocked {
+  background: #e8f5e8;
+  border-color: #4caf50;
+  color: #2e7d32;
+}
+
+.build-points-lock-btn.unlocked:hover {
+  background: #c8e6c9;
+  border-color: #388e3c;
+}
+
+.build-points-lock-btn i {
+  font-size: 12px;
+}
+
+.lock-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Locked Slider Styles */
+.progression-slider:disabled,
+.progression-slider.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e0e0e0 !important;
+}
+
+.progression-slider:disabled::-webkit-slider-thumb,
+.progression-slider.locked::-webkit-slider-thumb {
+  background: #999 !important;
+  cursor: not-allowed;
+}
+
+.progression-slider:disabled::-moz-range-thumb,
+.progression-slider.locked::-moz-range-thumb {
+  background: #999 !important;
+  cursor: not-allowed;
+}
+
+/* Optional: Add a subtle overlay to locked slider containers */
+.progression-slider-container:has(.progression-slider:disabled),
+.progression-slider-container:has(.progression-slider.locked) {
+  position: relative;
+}
+
+.progression-slider-container:has(.progression-slider:disabled)::after,
+.progression-slider-container:has(.progression-slider.locked)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+/* Multi-select styling for ancestry size options */
+select[name="system.sizeOptions"] {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 3px;
+  padding: 4px;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Ensure selected options are visually distinct */
+select[name="system.sizeOptions"] option:checked {
+  background: var(--color-bg-option) linear-gradient(0deg, var(--color-bg-option) 0%, var(--color-bg-option) 100%);
+  color: var(--color-text-light-primary);
+  font-weight: bold;
+}
+
+/* For browsers that support it, better selected styling */
+select[name="system.sizeOptions"] option:checked {
+  background-color: #0078d4 !important;
+  color: white !important;
+}
+
+/* Hover state for options */
+select[name="system.sizeOptions"] option:hover {
+  background-color: var(--color-bg-btn-minor-active);
+}
+
+/* Focus state for the select */
+select[name="system.sizeOptions"]:focus {
+  outline: 2px solid var(--color-border-highlight);
+  outline-offset: 1px;
+}
+
+/* Size field styling */
+.size-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.size-field select {
+  flex: 1;
+}
+
+.size-source {
+  color: var(--color-text-dark-secondary);
+  font-size: 0.8em;
+  cursor: help;
+}
+
+.size-source i {
+  opacity: 0.7;
+}
+
+.size-source:hover i {
+  opacity: 1;
+  color: var(--color-text-primary);
+}
+
+.zwolf-epic .tags-field {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.zwolf-epic .tags-field input {
+  flex-grow: 1;
+  min-width: 100px;
+}
+
+/* Awesome Progression Warning Icon Styles */
+.zwolf-epic .awesome-warning {
+  color: #ffc107;
+  margin-right: 6px;
+  font-size: 0.9em;
+  cursor: help;
+  text-shadow: 0 0 2px rgba(255, 193, 7, 0.5);
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .awesome-warning:hover {
+  color: #ff9800;
+  transform: scale(1.1);
+  text-shadow: 0 0 4px rgba(255, 193, 7, 0.8);
+}
+
+/* Adjust stat label to accommodate the warning icon */
+.zwolf-epic .stat-label {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: #782e22;
+  min-width: 100px;
+  margin-right: 1rem;
+  font-size: 1em;
+}
+
+/* Ensure proper spacing when warning icon is present */
+.zwolf-epic .stat-label .awesome-warning {
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------- */
+/*  Side Effects Tab Styling                */
+/* ----------------------------------------- */
+
+/* Restore proper form group styling with borders and padding */
+.zwolf-epic .progression-upgrades .form-group {
+  margin-bottom: 20px;
+  padding: 15px !important;
+  background: rgba(248, 249, 250, 0.8) !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .progression-upgrades .form-group:hover {
+  background: rgba(248, 249, 250, 1) !important;
+  border-color: #782e22 !important;
+  box-shadow: 0 2px 4px rgba(120, 46, 34, 0.1) !important;
+}
+
+/* Speed Progression - Green */
+.zwolf-epic .progression-upgrades .form-group:first-of-type {
+  border-left: 3px solid #28a745 !important;
+}
+
+.zwolf-epic .progression-upgrades .form-group:first-of-type label::before {
+  content: '🏃 ';
+  margin-right: 4px;
+}
+
+/* Toughness TN - Red */
+.zwolf-epic .progression-upgrades .form-group:nth-of-type(2) {
+  border-left: 3px solid #dc3545 !important;
+}
+
+.zwolf-epic .progression-upgrades .form-group:nth-of-type(2) label::before {
+  content: '🛡️ ';
+  margin-right: 4px;
+}
+
+/* Destiny TN - Lavender */
+.zwolf-epic .progression-upgrades .form-group:nth-of-type(3) {
+  border-left: 3px solid #9b59b6 !important;
+}
+
+.zwolf-epic .progression-upgrades .form-group:nth-of-type(3) label::before {
+  content: '⭐ ';
+  margin-right: 4px;
+}
+
+/* Ensure labels, selects, and notes within form groups are properly styled */
+.zwolf-epic .progression-upgrades .form-group label {
+  display: block;
+  font-weight: bold;
+  color: #782e22;
+  margin-bottom: 8px;
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.zwolf-epic .progression-upgrades .form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-size: 0.95em;
+  line-height: 1.4;
+  min-height: 40px;
+  height: auto;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .progression-upgrades .form-group select:focus {
+  outline: none;
+  border-color: #782e22;
+  box-shadow: 0 0 0 2px rgba(120, 46, 34, 0.2);
+}
+
+.zwolf-epic .progression-upgrades .form-group select:hover {
+  border-color: #999;
+}
+
+.zwolf-epic .progression-upgrades .form-group .notes {
+  margin: 8px 0 0 0;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: #666;
+  font-style: italic;
+  line-height: 1.3;
+  border-left: 2px solid #e9ecef;
+}}
+
+/* Option styling for progression levels */
+.zwolf-epic .progression-upgrades select option[value=""] {
+  color: #999;
+  font-style: italic;
+}
+
+.zwolf-epic .progression-upgrades select option[value="mediocre"] {
+  color: #8a8a8a;
+}
+
+.zwolf-epic .progression-upgrades select option[value="moderate"] {
+  color: #4a90e2;
+}
+
+.zwolf-epic .progression-upgrades select option[value="specialty"] {
+  color: #9b59b6;
+}
+
+.zwolf-epic .progression-upgrades select option[value="awesome"] {
+  color: #f39c12;
+}
+
+/* Future Side Effects Placeholder */
+.zwolf-epic .future-side-effects {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(120, 46, 34, 0.03), rgba(120, 46, 34, 0.08));
+  border-radius: 8px;
+  border: 2px dashed rgba(120, 46, 34, 0.3);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.zwolf-epic .future-side-effects:hover {
+  border-color: rgba(120, 46, 34, 0.5);
+  background: linear-gradient(135deg, rgba(120, 46, 34, 0.05), rgba(120, 46, 34, 0.1));
+}
+
+.zwolf-epic .future-side-effects h4 {
+  margin: 0 0 10px 0;
+  color: #782e22;
+  font-size: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0.8;
+}
+
+.zwolf-epic .future-side-effects h4 i {
+  color: #999;
+  font-size: 1.2em;
+}
+
+.zwolf-epic .future-side-effects .notes {
+  margin: 0;
+  color: #666;
+  font-style: italic;
+  font-size: 0.9em;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+/* Enhanced sidebar display for upgraded progressions */
+.zwolf-epic .stat-item.upgraded {
+  border-left: 3px solid #4caf50;
+  background: linear-gradient(to right, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.05), transparent);
+}
+
+.zwolf-epic .stat-item.upgraded .stat-name::after {
+  content: ' ⬆';
+  color: #4caf50;
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+.zwolf-epic .stat-item.upgraded:hover .stat-name::after {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* Responsive design for side effects tab */
+@media (max-width: 768px) {
+  .zwolf-epic .progression-upgrades {
+    padding: 15px;
+  }
+  
+  .zwolf-epic .progression-upgrades .form-group {
+    padding: 12px;
+  }
+  
+  .zwolf-epic .future-side-effects {
+    padding: 1rem;
+  }
+}
+
+/* Animation for upgraded stats */
+@keyframes upgrade-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); 
+  }
+  50% { 
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); 
+  }
+}
+
+.zwolf-epic .stat-item.upgraded:hover {
+  animation: upgrade-glow 2s ease-in-out infinite;
+}
+
+.zwolf-epic .stat-item.upgraded:hover {
+  animation: upgrade-glow 2s ease-in-out infinite;
+}
+
+.vision-radius-upgrades {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: rgba(0, 100, 200, 0.05);
+}
+
+.vision-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-suffix {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.vision-radius-upgrades h4 {
+  margin: 0 0 0.5rem 0;
+  color: #003d80;
+}
+
+/* Speed Roll Styling - Add to your zwolf-epic.css file */
+
+.zwolf-epic .speed-with-roll {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.zwolf-epic .speed-roll-die {
+  color: #4a90e2;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  font-size: 0.9em;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.zwolf-epic .speed-roll-die:hover {
+  opacity: 1;
+  color: #5ba0f2;
+  transform: rotate(15deg) scale(1.15);
+  text-shadow: 0 0 6px rgba(74, 144, 226, 0.8);
+}
+
+.zwolf-epic .speed-roll-die:active {
+  transform: rotate(360deg) scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+/* Ensure the speed resource maintains proper layout */
+.zwolf-epic .speed-resource .resource-value-single {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Track Sheet Specific Styles */
+
+/* Tier Content Styling */
+.tier-content {
+  padding: 1rem;
+}
+
+.tier-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #782e22;
+  padding-bottom: 0.5rem;
+}
+
+.tier-header h3 {
+  margin: 0;
+  color: #782e22;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.tier-header .notes {
+  margin: 0.5rem 0 0 0;
+  font-style: italic;
+  color: #666;
+}
+
+/* Talent Menu Styling */
+.talent-menu {
+  border: 1px solid #782e22;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.talent-menu.editable-menu {
+  background: rgba(120, 46, 34, 0.05);
+}
+
+.talent-menu.readonly-menu {
+  background: rgba(100, 100, 100, 0.05);
+  border-color: #999;
+}
+
+.talent-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid;
+  padding-bottom: 0.5rem;
+}
+
+.editable-menu .talent-menu-header {
+  border-bottom-color: #782e22;
+}
+
+.readonly-menu .talent-menu-header {
+  border-bottom-color: #999;
+}
+
+.talent-menu-header h4 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editable-menu .talent-menu-header h4 {
+  color: #782e22;
+}
+
+.readonly-menu .talent-menu-header h4 {
+  color: #666;
+}
+
+.readonly-indicator {
+  font-size: 0.8em;
+  color: #666;
+  font-style: italic;
+  background: rgba(100, 100, 100, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.readonly-content {
+  background: rgba(100, 100, 100, 0.02);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1rem;
+  color: #555;
+}
+
+.readonly-content a {
+  pointer-events: auto; /* Allow clicking on @Item links */
+}
+
+.talent-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #782e22;
+  border-radius: 4px;
+  background: #fff;
+  color: #782e22;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.talent-control:hover {
+  background: #782e22;
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.talent-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.talent-option {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  position: relative;
+}
+
+.talent-controls {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+}
+
+/* Optional Content Styling */
+.tier-optional-content {
+  margin-top: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tier-optional-content summary {
+  background: #f5f5f5;
+  padding: 1rem;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  color: #782e22;
+  border-bottom: 1px solid #ccc;
+}
+
+.tier-optional-content summary:hover {
+  background: #ececec;
+}
+
+.tier-optional-content[open] summary {
+  border-bottom: 1px solid #ccc;
+}
+
+.optional-content {
+  padding: 1rem;
+  background: #fff;
+}
+
+/* Granted Ability Form Styling */
+.granted-ability-form {
+  background: rgba(120, 46, 34, 0.03);
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+/* Side Effects Form Styling */
+.side-effects-form {
+  background: rgba(34, 78, 120, 0.03);
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.side-effects-form .form-group {
+  margin-bottom: 1rem;
+}
+
+/* Global Side Effects Tab Styling */
+.side-effects {
+  padding: 1rem;
+}
+
+.side-effects-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.side-effects-header h3 {
+  color: #782e22;
+  font-size: 1.8em;
+  margin-bottom: 0.5rem;
+}
+
+.progression-upgrades, .vision-radius-upgrades {
+  background: rgba(120, 46, 34, 0.05);
+  border: 1px solid #782e22;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.progression-upgrades h4, .vision-radius-upgrades h4 {
+  color: #782e22;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.3em;
+}
+
+.vision-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-suffix {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.future-side-effects {
+  text-align: center;
+}
+
+.future-side-effects h4 {
+  color: #666;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Enhanced Form Styling */
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.form-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+  transform: scale(1.2);
+}
+
+.form-group .notes {
+  font-size: 0.85em;
+  color: #666;
+  margin-top: 0.25rem;
+  font-style: italic;
+}
+
+/* Tab Navigation Enhancement */
+.sheet-tabs .item {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background: #f5f5f5;
+  margin-right: 2px;
+  border-radius: 6px 6px 0 0;
+  transition: all 0.2s ease;
+}
+
+.sheet-tabs .item:hover {
+  background: #ececec;
+}
+
+.sheet-tabs .item.active {
+  background: #fff;
+  border-color: #782e22;
+  color: #782e22;
+  font-weight: bold;
+}
+
+/* Tier Menu Spacing */
+.tier-content .talent-menu:not(:first-child) {
+  margin-top: 1rem;
+}
+
+.tier-content .talent-menu:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+/* Visual Separation Between Read-only and Editable Menus */
+.talent-menu + .talent-menu {
+  margin-top: 1rem;
+}
+
+.editable-menu {
+  border-width: 2px;
+  box-shadow: 0 2px 4px rgba(120, 46, 34, 0.1);
+}
+
+.readonly-menu {
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sheet-tabs {
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+  
+  .sheet-tabs .item {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+    font-size: 0.9em;
+    padding: 0.4rem 0.5rem;
+  }
+  
+  .talent-menu-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .talent-controls {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+  }
+  
+  .readonly-indicator {
+    align-self: flex-end;
+  }
+}
+
+/* Animation for Details Elements */
+.tier-optional-content[open] .optional-content {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    overflow: visible;
+  }
+}
+
+/* Focus and Accessibility */
+.talent-control:focus,
+.ability-control:focus {
+  outline: 2px solid #782e22;
+  outline-offset: 2px;
+}
+
+.tier-optional-content summary:focus {
+  outline: 2px solid #782e22;
+  outline-offset: -2px;
+}
+
+.previous-tier-content {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(100, 100, 100, 0.05);
+  border-left: 3px solid #999;
+  border-radius: 0 4px 4px 0;
+}
+
+.tier-label {
+  font-weight: bold;
+  color: #666;
+  font-size: 0.9em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.readonly-talent-content {
+  font-size: 0.9em;
+  color: #555;
+  line-height: 1.4;
+}
+
+.readonly-talent-content p {
+  margin-bottom: 0.5rem;
+}
+
+.readonly-talent-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Add this to your system's CSS file */
+
+/* Style smart editor containers */
+.smart-editor-container .editor-content {
+  min-height: 2em;
+}
+
+/* Ensure content-links look good in editor content */
+.smart-editor-container .editor-content .content-link {
+  color: #4b4a44;
+  text-decoration: none;
+}
+
+.smart-editor-container .editor-content .content-link:hover {
+  color: #191813;
+  text-decoration: underline;
+}
+
+/* Ensure edit buttons remain accessible */
+.smart-editor-container .editor .editor-edit {
+  position: relative;
+  z-index: 100;
+}
+
+/* Enhanced styling for granted abilities type dropdowns and other select elements */
+
+/* Base select styling with proper height */
+.zwolf-epic select {
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.zwolf-epic select:hover {
+  border-color: #999;
+}
+
+.zwolf-epic select:focus {
+  outline: none;
+  border-color: #782e22;
+  box-shadow: 0 0 0 2px rgba(120, 46, 34, 0.2);
+}
+
+/* Specific styling for granted abilities type selectors */
+.zwolf-epic .granted-abilities select[name*="type"],
+.zwolf-epic .abilities-list select[name*="type"] {
+  min-height: 40px;
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Ensure dropdown options have proper styling */
+.zwolf-epic select option {
+  padding: 8px 12px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  line-height: 1.4;
+  min-height: 32px;
+}
+
+.zwolf-epic select option:hover {
+  background: #f5f5f5;
+}
+
+.zwolf-epic select option:checked,
+.zwolf-epic select option:selected {
+  background: #782e22;
+  color: white;
+}
+
+/* Side effects progression selectors */
+.zwolf-epic .progression-upgrades select,
+.zwolf-epic .side-effects select {
+  min-height: 38px;
+  padding: 9px 12px;
+  width: 100%;
+}
+
+/* Track tier side effects selectors */
+.zwolf-epic .side-effects-form select {
+  min-height: 38px;
+  padding: 9px 12px;
+  width: 100%;
+}
+
+/* Config section selectors */
+.zwolf-epic .config-section select {
+  min-height: 36px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+/* Header field selectors (like size) */
+.zwolf-epic .header-field select,
+.zwolf-epic .size-field select {
+  min-height: 32px;
+  padding: 6px 10px;
+}
+
+/* Multi-select styling for ancestry size options */
+.zwolf-epic select[name="system.sizeOptions"] {
+  min-height: 200px;
+  padding: 8px;
+}
+
+.zwolf-epic select[name="system.sizeOptions"] option {
+  padding: 6px 10px;
+  margin: 1px 0;
+  border-radius: 2px;
+}
+
+/* Ensure proper spacing in form groups with selects */
+.zwolf-epic .form-group select {
+  margin-bottom: 8px;
+}
+
+/* Firefox-specific fixes */
+@-moz-document url-prefix() {
+  .zwolf-epic select {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  
+  .zwolf-epic select option {
+    padding: 6px 8px;
+  }
+}
+
+/* Webkit-specific fixes for better dropdown appearance */
+.zwolf-epic select::-webkit-scrollbar {
+  width: 8px;
+}
+
+.zwolf-epic select::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.zwolf-epic select::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.zwolf-epic select::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Ensure adequate spacing for long option text */
+.zwolf-epic select[name*="grantedAbilities"][name*="type"] option {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 28px;
+  line-height: 28px;
+  padding: 0 12px;
+}
+
+/* Additional space for progression upgrade selectors */
+.zwolf-epic .progression-upgrades select option,
+.zwolf-epic .side-effects-form select option {
+  min-height: 30px;
+  line-height: 30px;
+  padding: 0 12px;
+}
+
+/* Biography Tab Editor Styling - Add to your zwolf-epic.css */
+
+/* Base styling for biography tab editors - FORCE COMPACT HEIGHT */
+.zwolf-epic .biography .editor {
+  min-height: auto !important;
+  max-height: none !important;
+  height: auto !important;
+}
+
+/* Force the editor wrapper to be compact */
+.zwolf-epic .biography .form-fields .editor {
+  min-height: 120px !important;
+  max-height: 250px !important;
+  height: auto !important;
+  display: block !important;
+}
+
+/* Languages and Liabilities sections - smaller editors */
+.zwolf-epic .languages-content .form-fields .editor,
+.zwolf-epic .liabilities-section .form-fields .editor {
+  min-height: 100px !important;
+  max-height: 170px !important;
+  height: auto !important;
+}
+
+/* Notes section - larger editor */
+.zwolf-epic .notes-section .form-fields .editor {
+  min-height: 140px !important;
+  max-height: 320px !important;
+  height: auto !important;
+}
+
+/* Control the content area height */
+.zwolf-epic .biography .editor .editor-content {
+  min-height: 100px !important;
+  max-height: 250px !important;
+  overflow-y: auto;
+  padding: 8px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  background: white !important;
+  resize: vertical;
+}
+
+/* ProseMirror editor content */
+.zwolf-epic .biography .editor .ProseMirror {
+  min-height: 80px !important;
+  max-height: 230px !important;
+  overflow-y: auto;
+  padding: 8px !important;
+  border: none !important;
+  outline: none !important;
+}
+
+/* TinyMCE editor (if used instead of ProseMirror) */
+.zwolf-epic .biography .editor .mce-edit-area iframe,
+.zwolf-epic .biography .editor .mce-edit-area {
+  min-height: 100px !important;
+  max-height: 250px !important;
+}
+
+/* Languages section specific height */
+.zwolf-epic .languages-content .editor .editor-content,
+.zwolf-epic .languages-content .editor .ProseMirror {
+  min-height: 80px !important;
+  max-height: 150px !important;
+}
+
+/* Liabilities section specific height */
+.zwolf-epic .liabilities-section .editor .editor-content,
+.zwolf-epic .liabilities-section .editor .ProseMirror {
+  min-height: 80px !important;
+  max-height: 150px !important;
+}
+
+/* Notes section specific height (larger) */
+.zwolf-epic .notes-section .editor .editor-content,
+.zwolf-epic .notes-section .editor .ProseMirror {
+  min-height: 120px !important;
+  max-height: 300px !important;
+}
+
+/* === BIOGRAPHY SECTION SPACING AND HEADER STYLING === */
+
+/* Add spacing between biography sections */
+.zwolf-epic .biography > * + * {
+  margin-top: 8px;
+}
+
+/* Languages Section Header */
+.zwolf-epic .languages-header {
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  font-weight: bold;
+  list-style: none;
+  margin: 0;
+}
+
+.zwolf-epic .languages-header h3 {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  border: none !important;
+  background: none !important;
+}
+
+/* Liabilities Section Header */
+.zwolf-epic .liabilities-section h3 {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0.75rem 1rem !important;
+  background: var(--color-bg) !important;
+  border-bottom: 1px solid var(--color-border-light) !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Notes Section Header */
+.zwolf-epic .notes-section h3 {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0.75rem 1rem !important;
+  background: var(--color-bg) !important;
+  border-bottom: 1px solid var(--color-border-light) !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Journey and Miscellaneous Ability Headers */
+.zwolf-epic .journey-abilities .ability-category-header h3,
+.zwolf-epic .miscellaneous-abilities .ability-category-header h3 {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  border: none !important;
+  background: none !important;
+}
+
+/* Remove default Foundry h3 styling that adds underlines */
+.zwolf-epic .biography h3 {
+  text-decoration: none !important;
+  border-bottom: none !important;
+  border: none !important;
+  background: none !important;
+}
+
+/* Language count styling to ensure it stays inline */
+.zwolf-epic .language-count {
+  font-size: 0.9em;
+  color: var(--color-text-light);
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+/* Triangle icon for collapsible sections */
+.zwolf-epic .languages-header::before {
+  content: "▶";
+  margin-right: 0.5rem;
+  transition: transform 0.2s;
+  font-size: 0.8em;
+}
+
+.zwolf-epic .languages-section[open] .languages-header::before {
+  transform: rotate(90deg);
+}
+
+/* Remove webkit details marker */
+.zwolf-epic .languages-header::-webkit-details-marker {
+  display: none;
+}
+
+/* Ensure proper flex layout for languages header */
+.zwolf-epic .languages-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+/* Make sure the h3 in languages header doesn't break the flex layout */
+.zwolf-epic .languages-header h3 {
+  flex: 0 0 auto;
+}
+
+.zwolf-epic .languages-header .language-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* Editor toolbar styling */
+.zwolf-epic .biography .editor .editor-menu {
+  padding: 4px !important;
+  background: #f5f5f5 !important;
+  border-bottom: 1px solid #ddd !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+/* Remove excessive padding/margins from editor containers */
+.zwolf-epic .biography .form-group {
+  margin-bottom: 1rem;
+}
+
+.zwolf-epic .biography .form-fields {
+  margin: 0;
+}
+
+/* Ensure edit buttons are visible and properly positioned */
+.zwolf-epic .biography .editor .editor-edit {
+  position: absolute !important;
+  top: 5px !important;
+  right: 5px !important;
+  z-index: 1000 !important;
+  background: rgba(120, 46, 34, 0.8) !important;
+  color: white !important;
+  padding: 4px 8px !important;
+  border-radius: 3px !important;
+  font-size: 12px !important;
+  text-decoration: none !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.zwolf-epic .biography .editor .editor-edit:hover {
+  background: rgba(120, 46, 34, 1) !important;
+}
+
+/* Remove any conflicting height rules from earlier CSS */
+.zwolf-epic .biography .editor-content {
+  min-height: auto !important;
+  height: auto !important;
+}
+
+/* Force proper editor container sizing */
+.zwolf-epic .biography .editor {
+  display: block !important;
+  width: 100% !important;
+  position: relative !important;
+}
+
+/* ==== INVENTORY TAB UPDATES ==== */
+
+/* Updated Inventory Summary - Side by side rectangular layout with icons */
+.zwolf-epic .inventory-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Bulk Display Section - Left Side */
+.zwolf-epic .bulk-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(120, 46, 34, 0.1), rgba(120, 46, 34, 0.05));
+  border: 2px solid #782e22;
+  border-radius: 12px;
+  padding: 20px;
+  gap: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.zwolf-epic .bulk-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.05) 50%, transparent 60%);
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.zwolf-epic .bulk-section:hover::before {
+  opacity: 1;
+  animation: shimmer 1.5s ease-in-out;
+}
+
+.zwolf-epic .bulk-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(120, 46, 34, 0.2);
+  border-color: #5a1f17;
+}
+
+.zwolf-epic .bulk-section .summary-label {
+  font-weight: bold;
+  color: #782e22;
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.zwolf-epic .bulk-section .summary-label::before {
+  content: '📦';
+  font-size: 1.2em;
+  filter: drop-shadow(0 2px 4px rgba(120, 46, 34, 0.3));
+}
+
+.zwolf-epic .bulk-section .bulk-display {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #5a1f17;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 2px solid rgba(120, 46, 34, 0.3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  min-width: 120px;
+  text-align: center;
+}
+
+/* Wealth Display Section - Right Side with Gold Theme */
+.zwolf-epic .wealth-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+  border: 2px solid #b8860b;
+  border-radius: 12px;
+  padding: 20px;
+  gap: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(184, 134, 11, 0.2);
+}
+
+.zwolf-epic .wealth-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.3) 50%, transparent 60%);
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.zwolf-epic .wealth-section:hover::before {
+  opacity: 1;
+  animation: shimmer 1.5s ease-in-out;
+}
+
+.zwolf-epic .wealth-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(184, 134, 11, 0.4);
+  border-color: #8b4513;
+}
+
+.zwolf-epic .wealth-section .summary-label {
+  font-weight: bold;
+  color: #8b4513;
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.zwolf-epic .wealth-section .summary-label::before {
+  content: '💎';
+  font-size: 1.2em;
+  filter: drop-shadow(0 2px 4px rgba(139, 69, 19, 0.3));
+}
+
+.zwolf-epic .wealth-section .wealth-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 2px solid rgba(139, 69, 19, 0.3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.zwolf-epic .wealth-section input {
+  width: 100px;
+  padding: 10px 14px;
+  border: 2px solid #b8860b;
+  border-radius: 6px;
+  background: white;
+  color: #8b4513;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: center;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .wealth-section input:focus {
+  outline: none;
+  border-color: #8b4513;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);
+  transform: scale(1.02);
+}
+
+.zwolf-epic .wealth-section .wealth-unit {
+  font-weight: bold;
+  color: #8b4513;
+  font-size: 1.2em;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+}
+
+.zwolf-epic .wealth-section .wealth-unit::after {
+  content: '';
+  margin-left: 0px;
+  font-size: 0.9em;
+  filter: none;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) rotate(-45deg);
+  }
+  100% {
+    transform: translateX(100%) rotate(-45deg);
+  }
+}
+
+/* Responsive design for inventory summary */
+@media (max-width: 768px) {
+  .zwolf-epic .inventory-summary {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .zwolf-epic .bulk-section,
+  .zwolf-epic .wealth-section {
+    width: 100%;
+  }
+  
+  .zwolf-epic .bulk-section .summary-label,
+  .zwolf-epic .wealth-section .summary-label {
+    font-size: 0.9em;
+  }
+  
+  .zwolf-epic .bulk-section .bulk-display {
+    font-size: 1.2em;
+  }
+  
+  .zwolf-epic .wealth-section input {
+    width: 80px;
+    font-size: 1.1em;
+  }
+}
+
+/* Small screen adjustments */
+@media (max-width: 480px) {
+  .zwolf-epic .inventory-summary {
+    gap: 12px;
+  }
+  
+  .zwolf-epic .bulk-section,
+  .zwolf-epic .wealth-section {
+    padding: 15px;
+  }
+  
+  .zwolf-epic .wealth-section .wealth-input-group {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+/* Enhanced CSS for Track-Talent Integration */
+/* Add this to your zwolf-epic.css file */
+
+/* Track source information in talent slots */
+.zwolf-epic .track-source {
+  font-size: 0.75em;
+  font-weight: normal;
+  color: #666;
+  font-style: italic;
+  display: block;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.zwolf-epic .track-source.track-missing {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+/* Enhanced talent slot labels to accommodate track info */
+.zwolf-epic .talent-slot .slot-label {
+  font-weight: bold;
+  font-size: 11px;
+  color: var(--color-text-dark-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  min-height: 32px; /* Accommodate two lines */
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Drop zone styling for missing tracks */
+.zwolf-epic .talent-drop-zone.track-missing {
+  border-color: #dc3545;
+  background: rgba(220, 53, 69, 0.05);
+  opacity: 0.7;
+}
+
+.zwolf-epic .talent-drop-zone.track-missing:hover {
+  border-color: #c82333;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+/* Drop requirement text */
+.zwolf-epic .drop-requirement {
+  font-size: 0.7em;
+  color: #dc3545;
+  margin-top: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Adjust talent grid for better spacing with longer labels */
+.zwolf-epic .talents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Increased from 280px */
+  gap: 15px; /* Increased from 12px */
+  margin-top: 10px;
+}
+
+/* Enhanced talent slot to accommodate track info */
+.zwolf-epic .talent-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Increased from 4px */
+}
+
+/* Tooltip enhancement for talent slots */
+.zwolf-epic .talent-drop-zone[title] {
+  position: relative;
+}
+
+/* Visual indicator for track relationships */
+.zwolf-epic .talent-slot:nth-child(4n+1) .track-source:not(.track-missing) {
+  color: #28a745; /* Track 1 - Green */
+}
+
+.zwolf-epic .talent-slot:nth-child(4n+2) .track-source:not(.track-missing) {
+  color: #007bff; /* Track 2 - Blue */
+}
+
+.zwolf-epic .talent-slot:nth-child(4n+3) .track-source:not(.track-missing) {
+  color: #6f42c1; /* Track 3 - Purple */
+}
+
+.zwolf-epic .talent-slot:nth-child(4n) .track-source:not(.track-missing) {
+  color: #fd7e14; /* Track 4 - Orange */
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .zwolf-epic .talents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  
+  .zwolf-epic .talent-slot .slot-label {
+    font-size: 10px;
+    min-height: 28px;
+  }
+  
+  .zwolf-epic .track-source {
+    font-size: 0.7em;
+  }
+}
+
+/* Small screen adjustments */
+@media (max-width: 480px) {
+  .zwolf-epic .talents-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .zwolf-epic .talent-slot .slot-label {
+    min-height: 24px;
+  }
+}

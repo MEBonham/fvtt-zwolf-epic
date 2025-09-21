@@ -1,0 +1,36 @@
+{
+  "id": "zwolf-epic",
+  "title": "Z-Wolf Epic",
+  "description": "The experience you always wanted, but the rules didn't cooperate with",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "13.0.0",
+    "verified": "13",
+    "maximum": ""
+  },
+  "authors": [{
+    "name": "M. Everett Bonham",
+    "email": "zaninar.games@gmail.com",
+    "discord": "yourdiscord"
+  }],
+  "esmodules": ["module/zwolf-epic.mjs"],
+  "styles": ["css/zwolf-epic.css"],
+  "scripts": [],
+  "packs": [],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "gridDistance": 1,
+  "gridUnits": "m",
+  "primaryTokenAttribute": "vitality",
+  "secondaryTokenAttribute": "power",
+  "url": "https://github.com/MEBonham/fvtt-zwolf-epic",
+  "manifest": "https://raw.githubusercontent.com/MEBonham/fvtt-zwolf-epic/main/system.json",
+  "download": "https://github.com/MEBonham/fvtt-zwolf-epic/archive/main.zip",
+  "license": "LICENSE.txt",
+  "changelog": "CHANGELOG.md"
+}

@@ -1,0 +1,132 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <div class="item-sheet-content">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div class="header-fields">
+        <h1 class="charname">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'ZWOLF.ItemName'}}"/>
+        </h1>
+        <div class="item-subtitle">{{localize 'ZWOLF.ItemTypeFundament'}}</div>
+      </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+      <a class="item" data-tab="details">{{localize 'ZWOLF.Details'}}</a>
+      <a class="item" data-tab="formulae">{{localize 'ZWOLF.Formulae'}}</a>
+      <a class="item" data-tab="abilities">{{localize 'ZWOLF.GrantedAbilities'}}</a>
+    </nav>
+
+    <section class="sheet-body">
+      <div class="tab" data-group="primary" data-tab="details">
+        <!-- Build Points and Knack Requirements -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.BuildPoints'}}</label>
+          <input type="number" name="system.buildPoints" value="{{system.buildPoints}}" data-dtype="Number" min="0"/>
+        </div>
+
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+          <input type="number" name="system.knacksProvided" value="{{system.knacksProvided}}" data-dtype="Number" min="0"/>
+          <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+        </div>
+
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.RequiredKnackTag'}}</label>
+          <input type="text" name="system.requiredKnackTag" value="{{system.requiredKnackTag}}" placeholder="{{localize 'ZWOLF.RequiredKnackTagPlaceholder'}}"/>
+          <p class="notes">{{localize 'ZWOLF.RequiredKnackTagHint'}}</p>
+        </div>
+      </div>
+
+      <div class="tab" data-group="primary" data-tab="formulae">
+        <div class="formulae-section">
+          <h3>{{localize 'ZWOLF.VitalityFunction'}}</h3>
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.VitalityFormula'}}</label>
+            <textarea name="system.vitalityFunction" rows="4" placeholder="// JavaScript function that returns vitality points&#10;// Available variables: level, attributes, skills, vitalityBoostCount&#10;// Example: return 10 + level * 2 + vitalityBoostCount * 5;">{{system.vitalityFunction}}</textarea>
+            <p class="notes">{{localize 'ZWOLF.VitalityFunctionHint'}}</p>
+          </div>
+
+          <h3>{{localize 'ZWOLF.CoastFunction'}}</h3>
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.CoastFormula'}}</label>
+            <textarea name="system.coastFunction" rows="4" placeholder="// JavaScript function that returns coast number&#10;// Available variables: level, attributes, skills&#10;// Example: return Math.max(4, Math.floor(level / 2) + 2);">{{system.coastFunction}}</textarea>
+            <p class="notes">{{localize 'ZWOLF.CoastFunctionHint'}}</p>
+          </div>
+
+          <div class="form-group">
+            <h4>{{localize 'ZWOLF.TestFunctions'}}</h4>
+            <div class="function-test-controls">
+              <label>{{localize 'ZWOLF.TestLevel'}}</label>
+              <input type="number" id="test-level" value="1" min="1" max="20"/>
+              <label>{{localize 'ZWOLF.VitalityBoostCount'}}</label>
+              <input type="number" id="test-vitality-boost" value="0" min="0" max="10"/>
+              <button type="button" id="test-functions">{{localize 'ZWOLF.TestFunctions'}}</button>
+            </div>
+            <div id="function-test-results" class="test-results"></div>
+          </div>
+        </div>
+      </div>
+
+        <!-- item-ancestry-sheet.html - Updated abilities tab section -->
+        <div class="tab" data-group="primary" data-tab="abilities">
+        <div class="granted-abilities">
+            <div class="abilities-header">
+            <h3>{{localize 'ZWOLF.GrantedAbilities'}}</h3>
+            <a class="ability-control" data-action="add-ability" title="{{localize 'ZWOLF.AddAbility'}}">
+                <i class="fas fa-plus"></i>
+            </a>
+            </div>
+            
+            <div class="abilities-list">
+            {{#each system.grantedAbilities as |ability index|}}
+            <div class="ability-item" data-ability-index="{{index}}">
+                <div class="ability-controls">
+                <a class="ability-control" data-action="delete-ability" data-ability-index="{{index}}" title="{{localize 'ZWOLF.DeleteAbility'}}">
+                    <i class="fas fa-trash"></i>
+                </a>
+                </div>
+                
+                <div class="form-group">
+                <label>{{localize 'ZWOLF.Name'}}</label>
+                <input type="text" name="system.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+                </div>
+                
+                <div class="form-group">
+                <label>{{localize 'ZWOLF.Tags'}}</label>
+                <input type="text" name="system.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                </div>
+                
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.Type'}}</label>
+                  <select name="system.grantedAbilities.{{index}}.type">
+                    <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+                    <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+                    <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+                    <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+                    <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+                    <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+                    <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+                    <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+                    <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.Description'}}</label>
+                  <div class="form-fields">
+                    {{#if @root.editable}}
+                      {{editor ability.description target=(concat "system.grantedAbilities." @index ".description") button=true editable=editable engine="prosemirror" collaborate=false}}
+                    {{else}}
+                      <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+                    {{/if}}
+                  </div>
+                </div>
+            </div>
+            {{/each}}
+            </div>
+        </div>
+        </div>
+
+    </section>
+  </div>
+</form>

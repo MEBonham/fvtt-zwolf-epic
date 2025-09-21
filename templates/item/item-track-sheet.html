@@ -1,0 +1,855 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <div class="item-sheet-content">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div class="header-fields">
+        <h1 class="charname">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'ZWOLF.ItemName'}}"/>
+        </h1>
+        <div class="item-subtitle">{{localize 'ZWOLF.ItemTypeTrack'}}</div>
+      </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+      <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
+      <a class="item" data-tab="tier1">{{localize 'ZWOLF.Tier'}} 1</a>
+      <a class="item" data-tab="tier2">{{localize 'ZWOLF.Tier'}} 2</a>
+      <a class="item" data-tab="tier3">{{localize 'ZWOLF.Tier'}} 3</a>
+      <a class="item" data-tab="tier4">{{localize 'ZWOLF.Tier'}} 4</a>
+      <a class="item" data-tab="tier5">{{localize 'ZWOLF.Tier'}} 5</a>
+    </nav>
+
+    <section class="sheet-body">
+      <!-- Basics Tab -->
+      <div class="tab" data-group="primary" data-tab="basics">
+        <!-- Tags -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Tags'}}</label>
+          <input type="text" name="system.tags" value="{{join system.tags}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+          <p class="notes">{{localize 'ZWOLF.TagsHint'}}</p>
+        </div>
+
+        <!-- Required Section -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Required'}}</label>
+          <div class="form-fields">
+            {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+          </div>
+        </div>
+
+        <!-- Track Overview -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.TrackOverview'}}</label>
+          <div class="form-fields">
+            {{editor system.overview target="system.overview" button=true owner=owner editable=editable}}
+          </div>
+          <p class="notes">{{localize 'ZWOLF.TrackOverviewHint'}}</p>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Prerequisites'}}</label>
+          <div class="form-fields">
+            {{editor system.prerequisites target="system.prerequisites" button=true owner=owner editable=editable}}
+          </div>
+          <p class="notes">{{localize 'ZWOLF.PrerequisitesHint'}}</p>
+        </div>
+      </div>
+
+      <!-- Tier 1 Tab -->
+      <div class="tab" data-group="primary" data-tab="tier1">
+        <div class="tier-content" data-tier="1">
+          <div class="tier-header">
+            <h3>{{localize 'ZWOLF.Tier'}} 1</h3>
+            <p class="notes">{{localize 'ZWOLF.TierHint'}}</p>
+          </div>
+
+          <!-- Talent Menu for Tier 1 (Editable) -->
+          <div class="talent-menu editable-menu">
+            <div class="talent-menu-header">
+              <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 1 {{localize 'ZWOLF.TalentMenu'}}</h4>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 1 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier1.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+            <label>{{localize 'ZWOLF.AvailableTalents'}}</label>
+            <div class="form-fields">
+                {{editor system.tiers.tier1.talentMenu.description target="system.tiers.tier1.talentMenu.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            </div>
+            <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
+            </div>
+          </div>
+
+          <!-- Tier Granted Abilities -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
+            <div class="optional-content">
+              <div class="granted-abilities">
+                <div class="abilities-header">
+                  <h4>{{localize 'ZWOLF.GrantedAbilities'}}</h4>
+                  <a class="ability-control" data-action="add-tier-ability" data-tier="1" title="{{localize 'ZWOLF.AddAbility'}}">
+                    <i class="fas fa-plus"></i>
+                  </a>
+                </div>
+                
+                <div class="abilities-list">
+                  {{#each system.tiers.tier1.grantedAbilities as |ability index|}}
+                  <div class="ability-item" data-ability-index="{{index}}">
+                    <div class="ability-controls">
+                      <a class="ability-control" data-action="delete-tier-ability" data-tier="1" data-ability-index="{{index}}" title="{{localize 'ZWOLF.DeleteAbility'}}">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Name'}}</label>
+                      <input type="text" name="system.tiers.tier1.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Tags'}}</label>
+                      <input type="text" name="system.tiers.tier1.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                      <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Type'}}</label>
+                      <select name="system.tiers.tier1.grantedAbilities.{{index}}.type">
+                        <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+                        <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+                        <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+                        <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+                        <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+                        <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+                        <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+                        <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+                        <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Description'}}</label>
+                      <div class="form-fields">
+                        {{#if @root.editable}}
+                          {{editor ability.description target=(concat "system.tiers.tier1.grantedAbilities." @index ".description") button=true editable=editable engine="prosemirror" collaborate=false}}
+                        {{else}}
+                          <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+                        {{/if}}
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Tier Side Effects -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-cog"></i> {{localize 'ZWOLF.TierSideEffects'}}</summary>
+            <div class="optional-content">
+              <div class="side-effects-form">
+                <!-- Speed Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.SpeedProgression'}}</label>
+                  <select name="system.tiers.tier1.sideEffects.speedProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier1.sideEffects.speedProgression}}>{{localize 'ZWOLF.NoUpgrade'}} (+0)</option>
+                    <option value="mediocre" {{selected 'mediocre' system.tiers.tier1.sideEffects.speedProgression}}>{{localize 'ZWOLF.Mediocre'}}</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier1.sideEffects.speedProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier1.sideEffects.speedProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier1.sideEffects.speedProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Toughness TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.ToughnessTNProgression'}}</label>
+                  <select name="system.tiers.tier1.sideEffects.toughnessTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier1.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Mediocre'}})</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier1.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier1.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier1.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Destiny TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DestinyTNProgression'}}</label>
+                  <select name="system.tiers.tier1.sideEffects.destinyTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier1.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Moderate'}})</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier1.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier1.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Vision Radius Upgrades -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
+                  <input type="number" name="system.tiers.tier1.sideEffects.nightsightRadius" 
+                         value="{{system.tiers.tier1.sideEffects.nightsightRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="1.0"/>
+                </div>
+                
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
+                  <input type="number" name="system.tiers.tier1.sideEffects.darkvisionRadius" 
+                         value="{{system.tiers.tier1.sideEffects.darkvisionRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Tier 2 Tab -->
+      <div class="tab" data-group="primary" data-tab="tier2">
+        <div class="tier-content" data-tier="2">
+          <div class="tier-header">
+            <h3>{{localize 'ZWOLF.Tier'}} 2</h3>
+            <p class="notes">{{localize 'ZWOLF.TierHint'}}</p>
+          </div>
+
+          <!-- Talent Menu for Tier 2 (Editable) -->
+          <div class="talent-menu editable-menu">
+            <div class="talent-menu-header">
+              <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 2 {{localize 'ZWOLF.TalentMenu'}}</h4>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 1 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier1.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 2 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier2.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+            <label>{{localize 'ZWOLF.AvailableTalents'}}</label>
+            <div class="form-fields">
+                {{editor system.tiers.tier2.talentMenu.description target="system.tiers.tier2.talentMenu.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            </div>
+            <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
+            </div>
+          </div>
+
+          <!-- Tier Granted Abilities -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
+            <div class="optional-content">
+              <div class="granted-abilities">
+                <div class="abilities-header">
+                  <h4>{{localize 'ZWOLF.GrantedAbilities'}}</h4>
+                  <a class="ability-control" data-action="add-tier-ability" data-tier="2" title="{{localize 'ZWOLF.AddAbility'}}">
+                    <i class="fas fa-plus"></i>
+                  </a>
+                </div>
+                
+                <div class="abilities-list">
+                  {{#each system.tiers.tier2.grantedAbilities as |ability index|}}
+                  <div class="ability-item" data-ability-index="{{index}}">
+                    <div class="ability-controls">
+                      <a class="ability-control" data-action="delete-tier-ability" data-tier="2" data-ability-index="{{index}}" title="{{localize 'ZWOLF.DeleteAbility'}}">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Name'}}</label>
+                      <input type="text" name="system.tiers.tier2.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Tags'}}</label>
+                      <input type="text" name="system.tiers.tier2.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                      <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Type'}}</label>
+                      <select name="system.tiers.tier2.grantedAbilities.{{index}}.type">
+                        <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+                        <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+                        <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+                        <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+                        <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+                        <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+                        <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+                        <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+                        <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Description'}}</label>
+                      <div class="form-fields">
+                        {{#if @root.editable}}
+                          {{editor ability.description target=(concat "system.tiers.tier2.grantedAbilities." @index ".description") button=true editable=editable engine="prosemirror" collaborate=false}}
+                        {{else}}
+                          <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+                        {{/if}}
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Tier Side Effects -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-cog"></i> {{localize 'ZWOLF.TierSideEffects'}}</summary>
+            <div class="optional-content">
+              <div class="side-effects-form">
+                <!-- Speed Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.SpeedProgression'}}</label>
+                  <select name="system.tiers.tier2.sideEffects.speedProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier2.sideEffects.speedProgression}}>{{localize 'ZWOLF.NoUpgrade'}} (+0)</option>
+                    <option value="mediocre" {{selected 'mediocre' system.tiers.tier2.sideEffects.speedProgression}}>{{localize 'ZWOLF.Mediocre'}}</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier2.sideEffects.speedProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier2.sideEffects.speedProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier2.sideEffects.speedProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Toughness TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.ToughnessTNProgression'}}</label>
+                  <select name="system.tiers.tier2.sideEffects.toughnessTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier2.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Mediocre'}})</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier2.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier2.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier2.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Destiny TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DestinyTNProgression'}}</label>
+                  <select name="system.tiers.tier2.sideEffects.destinyTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier2.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Moderate'}})</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier2.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier2.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Vision Radius Upgrades -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
+                  <input type="number" name="system.tiers.tier2.sideEffects.nightsightRadius" 
+                         value="{{system.tiers.tier2.sideEffects.nightsightRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="1.0"/>
+                </div>
+                
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
+                  <input type="number" name="system.tiers.tier2.sideEffects.darkvisionRadius" 
+                         value="{{system.tiers.tier2.sideEffects.darkvisionRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Tier 3 Tab -->
+      <div class="tab" data-group="primary" data-tab="tier3">
+        <div class="tier-content" data-tier="3">
+          <div class="tier-header">
+            <h3>{{localize 'ZWOLF.Tier'}} 3</h3>
+            <p class="notes">{{localize 'ZWOLF.TierHint'}}</p>
+          </div>
+
+          <!-- Talent Menu for Tier 3 (Editable) -->
+          <div class="talent-menu editable-menu">
+            <div class="talent-menu-header">
+              <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 3 {{localize 'ZWOLF.TalentMenu'}}</h4>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 1 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier1.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 2 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier2.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 3 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier3.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+            <label>{{localize 'ZWOLF.AvailableTalents'}}</label>
+            <div class="form-fields">
+                {{editor system.tiers.tier3.talentMenu.description target="system.tiers.tier3.talentMenu.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            </div>
+            <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
+            </div>
+          </div>
+
+          <!-- Tier Granted Abilities -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
+            <div class="optional-content">
+              <div class="granted-abilities">
+                <div class="abilities-header">
+                  <h4>{{localize 'ZWOLF.GrantedAbilities'}}</h4>
+                  <a class="ability-control" data-action="add-tier-ability" data-tier="3" title="{{localize 'ZWOLF.AddAbility'}}">
+                    <i class="fas fa-plus"></i>
+                  </a>
+                </div>
+                
+                <div class="abilities-list">
+                  {{#each system.tiers.tier3.grantedAbilities as |ability index|}}
+                  <div class="ability-item" data-ability-index="{{index}}">
+                    <div class="ability-controls">
+                      <a class="ability-control" data-action="delete-tier-ability" data-tier="3" data-ability-index="{{index}}" title="{{localize 'ZWOLF.DeleteAbility'}}">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Name'}}</label>
+                      <input type="text" name="system.tiers.tier3.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Tags'}}</label>
+                      <input type="text" name="system.tiers.tier3.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                      <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Type'}}</label>
+                      <select name="system.tiers.tier3.grantedAbilities.{{index}}.type">
+                        <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+                        <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+                        <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+                        <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+                        <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+                        <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+                        <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+                        <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+                        <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Description'}}</label>
+                      <div class="form-fields">
+                        {{#if @root.editable}}
+                          {{editor ability.description target=(concat "system.tiers.tier3.grantedAbilities." @index ".description") button=true editable=editable engine="prosemirror" collaborate=false}}
+                        {{else}}
+                          <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+                        {{/if}}
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Tier Side Effects -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-cog"></i> {{localize 'ZWOLF.TierSideEffects'}}</summary>
+            <div class="optional-content">
+              <div class="side-effects-form">
+                <!-- Speed Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.SpeedProgression'}}</label>
+                  <select name="system.tiers.tier3.sideEffects.speedProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier3.sideEffects.speedProgression}}>{{localize 'ZWOLF.NoUpgrade'}} (+0)</option>
+                    <option value="mediocre" {{selected 'mediocre' system.tiers.tier3.sideEffects.speedProgression}}>{{localize 'ZWOLF.Mediocre'}}</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier3.sideEffects.speedProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier3.sideEffects.speedProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier3.sideEffects.speedProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Toughness TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.ToughnessTNProgression'}}</label>
+                  <select name="system.tiers.tier3.sideEffects.toughnessTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier3.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Mediocre'}})</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier3.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier3.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier3.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Destiny TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DestinyTNProgression'}}</label>
+                  <select name="system.tiers.tier3.sideEffects.destinyTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier3.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Moderate'}})</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier3.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier3.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Vision Radius Upgrades -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
+                  <input type="number" name="system.tiers.tier3.sideEffects.nightsightRadius" 
+                         value="{{system.tiers.tier3.sideEffects.nightsightRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="1.0"/>
+                </div>
+                
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
+                  <input type="number" name="system.tiers.tier3.sideEffects.darkvisionRadius" 
+                         value="{{system.tiers.tier3.sideEffects.darkvisionRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Tier 4 Tab -->
+      <div class="tab" data-group="primary" data-tab="tier4">
+        <div class="tier-content" data-tier="4">
+          <div class="tier-header">
+            <h3>{{localize 'ZWOLF.Tier'}} 4</h3>
+            <p class="notes">{{localize 'ZWOLF.TierHint'}}</p>
+          </div>
+
+          <!-- Talent Menu for Tier 4 (Editable) -->
+          <div class="talent-menu editable-menu">
+            <div class="talent-menu-header">
+              <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 4 {{localize 'ZWOLF.TalentMenu'}}</h4>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 1 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier1.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 2 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier2.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 3 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier3.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 4 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier4.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+            <label>{{localize 'ZWOLF.AvailableTalents'}}</label>
+            <div class="form-fields">
+                {{editor system.tiers.tier4.talentMenu.description target="system.tiers.tier4.talentMenu.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            </div>
+            <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
+            </div>
+          </div>
+
+          <!-- Tier Granted Abilities -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
+            <div class="optional-content">
+              <div class="granted-abilities">
+                <div class="abilities-header">
+                  <h4>{{localize 'ZWOLF.GrantedAbilities'}}</h4>
+                  <a class="ability-control" data-action="add-tier-ability" data-tier="4" title="{{localize 'ZWOLF.AddAbility'}}">
+                    <i class="fas fa-plus"></i>
+                  </a>
+                </div>
+                
+                <div class="abilities-list">
+                  {{#each system.tiers.tier4.grantedAbilities as |ability index|}}
+                  <div class="ability-item" data-ability-index="{{index}}">
+                    <div class="ability-controls">
+                      <a class="ability-control" data-action="delete-tier-ability" data-tier="4" data-ability-index="{{index}}" title="{{localize 'ZWOLF.DeleteAbility'}}">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Name'}}</label>
+                      <input type="text" name="system.tiers.tier4.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Tags'}}</label>
+                      <input type="text" name="system.tiers.tier4.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                      <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Type'}}</label>
+                      <select name="system.tiers.tier4.grantedAbilities.{{index}}.type">
+                        <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+                        <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+                        <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+                        <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+                        <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+                        <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+                        <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+                        <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+                        <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Description'}}</label>
+                      <div class="form-fields">
+                        {{#if @root.editable}}
+                          {{editor ability.description target=(concat "system.tiers.tier4.grantedAbilities." @index ".description") button=true editable=editable engine="prosemirror" collaborate=false}}
+                        {{else}}
+                          <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+                        {{/if}}
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Tier Side Effects -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-cog"></i> {{localize 'ZWOLF.TierSideEffects'}}</summary>
+            <div class="optional-content">
+              <div class="side-effects-form">
+                <!-- Speed Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.SpeedProgression'}}</label>
+                  <select name="system.tiers.tier4.sideEffects.speedProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier4.sideEffects.speedProgression}}>{{localize 'ZWOLF.NoUpgrade'}} (+0)</option>
+                    <option value="mediocre" {{selected 'mediocre' system.tiers.tier4.sideEffects.speedProgression}}>{{localize 'ZWOLF.Mediocre'}}</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier4.sideEffects.speedProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier4.sideEffects.speedProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier4.sideEffects.speedProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Toughness TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.ToughnessTNProgression'}}</label>
+                  <select name="system.tiers.tier4.sideEffects.toughnessTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier4.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Mediocre'}})</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier4.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier4.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier4.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Destiny TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DestinyTNProgression'}}</label>
+                  <select name="system.tiers.tier4.sideEffects.destinyTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier4.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Moderate'}})</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier4.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier4.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Vision Radius Upgrades -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
+                  <input type="number" name="system.tiers.tier4.sideEffects.nightsightRadius" 
+                         value="{{system.tiers.tier4.sideEffects.nightsightRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="1.0"/>
+                </div>
+                
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
+                  <input type="number" name="system.tiers.tier4.sideEffects.darkvisionRadius" 
+                         value="{{system.tiers.tier4.sideEffects.darkvisionRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+
+      <!-- Tier 5 Tab -->
+      <div class="tab" data-group="primary" data-tab="tier5">
+        <div class="tier-content" data-tier="5">
+          <div class="tier-header">
+            <h3>{{localize 'ZWOLF.Tier'}} 5</h3>
+            <p class="notes">{{localize 'ZWOLF.TierHint'}}</p>
+          </div>
+
+          <!-- Talent Menu for Tier 5 (Editable) -->
+          <div class="talent-menu editable-menu">
+            <div class="talent-menu-header">
+              <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 5 {{localize 'ZWOLF.TalentMenu'}}</h4>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 1 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier1.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 2 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier2.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 3 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier3.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 4 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier4.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+              <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} 5 {{localize 'ZWOLF.TalentMenu'}}</label>
+              <div class="editor-content readonly-content">{{{system.tiers.tier5.talentMenu.enrichedDescription}}}</div>
+            </div>
+
+            <div class="form-group">
+            <label>{{localize 'ZWOLF.AvailableTalents'}}</label>
+            <div class="form-fields">
+                {{editor system.tiers.tier5.talentMenu.description target="system.tiers.tier5.talentMenu.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            </div>
+            <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
+            </div>
+          </div>
+
+          <!-- Tier Granted Abilities -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
+            <div class="optional-content">
+              <div class="granted-abilities">
+                <div class="abilities-header">
+                  <h4>{{localize 'ZWOLF.GrantedAbilities'}}</h4>
+                  <a class="ability-control" data-action="add-tier-ability" data-tier="5" title="{{localize 'ZWOLF.AddAbility'}}">
+                    <i class="fas fa-plus"></i>
+                  </a>
+                </div>
+                
+                <div class="abilities-list">
+                  {{#each system.tiers.tier5.grantedAbilities as |ability index|}}
+                  <div class="ability-item" data-ability-index="{{index}}">
+                    <div class="ability-controls">
+                      <a class="ability-control" data-action="delete-tier-ability" data-tier="5" data-ability-index="{{index}}" title="{{localize 'ZWOLF.DeleteAbility'}}">
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Name'}}</label>
+                      <input type="text" name="system.tiers.tier5.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Tags'}}</label>
+                      <input type="text" name="system.tiers.tier5.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                      <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Type'}}</label>
+                      <select name="system.tiers.tier5.grantedAbilities.{{index}}.type">
+                        <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+                        <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+                        <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+                        <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+                        <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+                        <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+                        <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+                        <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+                        <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>{{localize 'ZWOLF.Description'}}</label>
+                      <div class="form-fields">
+                        {{#if @root.editable}}
+                          {{editor ability.description target=(concat "system.tiers.tier5.grantedAbilities." @index ".description") button=true editable=editable engine="prosemirror" collaborate=false}}
+                        {{else}}
+                          <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+                        {{/if}}
+                      </div>
+                    </div>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Tier Side Effects -->
+          <details class="tier-optional-content">
+            <summary><i class="fas fa-cog"></i> {{localize 'ZWOLF.TierSideEffects'}}</summary>
+            <div class="optional-content">
+              <div class="side-effects-form">
+                <!-- Speed Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.SpeedProgression'}}</label>
+                  <select name="system.tiers.tier5.sideEffects.speedProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier5.sideEffects.speedProgression}}>{{localize 'ZWOLF.NoUpgrade'}} (+0)</option>
+                    <option value="mediocre" {{selected 'mediocre' system.tiers.tier5.sideEffects.speedProgression}}>{{localize 'ZWOLF.Mediocre'}}</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier5.sideEffects.speedProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier5.sideEffects.speedProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier5.sideEffects.speedProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Toughness TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.ToughnessTNProgression'}}</label>
+                  <select name="system.tiers.tier5.sideEffects.toughnessTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier5.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Mediocre'}})</option>
+                    <option value="moderate" {{selected 'moderate' system.tiers.tier5.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Moderate'}}</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier5.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier5.sideEffects.toughnessTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Destiny TN Progression -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DestinyTNProgression'}}</label>
+                  <select name="system.tiers.tier5.sideEffects.destinyTNProgression" data-dtype="String">
+                    <option value="" {{selected '' system.tiers.tier5.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.NoUpgrade'}} ({{localize 'ZWOLF.Moderate'}})</option>
+                    <option value="specialty" {{selected 'specialty' system.tiers.tier5.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Specialty'}}</option>
+                    <option value="awesome" {{selected 'awesome' system.tiers.tier5.sideEffects.destinyTNProgression}}>{{localize 'ZWOLF.Awesome'}}</option>
+                  </select>
+                </div>
+                
+                <!-- Vision Radius Upgrades -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
+                  <input type="number" name="system.tiers.tier5.sideEffects.nightsightRadius" 
+                         value="{{system.tiers.tier5.sideEffects.nightsightRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="1.0"/>
+                </div>
+                
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
+                  <input type="number" name="system.tiers.tier5.sideEffects.darkvisionRadius" 
+                         value="{{system.tiers.tier5.sideEffects.darkvisionRadius}}" 
+                         data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
+                </div>
+              </div>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+  </div>
+</form>

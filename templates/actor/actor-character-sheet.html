@@ -1,0 +1,1142 @@
+<form class="{{cssClass}}" autocomplete="off">
+  
+  <!-- Sheet Header -->
+  <div class="sheet-header-wrapper">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+      <div class="header-fields">
+        <h1 class="charname">
+          <input name="name" type="text" value="{{actor.name}}" placeholder="Character Name" />
+        </h1>
+        
+        <!-- Second Line: Level, Size, Tags -->
+        <div class="header-line-2">
+          <div class="header-field level-field">
+            <label>Level</label>
+            <input type="number" name="system.level" value="{{system.level}}" min="0" max="20" />
+          </div>
+          <div class="header-field size-field">
+            <div class="header-field size-field">
+              <label>Size</label>
+              <select name="system.size" value="{{system.size}}">
+                {{#if ancestry.system.sizeOptions.length}}
+                  {{#each ancestry.system.sizeOptions as |size|}}
+                    <option value="{{size}}" {{#if (eq ../system.size size)}}selected{{/if}}>{{capitalize size}}</option>
+                  {{/each}}
+                {{else}}
+                  <!-- Default to medium if no ancestry or no size options -->
+                  <option value="medium" {{#if (eq system.size "medium")}}selected{{/if}}>Medium</option>
+                {{/if}}
+              </select>
+              {{#if ancestry}}
+                <div class="size-source" title="Size options from {{ancestry.name}}">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+          <div class="header-field tags-field">
+            <label>Tags</label>
+            <input type="text" name="system.tags" value="{{characterTags}}" placeholder="Humanoid" />
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Header Resources (Line 3) -->
+    <div class="header-resources">
+      <div class="resource">
+        <label>VP</label>
+        <div class="resource-values">
+          <input type="number" name="system.vitalityPoints.value" value="{{system.vitalityPoints.value}}" />
+          <span class="sep">/</span>
+          <span class="max-value">{{calculatedValues.maxVitality}}</span>
+        </div>
+      </div>
+      
+      <div class="resource">
+        <label>SP</label>
+        <div class="resource-values">
+          <input type="number" name="system.staminaPoints.value" value="{{system.staminaPoints.value}}" />
+          <span class="sep">/</span>
+          <span class="max-value">{{system.staminaPoints.max}}</span>
+        </div>
+      </div>
+      
+      {{#if (eq actor.type "pc")}}
+      <div class="resource karma-resource">
+        <label>KP</label>
+        <div class="resource-values">
+          <input type="number" name="system.karmaPoints.value" value="{{system.karmaPoints.value}}" />
+          <span class="sep">/</span>
+          <span class="max-value">{{system.karmaPoints.max}}</span>
+        </div>
+      </div>
+      {{/if}}
+      
+      <div class="resource coast-number">
+        <label>CN</label>
+        <div class="resource-value-single">
+          <span class="calculated-value">{{calculatedValues.coastNumber}}</span>
+        </div>
+      </div>
+      
+      {{#unless sideEffects.speedProgression}}
+      <div class="resource speed-resource">
+        <label>Speed</label>
+        <div class="resource-value-single">
+          <!-- Speed is default (+0) - show with rollable dice icon -->
+          <div class="speed-with-roll">
+            <span class="static-value">+0</span>
+            <i class="fas fa-dice-d12 speed-roll-die" 
+              data-modifier="0" 
+              data-flavor="Speed Check"
+              title="Roll Speed Check (+0)"></i>
+          </div>
+        </div>
+      </div>
+      {{/unless}}
+
+      <!-- Rest Buttons -->
+      <div class="resource rest-buttons">
+        <div class="rest-button-stack">
+          <button type="button" class="rest-button short-rest-btn" title="Short Rest: -1 SP, restore VP to max, gain Suffused">
+            <i class="fas fa-moon"></i>
+            <span class="rest-label">Short Rest</span>
+          </button>
+          <button type="button" class="rest-button extended-rest-btn" title="Extended Rest: restore SP & VP to max, gain Suffused, remove Bruised, reminder to roll Fortitude">
+            <i class="fas fa-bed"></i>
+            <span class="rest-label">Extended Rest</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fourth Line: Target Numbers -->
+    <div class="header-tns">
+      <div class="tn-group tn-group-primary">
+        <div class="tn-item">
+          <label>Toughness TN</label>
+          <div class="tn-value">{{tns.toughness}}</div>
+        </div>
+        
+        <div class="tn-item">
+          <label>Destiny TN</label>
+          <div class="tn-value">{{tns.destiny}}</div>
+        </div>
+      </div>
+      
+      <div class="tn-divider"></div>
+      
+      <div class="tn-group tn-group-secondary">
+        <div class="tn-item">
+          <label>Improvised TN</label>
+          <div class="tn-value">{{tns.improvised}}</div>
+        </div>
+        
+        <div class="tn-item">
+          <label>Healing TN</label>
+          <div class="tn-value">{{tns.healing}}</div>
+        </div>
+        
+        <div class="tn-item">
+          <label>Challenge TN</label>
+          <div class="tn-value">{{tns.challenge}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Sheet Container -->
+  <div class="sheet-container">
+    
+    <!-- Progressions Sidebar -->
+    <aside class="progressions-sidebar">
+      <div class="progressions-container"><!-- Updated progression groups section for actor-character-sheet.html -->
+
+      <!-- Dynamic Progression Groups -->
+      {{#each progressions as |progression key|}}
+      <div class="progression-group {{key}}" data-progression="{{key}}">
+        <div class="progression-header">
+          <span class="progression-name">
+            <i class="fas fa-dice-d12 progression-die" 
+              data-progression="{{key}}" 
+              data-bonus="{{progression.bonus}}"
+              title="Roll {{progression.name}} ({{#if (gte progression.bonus 0)}}+{{/if}}{{progression.bonus}})"></i>
+            {{progression.name}}
+          </span>
+          <span class="progression-bonus">{{#if (gte progression.bonus 0)}}+{{/if}}{{progression.bonus}}</span>
+        </div>
+        <div class="progression-content">
+          <div class="progression-stats">
+            {{#if progression.stats.length}}
+              {{#each progression.stats as |stat|}}
+              <div class="stat-item">
+                <div class="stat-rollable" data-stat="{{stat.key}}" data-type="{{stat.type}}" data-progression="{{key}}">
+                  <span class="stat-icon {{stat.type}}"></span>
+                  <span class="stat-name">{{stat.name}}</span>
+                </div>
+                <span class="stat-value">{{#if (gte stat.value 0)}}+{{/if}}{{stat.value}}</span>
+              </div>
+              {{/each}}
+            {{else}}
+              <div class="stat-placeholder">No stats assigned yet</div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+      {{/each}}
+        
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="sheet-main-content">
+      
+      <!-- Navigation Tabs -->
+      <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item active" data-tab="main">Main</a>
+        <a class="item" data-tab="biography">Biography</a>
+        <a class="item" data-tab="inventory">Inventory</a>
+        <a class="item" data-tab="configure">Configure</a>
+      </nav>
+
+      <!-- Sheet Body -->
+      <section class="sheet-body">
+        
+        <!-- Main Tab -->
+        <div class="tab main active" data-group="primary" data-tab="main">
+          <div class="abilities-accordion">
+            
+            <!-- Passive Abilities -->
+            <details class="ability-category">
+              <summary class="ability-category-header">
+                <i class="fas fa-shield-alt"></i>
+                Passive Abilities
+                <span class="ability-count">({{abilityCategories.passive.length}})</span>
+              </summary>
+              <div class="ability-list">
+                {{#if abilityCategories.passive.length}}
+                  {{#each abilityCategories.passive as |ability|}}
+                    <details class="ability-item">
+                      <summary class="ability-name">{{ability.name}}</summary>
+                      <div class="ability-description">{{{ability.description}}}</div>
+                    </details>
+                  {{/each}}
+                {{else}}
+                  <div class="no-abilities">No passive abilities available</div>
+                {{/if}}
+              </div>
+            </details>
+
+            <!-- Dominant Actions -->
+            <details class="ability-category">
+              <summary class="ability-category-header">
+                <i class="fas fa-fist-raised"></i>
+                Dominant Actions
+                <span class="ability-count">({{math abilityCategories.dominantAction.length "+" abilityCategories.strike.length}})</span>
+              </summary>
+              <div class="ability-list">
+                
+                <!-- Standard Dominant Actions -->
+                {{#if abilityCategories.dominantAction.length}}
+                  <div class="ability-subsection">
+                    <h6 class="ability-subsection-header" style="width: 100%; text-align: center;">General Actions</h6>
+                    {{#each abilityCategories.dominantAction as |ability|}}
+                      <details class="ability-item">
+                        <summary class="ability-name">{{ability.name}}</summary>
+                        <div class="ability-description">{{{ability.description}}}</div>
+                      </details>
+                    {{/each}}
+                  </div>
+                {{/if}}
+                
+                <!-- Strike Actions -->
+                {{#if abilityCategories.strike.length}}
+                  <div class="ability-subsection">
+                    <h6 class="ability-subsection-header" style="width: 100%; text-align: center;">Strike Actions</h6>
+                    {{#each abilityCategories.strike as |ability|}}
+                      <details class="ability-item strike-ability">
+                        <summary class="ability-name">{{ability.name}}</summary>
+                        <div class="ability-description">{{{ability.description}}}</div>
+                      </details>
+                    {{/each}}
+                  </div>
+                {{/if}}
+                
+                <!-- No abilities message -->
+                {{#unless (or abilityCategories.dominantAction.length abilityCategories.strike.length)}}
+                  <div class="no-abilities">No dominant actions available</div>
+                {{/unless}}
+                
+              </div>
+            </details>
+
+            <!-- Swift Actions -->
+            <details class="ability-category">
+              <summary class="ability-category-header">
+                <i class="fas fa-running"></i>
+                Swift Actions
+                <span class="ability-count">({{abilityCategories.swift.length}})</span>
+              </summary>
+              <div class="ability-list">
+                {{#if abilityCategories.swift.length}}
+                  {{#each abilityCategories.swift as |ability|}}
+                    <details class="ability-item">
+                      <summary class="ability-name">{{ability.name}}</summary>
+                      <div class="ability-description">{{{ability.description}}}</div>
+                    </details>
+                  {{/each}}
+                {{else}}
+                  <div class="no-abilities">No swift actions available</div>
+                {{/if}}
+              </div>
+            </details>
+
+            <!-- Reactions -->
+            <details class="ability-category">
+              <summary class="ability-category-header">
+                <i class="fas fa-bolt"></i>
+                Reactions
+                <span class="ability-count">({{abilityCategories.reaction.length}})</span>
+              </summary>
+              <div class="ability-list">
+                {{#if abilityCategories.reaction.length}}
+                  {{#each abilityCategories.reaction as |ability|}}
+                    <details class="ability-item">
+                      <summary class="ability-name">{{ability.name}}</summary>
+                      <div class="ability-description">{{{ability.description}}}</div>
+                    </details>
+                  {{/each}}
+                {{else}}
+                  <div class="no-abilities">No reactions available</div>
+                {{/if}}
+              </div>
+            </details>
+
+            <!-- Free Actions -->
+            <details class="ability-category">
+              <summary class="ability-category-header">
+                <i class="fas fa-hand-point-up"></i>
+                Free Actions
+                <span class="ability-count">({{abilityCategories.free.length}})</span>
+              </summary>
+              <div class="ability-list">
+                {{#if abilityCategories.free.length}}
+                  {{#each abilityCategories.free as |ability|}}
+                    <details class="ability-item">
+                      <summary class="ability-name">{{ability.name}}</summary>
+                      <div class="ability-description">{{{ability.description}}}</div>
+                    </details>
+                  {{/each}}
+                {{else}}
+                  <div class="no-abilities">No free actions available</div>
+                {{/if}}
+              </div>
+            </details>
+
+          </div>
+        </div>
+
+        <!-- Biography Tab - Fixed Editor Structure -->
+        <div class="tab biography" data-group="primary" data-tab="biography">
+          
+          <!-- Languages Section (Collapsible) -->
+          <details class="languages-section">
+            <summary class="languages-header">
+              <h3>Languages</h3>
+              <span class="language-count">(Max: {{languageLimit}})</span>
+            </summary>
+            <div class="languages-content">
+              <div class="form-group">
+                <div class="form-fields">
+                  {{editor system.languages target="system.languages" button=true owner=owner editable=editable height=120}}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- Liabilities Section -->
+          <div class="liabilities-section">
+            <h3>Liabilities</h3>
+            <div class="form-group">
+              <div class="form-fields">
+                {{editor system.liabilities target="system.liabilities" button=true owner=owner editable=editable height=120}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Journey Abilities Section -->
+          <details class="ability-category journey-abilities">
+            <summary class="ability-category-header">
+              <i class="fas fa-map"></i>
+              Journey Abilities
+              <span class="ability-count">({{abilityCategories.journey.length}})</span>
+            </summary>
+            <div class="ability-list">
+              {{#if abilityCategories.journey.length}}
+                {{#each abilityCategories.journey as |ability|}}
+                  <details class="ability-item">
+                    <summary class="ability-name">{{ability.name}}</summary>
+                    <div class="ability-description">{{{ability.description}}}</div>
+                  </details>
+                {{/each}}
+              {{else}}
+                <div class="no-abilities">No journey abilities available</div>
+              {{/if}}
+            </div>
+          </details>
+
+          <!-- Miscellaneous Abilities Section -->
+          <details class="ability-category miscellaneous-abilities">
+            <summary class="ability-category-header">
+              <i class="fas fa-ellipsis-h"></i>
+              Miscellaneous Abilities
+              <span class="ability-count">({{abilityCategories.miscellaneous.length}})</span>
+            </summary>
+            <div class="ability-list">
+              {{#if abilityCategories.miscellaneous.length}}
+                {{#each abilityCategories.miscellaneous as |ability|}}
+                  <details class="ability-item">
+                    <summary class="ability-name">{{ability.name}}</summary>
+                    <div class="ability-description">{{{ability.description}}}</div>
+                  </details>
+                {{/each}}
+              {{else}}
+                <div class="no-abilities">No miscellaneous abilities available</div>
+              {{/if}}
+            </div>
+          </details>
+
+          <!-- Notes Section -->
+          <div class="notes-section">
+            <h3>Notes</h3>
+            <div class="form-group">
+              <div class="form-fields">
+                {{editor system.notes target="system.notes" button=true owner=owner editable=editable height=200}}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Inventory Tab - Updated Layout -->
+        <div class="tab inventory" data-group="primary" data-tab="inventory">
+          
+          <!-- Combined Summary: Bulk and Wealth -->
+          <div class="inventory-summary">
+            <!-- Bulk Display (Left Side) -->
+            <div class="bulk-section">
+              <label class="summary-label">Total Bulk:</label>
+              <span class="bulk-display">{{inventoryTotals.bulk}} / {{inventoryTotals.maxBulk}}</span>
+            </div>
+            
+            <!-- Wealth Display (Right Side) -->
+            <div class="wealth-section">
+              <label class="summary-label">Wealth:</label>
+              <div class="wealth-input-group">
+                <input type="number" name="system.wealth" value="{{system.wealth}}" min="0" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Equipment organized by Placement -->
+          <div class="inventory-categories">
+            
+            <!-- Wielded - Only show if has items -->
+            {{#if equipment.wielded.length}}
+            <div class="inventory-category">
+              <h4><i class="fas fa-hand-rock"></i> Wielded</h4>
+              <div class="items-list">
+                {{#each equipment.wielded as |item|}}
+                  <div class="item equipment-item" data-item-id="{{item._id}}">
+                    <img class="item-image" src="{{item.img}}" width="32" height="32"/>
+                    <div class="item-details">
+                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-properties">
+                        {{#if (gt item.system.quantity 1)}}
+                          <span class="quantity">x{{item.system.quantity}}</span>
+                        {{/if}}
+                        {{#if item.system.bulk}}
+                          <span class="bulk">{{item.system.bulk}} bulk</span>
+                        {{/if}}
+                        {{#if item.system.value}}
+                          <span class="value">{{item.system.value}} gp</span>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="item-controls">
+                      <a class="item-control item-edit" title="Edit {{item.name}}"><i class="fas fa-edit"></i></a>
+                      <a class="item-control item-delete" title="Delete {{item.name}}"><i class="fas fa-trash"></i></a>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+
+            <!-- Worn - Only show if has items -->
+            {{#if equipment.worn.length}}
+            <div class="inventory-category">
+              <h4><i class="fas fa-tshirt"></i> Worn</h4>
+              <div class="items-list">
+                {{#each equipment.worn as |item|}}
+                  <div class="item equipment-item" data-item-id="{{item._id}}">
+                    <img class="item-image" src="{{item.img}}" width="32" height="32"/>
+                    <div class="item-details">
+                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-properties">
+                        {{#if (gt item.system.quantity 1)}}
+                          <span class="quantity">x{{item.system.quantity}}</span>
+                        {{/if}}
+                        {{#if item.system.bulk}}
+                          <span class="bulk">{{item.system.bulk}} bulk</span>
+                        {{/if}}
+                        {{#if item.system.value}}
+                          <span class="value">{{item.system.value}} gp</span>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="item-controls">
+                      <a class="item-control item-edit" title="Edit {{item.name}}"><i class="fas fa-edit"></i></a>
+                      <a class="item-control item-delete" title="Delete {{item.name}}"><i class="fas fa-trash"></i></a>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+
+            <!-- Readily Available - Only show if has items -->
+            {{#if equipment.readily_available.length}}
+            <div class="inventory-category">
+              <h4><i class="fas fa-hand-paper"></i> Readily Available</h4>
+              <div class="items-list">
+                {{#each equipment.readily_available as |item|}}
+                  <div class="item equipment-item" data-item-id="{{item._id}}">
+                    <img class="item-image" src="{{item.img}}" width="32" height="32"/>
+                    <div class="item-details">
+                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-properties">
+                        {{#if (gt item.system.quantity 1)}}
+                          <span class="quantity">x{{item.system.quantity}}</span>
+                        {{/if}}
+                        {{#if item.system.bulk}}
+                          <span class="bulk">{{item.system.bulk}} bulk</span>
+                        {{/if}}
+                        {{#if item.system.value}}
+                          <span class="value">{{item.system.value}} gp</span>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="item-controls">
+                      <a class="item-control item-edit" title="Edit {{item.name}}"><i class="fas fa-edit"></i></a>
+                      <a class="item-control item-delete" title="Delete {{item.name}}"><i class="fas fa-trash"></i></a>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+
+            <!-- Stowed - Only show if has items -->
+            {{#if equipment.stowed.length}}
+            <div class="inventory-category">
+              <h4><i class="fas fa-box"></i> Stowed</h4>
+              <div class="items-list">
+                {{#each equipment.stowed as |item|}}
+                  <div class="item equipment-item" data-item-id="{{item._id}}">
+                    <img class="item-image" src="{{item.img}}" width="32" height="32"/>
+                    <div class="item-details">
+                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-properties">
+                        {{#if (gt item.system.quantity 1)}}
+                          <span class="quantity">x{{item.system.quantity}}</span>
+                        {{/if}}
+                        {{#if item.system.bulk}}
+                          <span class="bulk">{{item.system.bulk}} bulk</span>
+                        {{/if}}
+                        {{#if item.system.value}}
+                          <span class="value">{{item.system.value}} gp</span>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="item-controls">
+                      <a class="item-control item-edit" title="Edit {{item.name}}"><i class="fas fa-edit"></i></a>
+                      <a class="item-control item-delete" title="Delete {{item.name}}"><i class="fas fa-trash"></i></a>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+
+            <!-- Not Carried - Only show if has items -->
+            {{#if equipment.not_carried.length}}
+            <div class="inventory-category">
+              <h4><i class="fas fa-times-circle"></i> Not Carried</h4>
+              <div class="items-list">
+                {{#each equipment.not_carried as |item|}}
+                  <div class="item equipment-item" data-item-id="{{item._id}}">
+                    <img class="item-image" src="{{item.img}}" width="32" height="32"/>
+                    <div class="item-details">
+                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-properties">
+                        {{#if (gt item.system.quantity 1)}}
+                          <span class="quantity">x{{item.system.quantity}}</span>
+                        {{/if}}
+                        {{#if item.system.bulk}}
+                          <span class="bulk">{{item.system.bulk}} bulk</span>
+                        {{/if}}
+                        {{#if item.system.value}}
+                          <span class="value">{{item.system.value}} gp</span>
+                        {{/if}}
+                      </div>
+                    </div>
+                    <div class="item-controls">
+                      <a class="item-control item-edit" title="Edit {{item.name}}"><i class="fas fa-edit"></i></a>
+                      <a class="item-control item-delete" title="Delete {{item.name}}"><i class="fas fa-trash"></i></a>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+            {{/if}}
+
+            <!-- Show message when no equipment exists -->
+            {{#unless (or equipment.wielded.length equipment.worn.length equipment.readily_available.length equipment.stowed.length equipment.not_carried.length)}}
+              <div class="no-equipment-message">
+                <p><i class="fas fa-info-circle"></i> No equipment in inventory. Use the drop zone below to add items.</p>
+              </div>
+            {{/unless}}
+
+          </div>
+
+          <!-- Equipment Drop Zone - Moved to bottom -->
+          <div class="equipment-drop-section">
+            <h4><i class="fas fa-plus-circle"></i> Add Equipment</h4>
+            <div class="equipment-drop-zone drop-zone" title="Drag equipment items here to add them to your inventory">
+              <div class="drop-prompt">
+                <i class="fas fa-backpack"></i>
+                <span>Drag Equipment Items Here</span>
+                <div class="drop-hint">Any equipment item can be added to your inventory</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Configure Tab -->
+        <div class="tab configure" data-group="primary" data-tab="configure">
+
+          <h3>Character Build Configuration</h3>
+
+          <div class="build-sections">
+
+            <!-- Core Character Foundation Section -->
+            <div class="build-category character-foundation">
+              <h4>Character Foundation</h4>
+              <div class="foundation-row">
+                
+                <div class="foundation-item ancestry-slot">
+                  <label class="foundation-label">Ancestry</label>
+                  <div class="foundation-drop-zone drop-zone" data-item-type="ancestry" data-slot="ancestry" title="Drag an Ancestry item here">
+                    {{#if ancestry}}
+                      <div class="slotted-item" data-item-id="{{ancestry._id}}">
+                        <img class="item-image" src="{{ancestry.img}}" alt="{{ancestry.name}}" />
+                        <div class="item-info">
+                          <div class="item-name">{{ancestry.name}}</div>
+                        </div>
+                        <div class="item-controls">
+                          <a class="item-control item-edit" title="Edit {{ancestry.name}}">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <a class="item-control item-remove" title="Remove {{ancestry.name}}">
+                            <i class="fas fa-times"></i>
+                          </a>
+                        </div>
+                      </div>
+                    {{else}}
+                      <div class="drop-prompt">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Drag Ancestry Here</span>
+                      </div>
+                    {{/if}}
+                  </div>
+                </div>
+
+                <div class="foundation-item fundament-slot">
+                  <label class="foundation-label">Fundament</label>
+                  <div class="foundation-drop-zone drop-zone" data-item-type="fundament" data-slot="fundament" title="Drag a Fundament item here">
+                    {{#if fundament}}
+                      <div class="slotted-item" data-item-id="{{fundament._id}}">
+                        <img class="item-image" src="{{fundament.img}}" alt="{{fundament.name}}" />
+                        <div class="item-info">
+                          <div class="item-name">{{fundament.name}}</div>
+                        </div>
+                        <div class="item-controls">
+                          <a class="item-control item-edit" title="Edit {{fundament.name}}">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <a class="item-control item-remove" title="Remove {{fundament.name}}">
+                            <i class="fas fa-times"></i>
+                          </a>
+                        </div>
+                      </div>
+                    {{else}}
+                      <div class="drop-prompt">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Drag Fundament Here</span>
+                      </div>
+                    {{/if}}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Progression Assignments Section -->
+            <div class="build-category progression-assignments">
+              <!-- Updated Build Points Header with Lock Button -->
+              <div class="build-points-header">
+                <div class="build-points-display">
+                  <div class="bp-label">Build Points</div>
+                  <div class="bp-total {{#if (lt buildPoints.total 0)}}negative{{else}}{{#if (gt buildPoints.total buildPoints.max)}}over-max{{else}}{{#if (eq buildPoints.total buildPoints.max)}}at-max{{/if}}{{/if}}{{/if}}">
+                    {{buildPoints.total}} / {{buildPoints.max}} BP
+                  </div>
+                  <div class="bp-breakdown">
+                    <span class="bp-breakdown-item">Attributes: {{buildPoints.attributes}} BP</span>
+                    <span class="bp-breakdown-divider">•</span>
+                    <span class="bp-breakdown-item">Skills: {{buildPoints.skills}} BP</span>
+                  </div>
+                </div>
+                
+                <!-- NEW: Lock Button -->
+                <div class="build-points-controls">
+                  <button type="button" class="build-points-lock-btn {{#if system.buildPointsLocked}}locked{{else}}unlocked{{/if}}" 
+                          title="{{#if system.buildPointsLocked}}Unlock progression sliders{{else}}Lock progression sliders{{/if}}">
+                    <i class="fas {{#if system.buildPointsLocked}}fa-lock{{else}}fa-unlock{{/if}}"></i>
+                    <span class="lock-label">{{#if system.buildPointsLocked}}Locked{{else}}Unlocked{{/if}}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="progression-config">
+                
+                <!-- Attributes Section -->
+                <div class="config-section">
+                  <h5><i class="fas fa-user-shield"></i> Attributes</h5>
+                  <div class="config-list">
+                    
+                    <div class="config-row">
+                      <label class="stat-label">
+                        {{#if (eq system.attributes.agility.progression 'awesome')}}
+                          <i class="fas fa-exclamation-triangle awesome-warning" 
+                             title="Awesome Progression for Attributes is only available if granted by a Track or Talent"></i>
+                        {{/if}}
+                        Agility
+                      </label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.attributes.agility.progression 'mediocre')}}1{{else}}{{#if (eq system.attributes.agility.progression 'moderate')}}2{{else}}{{#if (eq system.attributes.agility.progression 'specialty')}}3{{else}}{{#if (eq system.attributes.agility.progression 'awesome')}}4{{else}}2{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="agility" 
+                              data-type="attribute" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-row config-row-alt">
+                      <label class="stat-label">
+                        {{#if (eq system.attributes.fortitude.progression 'awesome')}}
+                          <i class="fas fa-exclamation-triangle awesome-warning" 
+                             title="Awesome Progression for Attributes is only available if granted by a Track or Talent"></i>
+                        {{/if}}
+                        Fortitude
+                      </label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.attributes.fortitude.progression 'mediocre')}}1{{else}}{{#if (eq system.attributes.fortitude.progression 'moderate')}}2{{else}}{{#if (eq system.attributes.fortitude.progression 'specialty')}}3{{else}}{{#if (eq system.attributes.fortitude.progression 'awesome')}}4{{else}}2{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="fortitude" 
+                              data-type="attribute" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-row">
+                      <label class="stat-label">
+                        {{#if (eq system.attributes.perception.progression 'awesome')}}
+                          <i class="fas fa-exclamation-triangle awesome-warning" 
+                             title="Awesome Progression for Attributes is only available if granted by a Track or Talent"></i>
+                        {{/if}}
+                        Perception
+                      </label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.attributes.perception.progression 'mediocre')}}1{{else}}{{#if (eq system.attributes.perception.progression 'moderate')}}2{{else}}{{#if (eq system.attributes.perception.progression 'specialty')}}3{{else}}{{#if (eq system.attributes.perception.progression 'awesome')}}4{{else}}2{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="perception" 
+                              data-type="attribute" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-row config-row-alt">
+                      <label class="stat-label">
+                        {{#if (eq system.attributes.willpower.progression 'awesome')}}
+                          <i class="fas fa-exclamation-triangle awesome-warning" 
+                             title="Awesome Progression for Attributes is only available if granted by a Track or Talent"></i>
+                        {{/if}}
+                        Willpower
+                      </label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.attributes.willpower.progression 'mediocre')}}1{{else}}{{#if (eq system.attributes.willpower.progression 'moderate')}}2{{else}}{{#if (eq system.attributes.willpower.progression 'specialty')}}3{{else}}{{#if (eq system.attributes.willpower.progression 'awesome')}}4{{else}}2{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="willpower" 
+                              data-type="attribute" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Skills Section -->
+                <div class="config-section">
+                  <h5><i class="fas fa-cogs"></i> Skills</h5>
+                  <div class="config-list">
+
+                    <div class="config-item">
+                      <label class="stat-label">Acumen</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.acumen.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.acumen.progression 'moderate')}}2{{else}}{{#if (eq system.skills.acumen.progression 'specialty')}}3{{else}}{{#if (eq system.skills.acumen.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="acumen" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Athletics</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.athletics.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.athletics.progression 'moderate')}}2{{else}}{{#if (eq system.skills.athletics.progression 'specialty')}}3{{else}}{{#if (eq system.skills.athletics.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="athletics" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Brawn</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.brawn.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.brawn.progression 'moderate')}}2{{else}}{{#if (eq system.skills.brawn.progression 'specialty')}}3{{else}}{{#if (eq system.skills.brawn.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="brawn" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Dexterity</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.dexterity.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.dexterity.progression 'moderate')}}2{{else}}{{#if (eq system.skills.dexterity.progression 'specialty')}}3{{else}}{{#if (eq system.skills.dexterity.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="dexterity" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Glibness</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.glibness.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.glibness.progression 'moderate')}}2{{else}}{{#if (eq system.skills.glibness.progression 'specialty')}}3{{else}}{{#if (eq system.skills.glibness.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="glibness" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Influence</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.influence.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.influence.progression 'moderate')}}2{{else}}{{#if (eq system.skills.influence.progression 'specialty')}}3{{else}}{{#if (eq system.skills.influence.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="influence" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Insight</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.insight.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.insight.progression 'moderate')}}2{{else}}{{#if (eq system.skills.insight.progression 'specialty')}}3{{else}}{{#if (eq system.skills.insight.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="insight" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="config-item">
+                      <label class="stat-label">Stealth</label>
+                      <div class="progression-slider-container">
+                        <input type="range" 
+                              class="progression-slider" 
+                              min="1" max="4" 
+                              value="{{#if (eq system.skills.stealth.progression 'mediocre')}}1{{else}}{{#if (eq system.skills.stealth.progression 'moderate')}}2{{else}}{{#if (eq system.skills.stealth.progression 'specialty')}}3{{else}}{{#if (eq system.skills.stealth.progression 'awesome')}}4{{else}}1{{/if}}{{/if}}{{/if}}{{/if}}"
+                              data-stat="stealth" 
+                              data-type="skill" />
+                        <div class="slider-labels">
+                          <span class="slider-label">Med</span>
+                          <span class="slider-label">Mod</span>
+                          <span class="slider-label">Spec</span>
+                          <span class="slider-label">Awe</span>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Knacks Section -->
+            <div class="build-category knacks-section">
+              <h4><i class="fas fa-star"></i> Knacks</h4>
+              <div class="knacks-grid compact-grid">
+                {{#each knackSlots as |slot index|}}
+                  <div class="knack-slot compact-slot">
+                    <label class="slot-label">Knack {{math index "+" 1}}</label>
+                    <div class="knack-drop-zone drop-zone compact-drop-zone" data-item-type="knack" data-slot="knack-{{index}}" title="Drag a Knack item here">
+                      {{#if slot.item}}
+                        <div class="slotted-item compact-slotted-item" data-item-id="{{slot.item._id}}">
+                          <img class="item-image compact-item-image" src="{{slot.item.img}}" alt="{{slot.item.name}}" />
+                          <div class="item-info compact-item-info">
+                            <div class="item-name">{{slot.item.name}}</div>
+                          </div>
+                          <div class="item-controls compact-item-controls">
+                            <a class="item-control item-edit" title="Edit {{slot.item.name}}">
+                              <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="item-control item-remove" title="Remove {{slot.item.name}}">
+                              <i class="fas fa-times"></i>
+                            </a>
+                          </div>
+                        </div>
+                      {{else}}
+                        <div class="drop-prompt compact-drop-prompt">
+                          <i class="fas fa-star"></i>
+                          <span>Drag Knack Here</span>
+                        </div>
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/each}}
+                
+                {{#unless knackSlots.length}}
+                  <div class="no-slots-message">
+                    <i class="fas fa-info-circle"></i>
+                    <span>No knack slots available. Add an Ancestry, Fundament, or Talents to gain knack slots.</span>
+                  </div>
+                {{/unless}}
+              </div>
+            </div>
+
+            <!-- Tracks Section -->
+            <div class="build-category tracks-section">
+              <h4><i class="fas fa-road"></i> Tracks</h4>
+              <div class="tracks-grid compact-grid">
+                {{#each trackSlots as |slot index|}}
+                  <div class="track-slot compact-slot">
+                    <label class="slot-label">Track {{math index "+" 1}}</label>
+                    <div class="track-drop-zone drop-zone compact-drop-zone" data-item-type="track" data-slot="track-{{index}}" title="Drag a Track item here">
+                      {{#if slot.item}}
+                        <div class="slotted-item compact-slotted-item" data-item-id="{{slot.item._id}}">
+                          <img class="item-image compact-item-image" src="{{slot.item.img}}" alt="{{slot.item.name}}" />
+                          <div class="item-info compact-item-info">
+                            <div class="item-name">{{slot.item.name}}</div>
+                          </div>
+                          <div class="item-controls compact-item-controls">
+                            <a class="item-control item-edit" title="Edit {{slot.item.name}}">
+                              <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="item-control item-remove" title="Remove {{slot.item.name}}">
+                              <i class="fas fa-times"></i>
+                            </a>
+                          </div>
+                        </div>
+                      {{else}}
+                        <div class="drop-prompt compact-drop-prompt">
+                          <i class="fas fa-road"></i>
+                          <span>Drag Track Here</span>
+                        </div>
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/each}}
+                
+                {{#unless trackSlots.length}}
+                  <div class="no-slots-message">
+                    <i class="fas fa-info-circle"></i>
+                    <span>No track slots available at level {{system.level}}.</span>
+                  </div>
+                {{/unless}}
+              </div>
+            </div>
+
+            <!-- Talents Section -->
+            <div class="build-category talents-section">
+              <h4><i class="fas fa-gem"></i> Talents</h4>
+              <div class="talents-grid">
+                {{#each talentSlots as |slot index|}}
+                  <div class="talent-slot">
+                    <!-- Enhanced label with track information -->
+                    <label class="slot-label">
+                      Talent {{slot.talentNumber}}
+                      {{#if slot.hasTrack}}
+                        <span class="track-source">(Track {{slot.trackNumber}}: {{slot.trackName}})</span>
+                      {{else}}
+                        <span class="track-source track-missing">(Track {{slot.trackNumber}}: Not Assigned)</span>
+                      {{/if}}
+                    </label>
+                    
+                    <div class="talent-drop-zone drop-zone {{#unless slot.hasTrack}}track-missing{{/unless}}" 
+                        data-item-type="talent" 
+                        data-slot="talent-{{slot.index}}" 
+                        title="{{#if slot.hasTrack}}Drag a Talent item here (provided by {{slot.trackName}}){{else}}Drag a Talent item here (requires Track {{slot.trackNumber}} to be assigned){{/if}}">
+                      
+                      {{#if slot.item}}
+                        <div class="slotted-item" data-item-id="{{slot.item._id}}">
+                          <img class="item-image" src="{{slot.item.img}}" alt="{{slot.item.name}}" />
+                          <div class="item-info">
+                            <div class="item-name">{{slot.item.name}}</div>
+                            <div class="item-details">
+                              {{#if slot.item.system.talentType}}
+                                Type: {{slot.item.system.talentType}}
+                              {{/if}}
+                              {{#if slot.item.system.knacksProvided}}
+                                • Knacks: +{{slot.item.system.knacksProvided}}
+                              {{/if}}
+                            </div>
+                          </div>
+                          <div class="item-controls">
+                            <a class="item-control item-edit" title="Edit {{slot.item.name}}">
+                              <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="item-control item-remove" title="Remove {{slot.item.name}}">
+                              <i class="fas fa-times"></i>
+                            </a>
+                          </div>
+                        </div>
+                      {{else}}
+                        <div class="drop-prompt">
+                          <i class="fas fa-gem"></i>
+                          <span>Drag Talent Here</span>
+                          {{#unless slot.hasTrack}}
+                            <div class="drop-requirement">Requires Track {{slot.trackNumber}}</div>
+                          {{/unless}}
+                        </div>
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/each}}
+                
+                {{#unless talentSlots.length}}
+                  <div class="no-slots-message">
+                    <i class="fas fa-info-circle"></i>
+                    <span>No talent slots available at level {{system.level}}.</span>
+                  </div>
+                {{/unless}}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+  </div>
+</form>

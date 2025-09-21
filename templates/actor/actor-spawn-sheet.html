@@ -1,0 +1,24 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{actor.name}}" placeholder="Swarm Name"/></h1>
+      <div class="swarm-details">
+        <div class="swarm-count">
+          <label>Swarm Count:</label>
+          <input type="number" name="system.swarm.count" value="{{system.swarm.count}}"/>
+          <span>/</span>
+          <input type="number" name="system.swarm.maxCount" value="{{system.swarm.maxCount}}"/>
+        </div>
+      </div>
+    </div>
+  </header>
+  
+  <section class="sheet-body">
+    <div class="swarm-stats">
+      <label>Individual HP: <input type="number" name="system.swarm.individualHp" value="{{system.swarm.individualHp}}"/></label>
+      <label>Attack Bonus: <input type="number" name="system.swarm.attackBonus" value="{{system.swarm.attackBonus}}"/></label>
+      <label>Damage per Spawn: <input type="text" name="system.swarm.damagePerSpawn" value="{{system.swarm.damagePerSpawn}}"/></label>
+    </div>
+  </section>
+</form>
