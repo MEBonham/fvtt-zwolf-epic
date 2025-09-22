@@ -219,7 +219,12 @@
                 {{#if abilityCategories.passive.length}}
                   {{#each abilityCategories.passive as |ability|}}
                     <details class="ability-item">
-                      <summary class="ability-name">{{ability.name}}</summary>
+                      <summary class="ability-name">
+                        {{ability.name}}
+                        {{#if ability.tags}}
+                          <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                        {{/if}}
+                      </summary>
                       <div class="ability-description">{{{ability.description}}}</div>
                     </details>
                   {{/each}}
@@ -244,7 +249,12 @@
                     <h6 class="ability-subsection-header" style="width: 100%; text-align: center;">General Actions</h6>
                     {{#each abilityCategories.dominantAction as |ability|}}
                       <details class="ability-item">
-                        <summary class="ability-name">{{ability.name}}</summary>
+                        <summary class="ability-name">
+                          {{ability.name}}
+                          {{#if ability.tags}}
+                            <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                          {{/if}}
+                        </summary>
                         <div class="ability-description">{{{ability.description}}}</div>
                       </details>
                     {{/each}}
@@ -257,7 +267,12 @@
                     <h6 class="ability-subsection-header" style="width: 100%; text-align: center;">Strike Actions</h6>
                     {{#each abilityCategories.strike as |ability|}}
                       <details class="ability-item strike-ability">
-                        <summary class="ability-name">{{ability.name}}</summary>
+                        <summary class="ability-name">
+                          {{ability.name}}
+                          {{#if ability.tags}}
+                            <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                          {{/if}}
+                        </summary>
                         <div class="ability-description">{{{ability.description}}}</div>
                       </details>
                     {{/each}}
@@ -277,13 +292,18 @@
               <summary class="ability-category-header">
                 <i class="fas fa-running"></i>
                 Swift Actions
-                <span class="ability-count">({{abilityCategories.swift.length}})</span>
+                <span class="ability-count">({{abilityCategories.swiftAction.length}})</span>
               </summary>
               <div class="ability-list">
-                {{#if abilityCategories.swift.length}}
-                  {{#each abilityCategories.swift as |ability|}}
+                {{#if abilityCategories.swiftAction.length}}
+                  {{#each abilityCategories.swiftAction as |ability|}}
                     <details class="ability-item">
-                      <summary class="ability-name">{{ability.name}}</summary>
+                      <summary class="ability-name">
+                        {{ability.name}}
+                        {{#if ability.tags}}
+                          <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                        {{/if}}
+                      </summary>
                       <div class="ability-description">{{{ability.description}}}</div>
                     </details>
                   {{/each}}
@@ -304,7 +324,12 @@
                 {{#if abilityCategories.reaction.length}}
                   {{#each abilityCategories.reaction as |ability|}}
                     <details class="ability-item">
-                      <summary class="ability-name">{{ability.name}}</summary>
+                      <summary class="ability-name">
+                        {{ability.name}}
+                        {{#if ability.tags}}
+                          <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                        {{/if}}
+                      </summary>
                       <div class="ability-description">{{{ability.description}}}</div>
                     </details>
                   {{/each}}
@@ -325,7 +350,12 @@
                 {{#if abilityCategories.free.length}}
                   {{#each abilityCategories.free as |ability|}}
                     <details class="ability-item">
-                      <summary class="ability-name">{{ability.name}}</summary>
+                      <summary class="ability-name">
+                        {{ability.name}}
+                        {{#if ability.tags}}
+                          <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                        {{/if}}
+                      </summary>
                       <div class="ability-description">{{{ability.description}}}</div>
                     </details>
                   {{/each}}
@@ -338,7 +368,7 @@
           </div>
         </div>
 
-        <!-- Biography Tab - Fixed Editor Structure -->
+        <!-- Biography Tab -->
         <div class="tab biography" data-group="primary" data-tab="biography">
           
           <!-- Languages Section (Collapsible) -->
@@ -377,7 +407,12 @@
               {{#if abilityCategories.journey.length}}
                 {{#each abilityCategories.journey as |ability|}}
                   <details class="ability-item">
-                    <summary class="ability-name">{{ability.name}}</summary>
+                    <summary class="ability-name">
+                      {{ability.name}}
+                      {{#if ability.tags}}
+                        <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                      {{/if}}
+                    </summary>
                     <div class="ability-description">{{{ability.description}}}</div>
                   </details>
                 {{/each}}
@@ -398,7 +433,12 @@
               {{#if abilityCategories.miscellaneous.length}}
                 {{#each abilityCategories.miscellaneous as |ability|}}
                   <details class="ability-item">
-                    <summary class="ability-name">{{ability.name}}</summary>
+                    <summary class="ability-name">
+                      {{ability.name}}
+                      {{#if ability.tags}}
+                        <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                      {{/if}}
+                    </summary>
                     <div class="ability-description">{{{ability.description}}}</div>
                   </details>
                 {{/each}}
@@ -420,7 +460,7 @@
 
         </div>
 
-        <!-- Inventory Tab - Updated Layout -->
+        <!-- Inventory Tab - Updated Layout with Placement Dropdowns -->
         <div class="tab inventory" data-group="primary" data-tab="inventory">
           
           <!-- Combined Summary: Bulk and Wealth -->
@@ -452,7 +492,15 @@
                   <div class="item equipment-item" data-item-id="{{item._id}}">
                     <img class="item-image" src="{{item.img}}" width="32" height="32"/>
                     <div class="item-details">
-                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-name">
+                        {{item.name}}
+                        {{#if item.requiredPlacement}}
+                          {{#unless item.placementValid}}
+                            <i class="fas fa-exclamation-triangle placement-warning" 
+                              title="This item requires '{{item.requiredPlacement}}' placement but is currently '{{item.system.placement}}'"></i>
+                          {{/unless}}
+                        {{/if}}
+                      </div>
                       <div class="item-properties">
                         {{#if (gt item.system.quantity 1)}}
                           <span class="quantity">x{{item.system.quantity}}</span>
@@ -463,6 +511,20 @@
                         {{#if item.system.value}}
                           <span class="value">{{item.system.value}} gp</span>
                         {{/if}}
+                        {{#if item.requiredPlacement}}
+                          <span class="required-placement">Requires: {{item.requiredPlacement}}</span>
+                        {{/if}}
+                      </div>
+                      <!-- Placement Dropdown -->
+                      <div class="placement-control">
+                        <label for="placement-{{item._id}}">Placement:</label>
+                        <select name="system.placement" class="equipment-placement-select" id="placement-{{item._id}}">
+                          <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                          <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                          <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                          <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                          <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                        </select>
                       </div>
                     </div>
                     <div class="item-controls">
@@ -484,7 +546,15 @@
                   <div class="item equipment-item" data-item-id="{{item._id}}">
                     <img class="item-image" src="{{item.img}}" width="32" height="32"/>
                     <div class="item-details">
-                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-name">
+                        {{item.name}}
+                        {{#if item.requiredPlacement}}
+                          {{#unless item.placementValid}}
+                            <i class="fas fa-exclamation-triangle placement-warning" 
+                              title="This item requires '{{item.requiredPlacement}}' placement but is currently '{{item.system.placement}}'"></i>
+                          {{/unless}}
+                        {{/if}}
+                      </div>
                       <div class="item-properties">
                         {{#if (gt item.system.quantity 1)}}
                           <span class="quantity">x{{item.system.quantity}}</span>
@@ -495,6 +565,20 @@
                         {{#if item.system.value}}
                           <span class="value">{{item.system.value}} gp</span>
                         {{/if}}
+                        {{#if item.requiredPlacement}}
+                          <span class="required-placement">Requires: {{item.requiredPlacement}}</span>
+                        {{/if}}
+                      </div>
+                      <!-- Placement Dropdown -->
+                      <div class="placement-control">
+                        <label for="placement-{{item._id}}">Placement:</label>
+                        <select name="system.placement" class="equipment-placement-select" id="placement-{{item._id}}">
+                          <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                          <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                          <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                          <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                          <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                        </select>
                       </div>
                     </div>
                     <div class="item-controls">
@@ -516,7 +600,15 @@
                   <div class="item equipment-item" data-item-id="{{item._id}}">
                     <img class="item-image" src="{{item.img}}" width="32" height="32"/>
                     <div class="item-details">
-                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-name">
+                        {{item.name}}
+                        {{#if item.requiredPlacement}}
+                          {{#unless item.placementValid}}
+                            <i class="fas fa-exclamation-triangle placement-warning" 
+                              title="This item requires '{{item.requiredPlacement}}' placement but is currently '{{item.system.placement}}'"></i>
+                          {{/unless}}
+                        {{/if}}
+                      </div>
                       <div class="item-properties">
                         {{#if (gt item.system.quantity 1)}}
                           <span class="quantity">x{{item.system.quantity}}</span>
@@ -527,6 +619,20 @@
                         {{#if item.system.value}}
                           <span class="value">{{item.system.value}} gp</span>
                         {{/if}}
+                        {{#if item.requiredPlacement}}
+                          <span class="required-placement">Requires: {{item.requiredPlacement}}</span>
+                        {{/if}}
+                      </div>
+                      <!-- Placement Dropdown -->
+                      <div class="placement-control">
+                        <label for="placement-{{item._id}}">Placement:</label>
+                        <select name="system.placement" class="equipment-placement-select" id="placement-{{item._id}}">
+                          <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                          <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                          <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                          <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                          <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                        </select>
                       </div>
                     </div>
                     <div class="item-controls">
@@ -548,7 +654,15 @@
                   <div class="item equipment-item" data-item-id="{{item._id}}">
                     <img class="item-image" src="{{item.img}}" width="32" height="32"/>
                     <div class="item-details">
-                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-name">
+                        {{item.name}}
+                        {{#if item.requiredPlacement}}
+                          {{#unless item.placementValid}}
+                            <i class="fas fa-exclamation-triangle placement-warning" 
+                              title="This item requires '{{item.requiredPlacement}}' placement but is currently '{{item.system.placement}}'"></i>
+                          {{/unless}}
+                        {{/if}}
+                      </div>
                       <div class="item-properties">
                         {{#if (gt item.system.quantity 1)}}
                           <span class="quantity">x{{item.system.quantity}}</span>
@@ -559,6 +673,20 @@
                         {{#if item.system.value}}
                           <span class="value">{{item.system.value}} gp</span>
                         {{/if}}
+                        {{#if item.requiredPlacement}}
+                          <span class="required-placement">Requires: {{item.requiredPlacement}}</span>
+                        {{/if}}
+                      </div>
+                      <!-- Placement Dropdown -->
+                      <div class="placement-control">
+                        <label for="placement-{{item._id}}">Placement:</label>
+                        <select name="system.placement" class="equipment-placement-select" id="placement-{{item._id}}">
+                          <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                          <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                          <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                          <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                          <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                        </select>
                       </div>
                     </div>
                     <div class="item-controls">
@@ -580,7 +708,15 @@
                   <div class="item equipment-item" data-item-id="{{item._id}}">
                     <img class="item-image" src="{{item.img}}" width="32" height="32"/>
                     <div class="item-details">
-                      <div class="item-name">{{item.name}}</div>
+                      <div class="item-name">
+                        {{item.name}}
+                        {{#if item.requiredPlacement}}
+                          {{#unless item.placementValid}}
+                            <i class="fas fa-exclamation-triangle placement-warning" 
+                              title="This item requires '{{item.requiredPlacement}}' placement but is currently '{{item.system.placement}}'"></i>
+                          {{/unless}}
+                        {{/if}}
+                      </div>
                       <div class="item-properties">
                         {{#if (gt item.system.quantity 1)}}
                           <span class="quantity">x{{item.system.quantity}}</span>
@@ -591,6 +727,20 @@
                         {{#if item.system.value}}
                           <span class="value">{{item.system.value}} gp</span>
                         {{/if}}
+                        {{#if item.requiredPlacement}}
+                          <span class="required-placement">Requires: {{item.requiredPlacement}}</span>
+                        {{/if}}
+                      </div>
+                      <!-- Placement Dropdown -->
+                      <div class="placement-control">
+                        <label for="placement-{{item._id}}">Placement:</label>
+                        <select name="system.placement" class="equipment-placement-select" id="placement-{{item._id}}">
+                          <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                          <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                          <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                          <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                          <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                        </select>
                       </div>
                     </div>
                     <div class="item-controls">

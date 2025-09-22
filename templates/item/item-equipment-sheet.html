@@ -18,11 +18,11 @@
 
     <section class="sheet-body">
       <div class="tab" data-group="primary" data-tab="basics">
-        <!-- Tags -->
+        <!-- For item-level tags (not granted ability tags) -->
         <div class="form-group">
           <label>{{localize 'ZWOLF.Tags'}}</label>
-          <input type="text" name="system.tags" value="{{join system.tags}}" placeholder="{{localize 'ZWOLF.EquipmentTagsPlaceholder'}}"/>
-          <p class="notes">{{localize 'ZWOLF.EquipmentTagsHint'}}</p>
+          <input type="text" name="system.tags" value="{{join system.tags}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+          <p class="notes">{{localize 'ZWOLF.TagsHint'}}</p>
         </div>
 
         <!-- Physical Properties -->
@@ -74,14 +74,24 @@
         <!-- Required Placement for Effects -->
         <div class="form-group">
           <label>{{localize 'ZWOLF.RequiredPlacement'}}</label>
-          <select name="system.sideEffects.requiredPlacement" data-dtype="String">
-            <option value="" {{selected '' system.sideEffects.requiredPlacement}}>{{localize 'ZWOLF.NoRequirement'}}</option>
-            <option value="wielded" {{selected 'wielded' system.sideEffects.requiredPlacement}}>{{localize 'ZWOLF.Wielded'}}</option>
-            <option value="worn" {{selected 'worn' system.sideEffects.requiredPlacement}}>{{localize 'ZWOLF.Worn'}}</option>
-            <option value="readily-available" {{selected 'readily-available' system.sideEffects.requiredPlacement}}>{{localize 'ZWOLF.ReadilyAvailable'}}</option>
-            <option value="carried" {{selected 'carried' system.sideEffects.requiredPlacement}}>{{localize 'ZWOLF.Carried'}} ({{localize 'ZWOLF.AnyCarriedPlacement'}})</option>
+          <select name="system.requiredPlacement" data-dtype="String">
+            <option value="" {{selected '' system.requiredPlacement}}>{{localize 'ZWOLF.NoRequirement'}}</option>
+            <option value="wielded" {{selected 'wielded' system.requiredPlacement}}>{{localize 'ZWOLF.Wielded'}}</option>
+            <option value="worn" {{selected 'worn' system.requiredPlacement}}>{{localize 'ZWOLF.Worn'}}</option>
+            <option value="readily_available" {{selected 'readily_available' system.requiredPlacement}}>{{localize 'ZWOLF.ReadilyAvailable'}}</option>
+            <option value="stowed" {{selected 'stowed' system.requiredPlacement}}>{{localize 'ZWOLF.Stowed'}}</option>
+            <option value="not_carried" {{selected 'not_carried' system.requiredPlacement}}>{{localize 'ZWOLF.NotCarried'}}</option>
           </select>
           <p class="notes">{{localize 'ZWOLF.RequiredPlacementHint'}}</p>
+          
+          {{#if system.requiredPlacement}}
+            <div class="placement-warning-info" style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(255, 193, 7, 0.1); border-left: 4px solid #ffc107; border-radius: 4px; font-size: 0.9em;">
+              <i class="fas fa-info-circle" style="color: #ffc107; margin-right: 0.5rem;"></i>
+              <strong>Placement Requirement Active:</strong> 
+              This item's granted abilities and side effects will only apply when the item is placed as "{{system.requiredPlacement}}".
+              When placed differently, the item provides no mechanical benefits.
+            </div>
+          {{/if}}
         </div>
 
         <!-- Description -->
@@ -177,6 +187,25 @@
               <p class="notes">Upgrade darkvision radius from the default of 0.5 meters. Leave empty to use default.</p>
             </div>
           </div>
+
+          <!-- Add this after the existing vision radius upgrades section -->
+          <div class="bulk-upgrades">
+            <h4><i class="fas fa-weight-hanging"></i> Bulk Capacity Upgrades</h4>
+            <p class="notes">Increase your character's maximum bulk carrying capacity.</p>
+            
+            <!-- Max Bulk Boost -->
+            <div class="form-group">
+              <label>Max Bulk Boost</label>
+              <div class="bulk-input-group">
+                <input type="number" name="system.sideEffects.maxBulkBoost" 
+                      value="{{system.sideEffects.maxBulkBoost}}" 
+                      data-dtype="Number" min="0" step="1" 
+                      placeholder="0" style="width: 120px;"/>
+                <span class="input-suffix">bulk</span>
+              </div>
+              <p class="notes">Increase maximum bulk capacity by this amount. Multiple sources stack together.</p>
+            </div>
+          </div>
           
           <!-- Placeholder for Future Side Effects -->
           <div class="future-side-effects" style="margin-top: 2rem; padding: 1rem; background: rgba(120, 46, 34, 0.05); border-radius: 5px; border: 1px dashed #782e22;">
@@ -209,11 +238,11 @@
                 <label>{{localize 'ZWOLF.Name'}}</label>
                 <input type="text" name="system.grantedAbilities.{{index}}.name" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
               </div>
-              
+
               <div class="form-group">
                 <label>{{localize 'ZWOLF.Tags'}}</label>
-                <input type="text" name="system.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
-                <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+                <input type="text" name="system.grantedAbilities.{{index}}.tags" value="{{ability.tags}}" placeholder="{{localize 'ZWOLF.EquipmentTagsPlaceholder'}}"/>
+                <p class="notes">{{localize 'ZWOLF.EquipmentTagsHint'}}</p>
               </div>
               
               <div class="form-group">

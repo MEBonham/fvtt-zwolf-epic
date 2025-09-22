@@ -27,36 +27,59 @@ export class ZWolfItemSheet extends ItemSheet {
 
   /** @override */
   async getData() {
-    console.log(`ItemSheet getData() called for ${this.item.type}:`, this.item.name);
-    const context = super.getData();
+  // console.log("=== GETDATA DEBUG ===");
+  // console.log("Before super.getData() - item.system.tags:", this.item.system.tags);
+  // console.log("Item type:", this.item.type);
+  
+  const context = super.getData();
+  
+  // console.log("After super.getData() - item.system.tags:", this.item.system.tags);
+  // console.log("Context data tags:", context.data?.tags);
+  
+// // Fix array corruption that occurs in super.getData()
+// const fixArrayCorruption = (obj) => {
+//   for (const [key, value] of Object.entries(obj || {})) {
+//     if (Array.isArray(value)) {
+//       // Fix corrupted array elements
+//       for (let i = 0; i < value.length; i++) {
+//         if (value[i] && typeof value[i] === 'string' && value[i].includes('[object Object]')) {
+//           // Split on corruption and rejoin properly
+//           const parts = value[i].split('[object Object]').filter(part => part.trim().length > 0);
+//           value.splice(i, 1, ...parts);
+//         }
+//       }
+//     } else if (typeof value === 'object' && value !== null) {
+//       fixArrayCorruption(value);
+//     }
+//   }
+// };
+
+// // Apply fix to both the context data and the original item
+// fixArrayCorruption(context.data);
+// fixArrayCorruption(this.item.system);
+
     const itemData = this.item.toObject(false);
 
     context.editable = this.isEditable;
     context.owner = this.item.isOwner;
     
-    console.log(`Item type: ${this.item.type}, editable: ${context.editable}`);
-    
     // Ensure grantedAbilities exists and is an array
     if (!itemData.system.grantedAbilities) {
-      console.log("No grantedAbilities found, creating empty array");
       itemData.system.grantedAbilities = [];
     }
 
     // Validate each ability has required properties
     if (Array.isArray(itemData.system.grantedAbilities)) {
-      console.log(`Processing ${itemData.system.grantedAbilities.length} granted abilities`);
       itemData.system.grantedAbilities = itemData.system.grantedAbilities.map((ability, index) => {
-        console.log(`Processing ability ${index}:`, ability);
         return {
           name: ability.name || "",
-          tags: Array.isArray(ability.tags) ? ability.tags : [],
+          tags: typeof ability.tags === 'string' ? ability.tags : 
+                (Array.isArray(ability.tags) ? ability.tags.join(', ') : ""), // Convert arrays to strings
           type: ability.type || "passive",
           description: ability.description || ""
         };
       });
     } else {
-      // Force it to be an empty array if it's not already an array
-      console.log("grantedAbilities was not an array, forcing to empty array");
       itemData.system.grantedAbilities = [];
     }
 
@@ -64,7 +87,6 @@ export class ZWolfItemSheet extends ItemSheet {
     if (itemData.system.grantedAbilities && Array.isArray(itemData.system.grantedAbilities)) {
       for (let i = 0; i < itemData.system.grantedAbilities.length; i++) {
         const ability = itemData.system.grantedAbilities[i];
-        console.log(`Enriching ability ${i} raw description:`, ability.description);
         
         if (ability.description) {
           try {
@@ -89,12 +111,11 @@ export class ZWolfItemSheet extends ItemSheet {
       }
     }
 
-    // Enrich required field for ancestries and tracks
-    if ((this.item.type === 'ancestry' || this.item.type === 'track') && this.item.system.required) {
+    // Handle knacks calculation for ancestries and tracks
+    if ((this.item.type === 'ancestry' || this.item.type === 'talent') && this.item.system.required) {
       const totalKnacksProvided = this._calculateKnacksProvided(itemData.system.knackMenus || []);
       itemData.system.knacksProvided = totalKnacksProvided;
       context.calculatedKnacksProvided = totalKnacksProvided;
-      console.log(`Ancestry knacksProvided calculated: ${totalKnacksProvided}`);
     }
 
     // Handle Track-specific data
@@ -121,7 +142,7 @@ export class ZWolfItemSheet extends ItemSheet {
     }
 
     // Enrich required field for ancestries
-    if (this.item.type === 'ancestry' && this.item.system.required) {
+    if ((this.item.type === 'ancestry' || this.item.type === 'talent') && this.item.system.required) {
       try {
         context.enrichedRequired = await TextEditorImpl.enrichHTML(
           this.item.system.required,
@@ -143,13 +164,6 @@ export class ZWolfItemSheet extends ItemSheet {
     context.system = itemData.system;
     context.flags = itemData.flags;
     context.config = CONFIG.ZWOLF;
-
-    console.log("Final context for template:", {
-      type: this.item.type,
-      editable: context.editable,
-      grantedAbilitiesCount: context.system.grantedAbilities?.length || 0,
-      grantedAbilities: context.system.grantedAbilities
-    });
 
     if (this.item.type === 'ancestry') {
       await this._getAncestryData(context, itemData);
@@ -212,47 +226,8 @@ export class ZWolfItemSheet extends ItemSheet {
         }
       }
     }
-    
-    // Enrich overview and prerequisites with the same options
-    if (this.item.system.overview) {
-      try {
-        context.enrichedOverview = await TextEditorImpl.enrichHTML(
-          this.item.system.overview,
-          {
-            secrets: this.item.isOwner,
-            documents: true,
-            links: true,
-            async: true,
-            rollData: this.item.getRollData(),
-            relativeTo: this.item
-          }
-        );
-      } catch (error) {
-        console.error("Error enriching overview:", error);
-        context.enrichedOverview = this.item.system.overview;
-      }
-    }
-    
-    if (this.item.system.prerequisites) {
-      try {
-        context.enrichedPrerequisites = await TextEditorImpl.enrichHTML(
-          this.item.system.prerequisites,
-          {
-            secrets: this.item.isOwner,
-            documents: true,
-            links: true,
-            async: true,
-            rollData: this.item.getRollData(),
-            relativeTo: this.item
-          }
-        );
-      } catch (error) {
-        console.error("Error enriching prerequisites:", error);
-        context.enrichedPrerequisites = this.item.system.prerequisites;
-      }
-    }
   }
-
+    
   /* -------------------------------------------- */
 
   /**
@@ -307,18 +282,7 @@ export class ZWolfItemSheet extends ItemSheet {
     super.activateListeners(html);
 
     if (!this.options.editable) return;
-
-    console.log("Activating listeners for:", this.item.type, this.item.name);
-    
-    // Debug: Check if editors are being created properly
-    const editors = html.find('.editor');
-    console.log("Found editors:", editors.length);
-    editors.each((index, element) => {
-      console.log(`Editor ${index}:`, element);
-      const target = element.getAttribute('data-edit') || element.closest('[data-edit]')?.getAttribute('data-edit');
-      console.log(`Editor ${index} target:`, target);
-    });
-
+  
     // Handle adding granted abilities
     html.on('click', '[data-action="add-ability"]', this._onAddAbility.bind(this));
 
@@ -334,11 +298,13 @@ export class ZWolfItemSheet extends ItemSheet {
     // Handle deleting knack menus (ancestry only)
     html.on('click', '[data-action="delete-knack-menu"]', this._onDeleteKnackMenu.bind(this));
 
-    // Handle changes to knack menu selection counts (ancestry only)
+    // Handle changes to knack menu selection counts (ancestry only)  
     html.on('change', 'input[name*="knackMenus"][name*="selectionCount"]', this._onKnackMenuSelectionCountChange.bind(this));
 
-    // Handle array input changes - updated to include tags
-    html.on('change', 'input[name*="properties"], input[name*="ancestryTags"], input[name*="characterTags"], input[name*="knackIds"], input[name="system.tags"]', this._onArrayInputChange.bind(this));
+    // Handle array input changes for visual feedback only
+    // NOTE: Actual processing is handled by _onChangeInput override
+    // IMPORTANT: This line is intentionally commented out to fix the [object Object] bug
+    // html.on('change', 'input[name*="properties"], input[name*="ancestryTags"], input[name*="characterTags"], input[name="system.tags"]', this._onArrayInputChange.bind(this));
 
     // Handle function testing for fundaments
     html.on('click', '#test-functions', this._onTestFunctions.bind(this));
@@ -347,11 +313,11 @@ export class ZWolfItemSheet extends ItemSheet {
     if (this.item.type === 'track') {
       this._activateTrackListeners(html);
     }
-  
+
     // Lock handling
     const isLocked = this.item.actor && this.item.getFlag('zwolf-epic', 'locked');
     const isEquipment = this.item.type === 'equipment';
-    
+
     if (isLocked && !isEquipment) {
       html.find('input, select, textarea').prop('disabled', true);
       html.find('button').not('.close').prop('disabled', true);
@@ -375,7 +341,6 @@ export class ZWolfItemSheet extends ItemSheet {
 
   /** @override */
   async render(force, options) {
-    console.log(`Rendering ${this.item.type} sheet:`, this.item.name);
     // Always force getData refresh when rendering
     if (this._state === Application.RENDER_STATES.RENDERED) {
       this._data = null; // Clear cached data
@@ -396,7 +361,7 @@ export class ZWolfItemSheet extends ItemSheet {
     
     const newAbility = {
       name: "",
-      tags: [],
+      tags: "", // Store as string, not array
       type: "passive",
       description: ""
     };
@@ -418,7 +383,127 @@ export class ZWolfItemSheet extends ItemSheet {
   /* -------------------------------------------- */
 
   /**
-   * Handle changes to granted ability fields
+   * Preserve granted abilities structure when updating from form data
+   * This prevents the editor from corrupting the abilities array
+   * @param {Object} formData - The raw form data
+   * @returns {Object} - The processed form data with preserved abilities
+   * @private
+   */
+  async _preserveGrantedAbilities(formData) {
+    const processedData = foundry.utils.duplicate(formData);
+    
+    // Get the current abilities array as our base
+    const currentAbilities = foundry.utils.duplicate(this.item.system.grantedAbilities || []);
+    console.log("Current abilities at start:", currentAbilities);
+    
+    // Track which abilities have been updated from the form
+    const updatedAbilities = foundry.utils.duplicate(currentAbilities);
+    let hasAbilityUpdates = false;
+    
+    // Process all form data keys to find ability-related updates
+    Object.keys(processedData).forEach(key => {
+      const abilityMatch = key.match(/^system\.grantedAbilities\.(\d+)\.(.+)$/);
+      if (abilityMatch) {
+        const index = parseInt(abilityMatch[1]);
+        const field = abilityMatch[2];
+        const value = processedData[key];
+        
+        console.log(`Found ability update: index=${index}, field=${field}, value=`, value);
+        
+        // Ensure we have an ability object at this index
+        while (updatedAbilities.length <= index) {
+          updatedAbilities.push({
+            name: "",
+            tags: "",
+            type: "passive",
+            description: ""
+          });
+        }
+        
+        // Update the specific field
+        updatedAbilities[index][field] = value;
+        hasAbilityUpdates = true;
+        
+        // Remove the individual field update from form data
+        // We'll replace it with the complete array
+        delete processedData[key];
+      }
+    });
+    
+    // If we had any ability updates, replace with the complete updated array
+    if (hasAbilityUpdates) {
+      console.log("Updated abilities array:", updatedAbilities);
+      processedData['system.grantedAbilities'] = updatedAbilities;
+    }
+    
+    // Handle tier abilities for tracks similarly
+    if (this.item.type === 'track') {
+      processedData = await this._preserveTrackTierAbilities(processedData);
+    }
+    
+    console.log("Processed form data:", processedData);
+    return processedData;
+  }
+
+  /**
+   * Preserve track tier abilities structure
+   * @param {Object} formData - The form data to process
+   * @returns {Object} - The processed form data
+   * @private
+   */
+  async _preserveTrackTierAbilities(formData) {
+    const processedData = foundry.utils.duplicate(formData);
+    
+    // Handle each tier (1-5)
+    for (let tierNum = 1; tierNum <= 5; tierNum++) {
+      const currentTierAbilities = foundry.utils.duplicate(
+        foundry.utils.getProperty(this.item.system, `tiers.tier${tierNum}.grantedAbilities`) || []
+      );
+      
+      const updatedTierAbilities = foundry.utils.duplicate(currentTierAbilities);
+      let hasTierUpdates = false;
+      
+      // Process form data for this tier
+      Object.keys(processedData).forEach(key => {
+        const tierAbilityMatch = key.match(new RegExp(`^system\\.tiers\\.tier${tierNum}\\.grantedAbilities\\.(\\d+)\\.(.+)$`));
+        if (tierAbilityMatch) {
+          const index = parseInt(tierAbilityMatch[1]);
+          const field = tierAbilityMatch[2];
+          const value = processedData[key];
+          
+          console.log(`Found tier ${tierNum} ability update: index=${index}, field=${field}, value=`, value);
+          
+          // Ensure we have an ability object at this index
+          while (updatedTierAbilities.length <= index) {
+            updatedTierAbilities.push({
+              name: "",
+              tags: "",
+              type: "passive",
+              description: ""
+            });
+          }
+          
+          // Update the specific field
+          updatedTierAbilities[index][field] = value;
+          hasTierUpdates = true;
+          
+          // Remove the individual field update from form data
+          delete processedData[key];
+        }
+      });
+      
+      // If we had any tier ability updates, replace with the complete updated array
+      if (hasTierUpdates) {
+        console.log(`Updated tier ${tierNum} abilities:`, updatedTierAbilities);
+        processedData[`system.tiers.tier${tierNum}.grantedAbilities`] = updatedTierAbilities;
+      }
+    }
+    
+    return processedData;
+  }
+
+  /**
+   * Handle changes to granted ability fields - UPDATED VERSION
    * @param {Event} event - The originating change event
    * @private
    */
@@ -431,7 +516,6 @@ export class ZWolfItemSheet extends ItemSheet {
     console.log("Ability field change:", field, "=", value);
     
     // Extract ability index and field name from input name
-    // Expected format: system.grantedAbilities.0.name or system.grantedAbilities.0.tags
     const match = field.match(/system\.grantedAbilities\.(\d+)\.(.+)/);
     if (!match) {
       console.log("Field name didn't match expected pattern:", field);
@@ -440,6 +524,12 @@ export class ZWolfItemSheet extends ItemSheet {
     
     const abilityIndex = parseInt(match[1]);
     const fieldName = match[2];
+    
+    // Skip description fields - they're handled by the editor system
+    if (fieldName === 'description') {
+      console.log("Skipping description field - handled by editor");
+      return;
+    }
     
     console.log(`Updating ability ${abilityIndex}, field ${fieldName}`);
     
@@ -450,18 +540,16 @@ export class ZWolfItemSheet extends ItemSheet {
     if (!abilities[abilityIndex]) {
       abilities[abilityIndex] = {
         name: "",
-        tags: [],
+        tags: "",
         type: "passive",
         description: ""
       };
     }
     
-    // Handle different field types
+    // Handle tags field - always store as string
     if (fieldName === 'tags') {
-      // Convert comma-separated string to array
-      abilities[abilityIndex][fieldName] = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      abilities[abilityIndex][fieldName] = typeof value === 'string' ? value : "";
     } else {
-      // Handle regular string fields
       abilities[abilityIndex][fieldName] = value;
     }
     
@@ -472,6 +560,89 @@ export class ZWolfItemSheet extends ItemSheet {
   }
 
   /* -------------------------------------------- */
+
+  // Add this method to handle editor saves properly for tracks
+  async _onEditorSave(target, element, content) {
+    console.log("=== EDITOR SAVE DEBUG ===");
+    console.log("Target:", target);
+    console.log("Content:", content);
+    console.log("Item type:", this.item.type);
+
+    // Handle Track-specific editor saves
+    if (this.item.type === 'track') {
+      const trackResult = await this._onTrackEditorSave(target, element, content);
+      if (trackResult !== undefined) {
+        return trackResult;
+      }
+    }
+
+    // Handle Ancestry-specific editor saves
+    if (this.item.type === 'ancestry') {
+      const ancestryResult = await this._onAncestryEditorSave(target, element, content);
+      if (ancestryResult !== undefined) {
+        return ancestryResult;
+      }
+    }
+    
+    // Check if this is a granted ability description
+    if (target && target.includes('grantedAbilities') && target.includes('description')) {
+      console.log("This is a granted ability description save!");
+      
+      const match = target.match(/system\.grantedAbilities\.(\d+)\.description/);
+      if (match) {
+        const index = parseInt(match[1]);
+        console.log("Updating ability", index, "with content:", content);
+        
+        // Get current abilities array - use fresh data from the item
+        const currentAbilities = this.item.system.grantedAbilities || [];
+        
+        // Verify the ability exists at this index
+        if (index >= 0 && index < currentAbilities.length) {
+          // Use a direct path update instead of manipulating the entire array
+          const updatePath = `system.grantedAbilities.${index}.description`;
+          
+          try {
+            await this.item.update({ [updatePath]: content });
+            console.log("Direct update successful!");
+          } catch (error) {
+            console.error("Direct update failed:", error);
+            
+            // Fallback: use array manipulation as backup
+            const abilities = foundry.utils.duplicate(currentAbilities);
+            abilities[index].description = content;
+            await this.item.update({ "system.grantedAbilities": abilities });
+            console.log("Fallback update successful!");
+          }
+        } else {
+          console.error(`Ability at index ${index} does not exist. Current abilities length: ${currentAbilities.length}`);
+          
+          // If for some reason the ability doesn't exist, create it
+          const abilities = foundry.utils.duplicate(currentAbilities);
+          
+          // Only pad to the exact index needed
+          for (let i = abilities.length; i <= index; i++) {
+            abilities.push({ 
+              name: "", 
+              tags: "", 
+              type: "passive", 
+              description: "" 
+            });
+          }
+          
+          abilities[index].description = content;
+          await this.item.update({ "system.grantedAbilities": abilities });
+          console.log("Created missing ability and updated!");
+        }
+        
+        return;
+      }
+    }
+    
+    // For other fields, call the parent method
+    const result = await super._onEditorSave(target, element, content);
+    
+    return result;
+  }
 
   /**
    * Handle changes to tag inputs (comma-separated values)
@@ -583,76 +754,110 @@ export class ZWolfItemSheet extends ItemSheet {
 
   /* -------------------------------------------- */
 
-  /**
-   * Handle rich text editor saves - simple version
-   * @param {string} target - The target field being saved
-   * @param {HTMLElement} element - The editor element
-   * @param {string} content - The saved content
-   * @private
-   */
-  async _onEditorSave(target, element, content) {
-  
-    // Handle Ancestry-specific editor saves
-    if (this.item.type === 'ancestry') {
-      const ancestryResult = await this._onAncestryEditorSave(target, element, content);
-      if (ancestryResult !== undefined) {
-        return ancestryResult;
-      }
-    }
+  // /**
+  //  * Handle rich text editor saves - fixed version
+  //  * @param {string} target - The target field being saved
+  //  * @param {HTMLElement} element - The editor element
+  //  * @param {string} content - The saved content
+  //  * @private
+  //  */
+  // async _onEditorSave(target, element, content) {
+
+  //   // Handle Ancestry-specific editor saves
+  //   if (this.item.type === 'ancestry') {
+  //     const ancestryResult = await this._onAncestryEditorSave(target, element, content);
+  //     if (ancestryResult !== undefined) {
+  //       return ancestryResult;
+  //     }
+  //   }
     
-    // Handle Track-specific editor saves
-    if (this.item.type === 'track') {
-      const trackResult = await this._onTrackEditorSave(target, element, content);
-      if (trackResult !== undefined) {
-        return trackResult;
-      }
-    }
+  //   // Handle Track-specific editor saves
+  //   if (this.item.type === 'track') {
+  //     const trackResult = await this._onTrackEditorSave(target, element, content);
+  //     if (trackResult !== undefined) {
+  //       return trackResult;
+  //     }
+  //   }
     
-    // Check if this is a granted ability description
-    if (target && target.includes('grantedAbilities') && target.includes('description')) {
-      console.log("This is a granted ability description save!");
+  //   // Check if this is a granted ability description
+  //   if (target && target.includes('grantedAbilities') && target.includes('description')) {
+  //     console.log("This is a granted ability description save!");
       
-      const match = target.match(/system\.grantedAbilities\.(\d+)\.description/);
-      if (match) {
-        const index = parseInt(match[1]);
-        console.log("Updating ability", index, "with content:", content);
+  //     const match = target.match(/system\.grantedAbilities\.(\d+)\.description/);
+  //     if (match) {
+  //       const index = parseInt(match[1]);
+  //       console.log("Updating ability", index, "with content:", content);
         
-        const abilities = foundry.utils.duplicate(this.item.system.grantedAbilities || []);
+  //       // Get current abilities array - use fresh data from the item
+  //       const currentAbilities = this.item.system.grantedAbilities || [];
         
-        // Ensure the ability exists at this index
-        while (abilities.length <= index) {
-          abilities.push({ name: "", tags: [], type: "passive", description: "" });
-        }
+  //       // Verify the ability exists at this index
+  //       if (index >= 0 && index < currentAbilities.length) {
+  //         // Use a direct path update instead of manipulating the entire array
+  //         const updatePath = `system.grantedAbilities.${index}.description`;
+          
+  //         try {
+  //           await this.item.update({ [updatePath]: content });
+  //           console.log("Direct update successful!");
+  //         } catch (error) {
+  //           console.error("Direct update failed:", error);
+            
+  //           // Fallback: use array manipulation as backup
+  //           const abilities = foundry.utils.duplicate(currentAbilities);
+  //           abilities[index].description = content;
+  //           await this.item.update({ "system.grantedAbilities": abilities });
+  //           console.log("Fallback update successful!");
+  //         }
+  //       } else {
+  //         console.error(`Ability at index ${index} does not exist. Current abilities length: ${currentAbilities.length}`);
+          
+  //         // If for some reason the ability doesn't exist, create it
+  //         const abilities = foundry.utils.duplicate(currentAbilities);
+          
+  //         // Only pad to the exact index needed
+  //         for (let i = abilities.length; i <= index; i++) {
+  //           abilities.push({ 
+  //             name: "", 
+  //             tags: "", 
+  //             type: "passive", 
+  //             description: "" 
+  //           });
+  //         }
+          
+  //         abilities[index].description = content;
+  //         await this.item.update({ "system.grantedAbilities": abilities });
+  //         console.log("Created missing ability and updated!");
+  //       }
         
-        // Update the description
-        abilities[index].description = content;
-        
-        console.log("Updated abilities array:", abilities);
-        
-        // Update the item directly
-        try {
-          await this.item.update({ "system.grantedAbilities": abilities });
-          console.log("Update successful!");
-        } catch (error) {
-          console.error("Update failed:", error);
-        }
-        
-        return;
-      }
-    }
+  //       return;
+  //     }
+  //   }
     
-    // For other fields, call the parent method
-    const result = await super._onEditorSave(target, element, content);
+  //   // For other fields, call the parent method
+  //   const result = await super._onEditorSave(target, element, content);
     
-    return result;
-  }
+  //   return result;
+  // }
 
   /* -------------------------------------------- */
 
+  // Update the _onTrackEditorSave method to handle the required field
   async _onTrackEditorSave(target, element, content) {
     console.log("=== TRACK EDITOR SAVE DEBUG ===");
     console.log("Target:", target);
     console.log("Content:", content);
+    
+    // Handle required field specifically
+    if (target === 'system.required') {
+      console.log("Updating required field with content:", content);
+      try {
+        await this.item.update({ [target]: content });
+        console.log("Required field update successful!");
+        return true; // Signal that we handled this
+      } catch (error) {
+        console.error("Required field update failed:", error);
+      }
+    }
     
     // Check if this is a tier talent menu description
     if (target && target.includes('tiers.tier') && target.includes('talentMenu.description')) {
@@ -687,9 +892,14 @@ export class ZWolfItemSheet extends ItemSheet {
           const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
           const abilities = foundry.utils.duplicate(foundry.utils.getProperty(this.item.system, `tiers.tier${tier}.grantedAbilities`) || []);
           
-          // Ensure the ability exists at this index
+          // Ensure the ability exists at this index with consistent structure
           while (abilities.length <= index) {
-            abilities.push({ name: "", tags: [], type: "passive", description: "" });
+            abilities.push({ 
+              name: "", 
+              tags: "", // Changed from [] to "" for consistency
+              type: "passive", 
+              description: "" 
+            });
           }
           
           // Update the description
@@ -701,18 +911,6 @@ export class ZWolfItemSheet extends ItemSheet {
         } catch (error) {
           console.error("Update failed:", error);
         }
-      }
-    }
-    
-    // Handle overview, prerequisites, and required
-    if (target === 'system.overview' || target === 'system.prerequisites' || target === 'system.required') {
-      console.log(`Updating ${target} with content:`, content);
-      try {
-        await this.item.update({ [target]: content });
-        console.log("Update successful!");
-        return true; // Signal that we handled this
-      } catch (error) {
-        console.error("Update failed:", error);
       }
     }
     
@@ -758,7 +956,7 @@ export class ZWolfItemSheet extends ItemSheet {
     
     const newAbility = {
       name: "",
-      tags: [],
+      tags: "", // Store as string, not array
       type: "passive",
       description: ""
     };
@@ -768,26 +966,6 @@ export class ZWolfItemSheet extends ItemSheet {
     
     const updatedAbilities = foundry.utils.duplicate(currentAbilities);
     updatedAbilities.push(newAbility);
-    
-    await this.item.update({ [tierPath]: updatedAbilities });
-  }
-
-  /**
-   * Handle deleting a tier ability
-   * @param {Event} event - The originating click event
-   * @private
-   */
-  async _onDeleteTierAbility(event) {
-    event.preventDefault();
-    const tier = event.currentTarget.dataset.tier;
-    const abilityIndex = parseInt(event.currentTarget.dataset.abilityIndex);
-    console.log(`Deleting tier ability ${abilityIndex} from tier ${tier}`);
-    
-    const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
-    const currentAbilities = foundry.utils.getProperty(this.item.system, `tiers.tier${tier}.grantedAbilities`) || [];
-    
-    const updatedAbilities = foundry.utils.duplicate(currentAbilities);
-    updatedAbilities.splice(abilityIndex, 1);
     
     await this.item.update({ [tierPath]: updatedAbilities });
   }
@@ -826,16 +1004,16 @@ export class ZWolfItemSheet extends ItemSheet {
     if (!abilities[abilityIndex]) {
       abilities[abilityIndex] = {
         name: "",
-        tags: [],
+        tags: "", // Store as string, not array
         type: "passive",
         description: ""
       };
     }
     
-    // Handle different field types
+    // Handle tags field - always store as string
     if (fieldName === 'tags') {
-      // Convert comma-separated string to array
-      abilities[abilityIndex][fieldName] = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      // Ensure we're storing a clean string
+      abilities[abilityIndex][fieldName] = typeof value === 'string' ? value : "";
     } else {
       // Handle regular string fields
       abilities[abilityIndex][fieldName] = value;
@@ -845,6 +1023,26 @@ export class ZWolfItemSheet extends ItemSheet {
     
     // Update the item
     await this.item.update({ [`system.tiers.tier${tier}.grantedAbilities`]: abilities });
+  }
+
+  /**
+   * Handle deleting a tier ability
+   * @param {Event} event - The originating click event
+   * @private
+   */
+  async _onDeleteTierAbility(event) {
+    event.preventDefault();
+    const tier = event.currentTarget.dataset.tier;
+    const abilityIndex = parseInt(event.currentTarget.dataset.abilityIndex);
+    console.log(`Deleting tier ability ${abilityIndex} from tier ${tier}`);
+    
+    const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
+    const currentAbilities = foundry.utils.getProperty(this.item.system, `tiers.tier${tier}.grantedAbilities`) || [];
+    
+    const updatedAbilities = foundry.utils.duplicate(currentAbilities);
+    updatedAbilities.splice(abilityIndex, 1);
+    
+    await this.item.update({ [tierPath]: updatedAbilities });
   }
 
   /* -------------------------------------------- */
@@ -929,7 +1127,7 @@ export class ZWolfItemSheet extends ItemSheet {
   /* -------------------------------------------- */
 
   /**
-   * Handle changes to array inputs (comma-separated values)
+   * Handle changes to array inputs - provides visual feedback only
    * @param {Event} event - The originating change event
    * @private
    */
@@ -937,12 +1135,7 @@ export class ZWolfItemSheet extends ItemSheet {
     const input = event.currentTarget;
     const value = input.value;
     
-    console.log("Array input change:", input.name, "=", value);
-    
-    // Don't update immediately - let _updateObject handle it
-    // Just validate the input format if needed
-    
-    // Optional: Add visual feedback for valid/invalid format
+    // Provide visual feedback for valid/invalid format
     if (value.trim() && !value.match(/^[^,]+(,[^,]+)*$/)) {
       input.style.borderColor = 'orange';
       input.title = 'Format: item1, item2, item3';
@@ -950,126 +1143,6 @@ export class ZWolfItemSheet extends ItemSheet {
       input.style.borderColor = '';
       input.title = '';
     }
-  }
-
-  /* -------------------------------------------- */
-
-  /** @override */
-  async _updateObject(event, formData) {
-    console.log("=== UPDATE OBJECT DEBUG ===");
-    console.log("Item type:", this.item.type);
-    console.log("Form data keys:", Object.keys(formData));
-    
-    // Handle Track-specific data processing
-    if (this.item.type === 'track') {
-      formData = await this._updateTrackObject(formData);
-    }
-    
-    // Handle multi-select fields specially
-    const form = this.form;
-    const sizeOptionsSelect = form.querySelector('select[name="system.sizeOptions"]');
-    
-    if (sizeOptionsSelect) {
-      const selectedValues = Array.from(sizeOptionsSelect.selectedOptions).map(option => option.value);
-      formData['system.sizeOptions'] = selectedValues;
-      console.log("Multi-select size options:", selectedValues);
-    }
-
-    // Handle granted abilities specially to prevent data loss
-    const grantedAbilitiesData = {};
-    Object.keys(formData).forEach(key => {
-      if (key.startsWith('system.grantedAbilities.')) {
-        grantedAbilitiesData[key] = formData[key];
-        delete formData[key]; // Remove from main formData to handle separately
-      }
-    });
-
-    console.log("Granted abilities data extracted:", grantedAbilitiesData);
-
-    // Process granted abilities data
-    if (Object.keys(grantedAbilitiesData).length > 0) {
-      const abilities = foundry.utils.duplicate(this.item.system.grantedAbilities || []);
-      
-      Object.keys(grantedAbilitiesData).forEach(key => {
-        const match = key.match(/system\.grantedAbilities\.(\d+)\.(.+)/);
-        if (match) {
-          const index = parseInt(match[1]);
-          const field = match[2];
-          const value = grantedAbilitiesData[key];
-          
-          console.log(`Processing ability ${index}, field ${field}, value:`, value);
-          
-          // Ensure ability object exists
-          if (!abilities[index]) {
-            abilities[index] = {
-              name: "",
-              tags: [],
-              type: "passive",
-              description: ""
-            };
-          }
-          
-          // Handle tag fields specially
-          if (field === 'tags' && typeof value === 'string') {
-            abilities[index][field] = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-          } else {
-            abilities[index][field] = value;
-          }
-        }
-      });
-      
-      console.log("Final processed abilities:", abilities);
-      formData['system.grantedAbilities'] = abilities;
-    }
-
-    // Handle array fields that come in as comma-separated strings
-    const arrayFields = [
-      'system.weapon.properties',
-      'system.ancestryTags', 
-      'system.characterTags',
-      'system.tags'
-    ];
-
-    // Process array fields - ensure we're working with the actual form values
-    for (const field of arrayFields) {
-      if (formData[field] !== undefined) {
-        if (typeof formData[field] === 'string') {
-          // Convert comma-separated string to array
-          const arrayValue = formData[field].split(',').map(s => s.trim()).filter(s => s.length > 0);
-          formData[field] = arrayValue;
-          console.log(`Converted ${field} to array:`, arrayValue);
-        } else if (Array.isArray(formData[field])) {
-          // If it's already an array, clean it up
-          formData[field] = formData[field].map(s => String(s).trim()).filter(s => s.length > 0);
-          console.log(`Cleaned array ${field}:`, formData[field]);
-        }
-      }
-    }
-
-    // Handle knack menu knackIds arrays
-    Object.keys(formData).forEach(key => {
-      if (key.includes('knackIds') && typeof formData[key] === 'string') {
-        formData[key] = formData[key].split(',').map(s => s.trim()).filter(s => s.length > 0);
-      }
-    });
-
-    // Handle damage parts for weapons
-    if (formData['system.weapon.damage.parts'] && typeof formData['system.weapon.damage.parts'] === 'string') {
-      const parts = formData['system.weapon.damage.parts'].split(',').map(s => s.trim()).filter(s => s.length > 0);
-      formData['system.weapon.damage.parts'] = parts;
-    }
-
-    console.log("Final form data being sent to super._updateObject:", formData);
-
-    // Call the parent update first
-    const result = await super._updateObject(event, formData);
-    
-    // Update knacksProvided after form submission for ancestry items
-    if (this.item.type === 'ancestry') {
-      await this._updateKnacksProvided();
-    }
-    
-    return result;
   }
 
   /* -------------------------------------------- */
@@ -1155,5 +1228,106 @@ export class ZWolfItemSheet extends ItemSheet {
     }
     
     return undefined; // Signal that we didn't handle this
+  }
+
+  // /**
+  //  * Override the core _onChangeInput method to handle array fields properly
+  //  * This is called by Foundry when form fields change (including on blur)
+  //  */
+  // async _onChangeInput(event) {
+  //   const input = event.target;
+  //   const field = input.name;
+  //   const value = input.value;
+    
+  //   // Check if this is an array field that needs special handling
+  //   const arrayFields = [
+  //     'system.tags',
+  //     'system.ancestryTags', 
+  //     'system.characterTags',
+  //     'system.weapon.properties'
+  //   ];
+    
+  //   const isArrayField = arrayFields.includes(field) || 
+  //                       field.includes('grantedAbilities') && field.includes('tags') ||
+  //                       field.includes('knackIds');
+    
+  //   if (isArrayField && typeof value === 'string') {
+  //     // Convert comma-separated string to array
+  //     const arrayValue = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+      
+  //     // Update the item directly with the array value
+  //     try {
+  //       await this.item.update({ [field]: arrayValue });
+  //       return; // Don't call parent method
+  //     } catch (error) {
+  //       console.error("Array field update failed:", error);
+  //     }
+  //   }
+    
+  //   // For granted abilities tags, handle specially
+  //   if (field.includes('grantedAbilities') && field.includes('tags')) {
+  //     const match = field.match(/system\.grantedAbilities\.(\d+)\.tags/);
+  //     if (match) {
+  //       const index = parseInt(match[1]);
+  //       const arrayValue = value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        
+  //       const abilities = foundry.utils.duplicate(this.item.system.grantedAbilities || []);
+  //       if (abilities[index]) {
+  //         abilities[index].tags = arrayValue;
+  //         await this.item.update({ "system.grantedAbilities": abilities });
+  //         return;
+  //       }
+  //     }
+  //   }
+    
+  //   // For all other fields, call the parent method
+  //   return super._onChangeInput(event);
+  // }
+
+  // Update the _updateObject method to be more careful with track data
+  async _updateObject(event, formData) {
+    console.log("=== UPDATE OBJECT DEBUG ===");
+    console.log("Form data keys:", Object.keys(formData));
+    console.log("Raw form data:", formData);
+    console.log("Item type:", this.item.type);
+    
+    // For tracks, be very selective about what we process
+    if (this.item.type === 'track') {
+      // Only process granted abilities if we actually have granted ability form data
+      const hasGrantedAbilityData = Object.keys(formData).some(key => 
+        key.includes('grantedAbilities') && !key.includes('tiers.tier')
+      );
+      
+      if (hasGrantedAbilityData) {
+        formData = await this._preserveGrantedAbilities(formData);
+      }
+      
+      // Handle track-specific processing
+      formData = await this._updateTrackObject(formData);
+    } else {
+      // For non-track items, use the full preservation logic
+      formData = await this._preserveGrantedAbilities(formData);
+    }
+    
+    // Handle multi-select fields specially
+    const form = this.form;
+    const sizeOptionsSelect = form.querySelector('select[name="system.sizeOptions"]');
+    
+    if (sizeOptionsSelect) {
+      const selectedValues = Array.from(sizeOptionsSelect.selectedOptions).map(option => option.value);
+      formData['system.sizeOptions'] = selectedValues;
+    }
+
+    console.log("Final form data before parent update:", formData);
+
+    // Call the parent update
+    const result = await super._updateObject(event, formData);
+    
+    // Update knacksProvided after form submission for ancestry items
+    if (this.item.type === 'ancestry') {
+      await this._updateKnacksProvided();
+    }
+    
+    return result;
   }
 }

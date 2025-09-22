@@ -109,9 +109,27 @@ Handlebars.registerHelper('toLowerCase', function(str) {
 });
 
 Handlebars.registerHelper('join', function(array, separator) {
-  if (!array || !Array.isArray(array)) return '';
+  if (!array) return '';
+  if (!Array.isArray(array)) return String(array);
+  
   separator = separator || ', ';
-  return array.join(separator);
+  
+  // Clean up corrupted array elements
+  const cleanArray = array
+    .filter(item => item !== null && item !== undefined)
+    .map(item => {
+      const str = String(item);
+      // If we find [object Object] corruption, try to extract meaningful parts
+      if (str.includes('[object Object]')) {
+        // Split on [object Object] and take valid parts
+        const parts = str.split('[object Object]').filter(part => part.trim().length > 0);
+        return parts.join(', ');
+      }
+      return str;
+    })
+    .filter(str => str.length > 0);
+    
+  return cleanArray.join(separator);
 });
 
 Handlebars.registerHelper('eq', function(a, b) {

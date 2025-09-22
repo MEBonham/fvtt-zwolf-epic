@@ -141,7 +141,7 @@ export class ZWolfActorSheet extends ActorSheet {
     const defaultCategories = {
       passive: [],
       dominantAction: [],
-      swift: [],
+      swiftAction: [],
       reaction: [],
       free: [],
       strike: [],
@@ -200,11 +200,7 @@ export class ZWolfActorSheet extends ActorSheet {
   }
   
   /**
-   * Apply side effects from all applicable items, using highest upgrade available
-   * @param {Object} ancestry - The ancestry item object
-   * @param {Object} fundament - The fundament item object (for future expansion)
-   * @param {Collection} allItems - All items owned by the actor
-   * @returns {Object} Object containing applied side effects with sources
+   * Enhanced _applySideEffects method that filters equipment based on placement
    */
   _applySideEffects(ancestry = null, fundament = null, allItems = null) {
     // Define progression hierarchy for comparison
@@ -300,7 +296,7 @@ export class ZWolfActorSheet extends ActorSheet {
       checkVisionRadius(ancestry.name, ancestry.system.sideEffects, 'darkvisionRadius');
     }
     
-    // Check fundament for side effects (future expansion)
+    // Check fundament for side effects
     if (fundament && fundament.system && fundament.system.sideEffects) {
       checkProgression(fundament.name, fundament.system.sideEffects, 'speedProgression');
       checkProgression(fundament.name, fundament.system.sideEffects, 'toughnessTNProgression');
@@ -309,11 +305,23 @@ export class ZWolfActorSheet extends ActorSheet {
       checkVisionRadius(fundament.name, fundament.system.sideEffects, 'darkvisionRadius');
     }
     
-    // Check all other items for side effects (talents, equipment, etc.)
+    // Check all other items for side effects
     if (allItems) {
       allItems.forEach(item => {
         // Skip ancestry and fundament as we already checked them
         if (item.type === 'ancestry' || item.type === 'fundament') return;
+        
+        // NEW: Equipment placement filtering
+        if (item.type === 'equipment') {
+          const requiredPlacement = item.system.requiredPlacement;
+          const currentPlacement = item.system.placement;
+          
+          // If equipment has a required placement and it doesn't match current placement, skip its effects
+          if (requiredPlacement && requiredPlacement !== '' && requiredPlacement !== currentPlacement) {
+            console.log(`Z-Wolf Epic | Skipping ${item.name} side effects - required placement "${requiredPlacement}" != current placement "${currentPlacement}"`);
+            return;
+          }
+        }
         
         if (item.system && item.system.sideEffects) {
           checkProgression(item.name, item.system.sideEffects, 'speedProgression');
@@ -705,6 +713,11 @@ export class ZWolfActorSheet extends ActorSheet {
     if (this._itemDeleteHook) {
       Hooks.off('deleteItem', this._itemDeleteHook);
     }
+
+    // NEW: Equipment placement change handler
+    html.find('.equipment-placement-select').change(ev => {
+      this._onEquipmentPlacementChange(ev);
+    });
     
     this._itemDeleteHook = Hooks.on('deleteItem', (item, options, userId) => {
       // Only react if this is an item from our actor and we're the current user
@@ -1500,16 +1513,14 @@ export class ZWolfActorSheet extends ActorSheet {
   }
 
   /**
-   * Categorize granted abilities from all items by action type
-   * @returns {Object} Object containing arrays of abilities by category
+   * Enhanced _categorizeGrantedAbilities method that filters equipment based on placement
    */
   _categorizeGrantedAbilities() {
-    
     const categories = {
       passive: [],
       exoticSenses: [],
       dominantAction: [],
-      swift: [],
+      swiftAction: [],
       reaction: [],
       free: [],
       strike: [],
@@ -1531,6 +1542,18 @@ export class ZWolfActorSheet extends ActorSheet {
       processedItems.add(item.id);
       console.log(`Z-Wolf Epic | Processing abilities from ${source}: ${item.name} (${item.type})`);
       
+      // NEW: Equipment placement filtering for granted abilities
+      if (item.type === 'equipment') {
+        const requiredPlacement = item.system.requiredPlacement;
+        const currentPlacement = item.system.placement;
+        
+        // If equipment has a required placement and it doesn't match current placement, skip its abilities
+        if (requiredPlacement && requiredPlacement !== '' && requiredPlacement !== currentPlacement) {
+          console.log(`Z-Wolf Epic | Skipping ${item.name} granted abilities - required placement "${requiredPlacement}" != current placement "${currentPlacement}"`);
+          return;
+        }
+      }
+      
       if (item.system && item.system.grantedAbilities && Array.isArray(item.system.grantedAbilities)) {
         console.log(`Z-Wolf Epic | Found ${item.system.grantedAbilities.length} granted abilities in ${item.name}`);
         
@@ -1545,20 +1568,21 @@ export class ZWolfActorSheet extends ActorSheet {
             
             // Only add to categories that we support
             if (categories.hasOwnProperty(categoryKey)) {
-
               const description = ability.description 
                 ? (typeof ability.description === 'string' 
                   ? ability.description 
                   : TextEditorImpl.enrichHTML(ability.description))
                 : 'No description provided.';
 
+              // FIXED: Include the tags field properly
               categories[categoryKey].push({
                 name: ability.name,
+                tags: ability.tags || '', // Add the tags field
                 description: ability.description || 'No description provided.',
                 itemName: item.name,
                 itemId: item.id
               });
-              console.log(`Z-Wolf Epic | Added "${ability.name}" to ${categoryKey} category`);
+              console.log(`Z-Wolf Epic | Added "${ability.name}" to ${categoryKey} category with tags: "${ability.tags || 'none'}"`);
             } else {
               console.warn(`Z-Wolf Epic | Unknown category "${categoryKey}" for ability "${ability.name}"`);
             }
@@ -1579,7 +1603,7 @@ export class ZWolfActorSheet extends ActorSheet {
     Object.keys(categories).forEach(category => {
       console.log(`Z-Wolf Epic | Final ${category} abilities count: ${categories[category].length}`);
       if (categories[category].length > 0) {
-        console.log(`Z-Wolf Epic | ${category} abilities:`, categories[category].map(a => `${a.name} (from ${a.itemName})`));
+        console.log(`Z-Wolf Epic | ${category} abilities:`, categories[category].map(a => `${a.name} (from ${a.itemName}) [tags: ${a.tags || 'none'}]`));
       }
     });
 
@@ -2242,6 +2266,26 @@ calculateTotalKnacksProvided() {
     
     maxBulk += brawnProgressionTiers[brawnProgression] || 0;
 
+    // NEW: Add Max Bulk boosts from equipment
+    let totalMaxBulkBoost = 0;
+    this.actor.items.forEach(item => {
+      if (item.type === 'equipment' && item.system?.sideEffects?.maxBulkBoost) {
+        const requiredPlacement = item.system.requiredPlacement;
+        const currentPlacement = item.system.placement;
+        
+        // Only apply boost if equipment placement requirements are met
+        if (!requiredPlacement || requiredPlacement === '' || requiredPlacement === currentPlacement) {
+          const boost = parseInt(item.system.sideEffects.maxBulkBoost) || 0;
+          if (boost > 0) {
+            totalMaxBulkBoost += boost;
+            console.log(`Z-Wolf Epic | ${item.name} provides +${boost} max bulk`);
+          }
+        }
+      }
+    });
+    
+    maxBulk += totalMaxBulkBoost;
+
     // Calculate totals from carried equipment only (exclude not_carried)
     const carriedCategories = ['wielded', 'worn', 'readily_available', 'stowed'];
     
@@ -2261,5 +2305,92 @@ calculateTotalKnacksProvided() {
       bulk: totalBulk,
       maxBulk: Math.max(1, maxBulk)
     };
+  }
+
+  /**
+   * Handle equipment placement changes
+   */
+  async _onEquipmentPlacementChange(event) {
+    event.preventDefault();
+    const element = event.currentTarget;
+    const itemId = element.closest('.equipment-item').dataset.itemId;
+    const newPlacement = element.value;
+    const item = this.actor.items.get(itemId);
+    
+    if (!item) {
+      ui.notifications.error('Could not find equipment item to update.');
+      return;
+    }
+    
+    console.log(`Z-Wolf Epic | Changing ${item.name} placement to: ${newPlacement}`);
+    
+    try {
+      await item.update({ 'system.placement': newPlacement });
+      
+      // Check if this item has side effects or granted abilities that might now apply/not apply
+      const hasEffects = (item.system.sideEffects && Object.values(item.system.sideEffects).some(value => value && value !== '')) ||
+                        (item.system.grantedAbilities && item.system.grantedAbilities.length > 0);
+      
+      if (hasEffects) {
+        ui.notifications.info(`${item.name} placement changed. Recalculating character effects...`);
+        // Re-render to apply/remove any conditional effects
+        this.render(false);
+      } else {
+        ui.notifications.info(`${item.name} placement changed to ${this._getPlacementDisplayName(newPlacement)}.`);
+      }
+      
+    } catch (error) {
+      console.error("Z-Wolf Epic | Error updating equipment placement:", error);
+      ui.notifications.error(`Failed to update ${item.name} placement: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get display name for placement values
+   */
+  _getPlacementDisplayName(placement) {
+    const displayNames = {
+      'wielded': 'Wielded',
+      'worn': 'Worn',
+      'readily_available': 'Readily Available',
+      'stowed': 'Stowed',
+      'not_carried': 'Not Carried'
+    };
+    return displayNames[placement] || placement;
+  }
+
+  /**
+   * Enhanced _prepareEquipment method with placement validation
+   */
+  _prepareEquipment() {
+    const equipment = {
+      wielded: [],
+      worn: [],
+      readily_available: [],
+      stowed: [],
+      not_carried: []
+    };
+
+    // Get all equipment items
+    const equipmentItems = this.actor.items.filter(item => item.type === 'equipment');
+
+    // Categorize equipment by placement
+    equipmentItems.forEach(item => {
+      const itemData = item.toObject();
+      const placement = itemData.system.placement || 'not_carried';
+      const requiredPlacement = itemData.system.requiredPlacement || '';
+      
+      // Add placement validation info to item data
+      itemData.placementValid = !requiredPlacement || requiredPlacement === '' || requiredPlacement === placement;
+      itemData.requiredPlacement = requiredPlacement;
+      
+      if (equipment[placement]) {
+        equipment[placement].push(itemData);
+      } else {
+        equipment.not_carried.push(itemData);
+      }
+    });
+
+    return equipment;
   }
 }

@@ -143,7 +143,8 @@
           "toughnessTNProgression": "",
           "destinyTNProgression": "",
           "nightsightRadius": null,
-          "darkvisionRadius": null
+          "darkvisionRadius": null,
+          "maxBulkBoost": 0
         }
       }
     },
@@ -170,17 +171,10 @@
       "tags": [],
       "quantity": "1",
       "placement": "stowed",
+      "requiredPlacement": "",
       "price": 0,
       "bulk": 0,
-      "structure": 0,
-      "sideEffects": {
-        "requiredPlacement": "",
-        "speedProgression": "",
-        "toughnessTNProgression": "",
-        "destinyTNProgression": "",
-        "nightsightRadius": null,
-        "darkvisionRadius": null
-      }
+      "structure": 0
     },
     "knack": {
       "templates": ["base", "sideEffectsCapable"],
@@ -191,8 +185,6 @@
       "templates": ["base", "sideEffectsCapable"],
       "tags": [],
       "required": "",
-      "overview": "",
-      "prerequisites": "",
       "tiers": {
         "tier1": {
           "talentMenu": {
@@ -265,6 +257,7 @@
       "templates": ["base", "sideEffectsCapable"], 
       "tags": [],
       "characterTags": [],
+      "required": "",
       "knacksProvided": 0
     }
   }

@@ -18,7 +18,7 @@
 
     <section class="sheet-body">
       <div class="tab" data-group="primary" data-tab="details">
-        <!-- Tags -->
+        <!-- For item-level tags (not granted ability tags) -->
         <div class="form-group">
           <label>{{localize 'ZWOLF.Tags'}}</label>
           <input type="text" name="system.tags" value="{{join system.tags}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
@@ -35,7 +35,35 @@
         <div class="form-group">
           <label>{{localize 'ZWOLF.Required'}}</label>
           <div class="form-fields">
-            {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+            {{#if editable}}
+              {{editor system.required target="system.required" button=true editable=editable engine="prosemirror" collaborate=false}}
+            {{else}}
+              <div class="editor-content">{{{enrichedRequired}}}</div>
+            {{/if}}
+          </div>
+        </div>
+
+        <!-- Required Section -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Required'}}</label>
+          <div class="form-fields">
+            {{#if editable}}
+              {{editor system.required target="system.required" button=true editable=editable engine="prosemirror" collaborate=false}}
+            {{else}}
+              <div class="editor-content">{{{enrichedRequired}}}</div>
+            {{/if}}
+          </div>
+        </div>
+
+        <!-- Description Section -->
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Description'}}</label>
+          <div class="form-fields">
+            {{#if editable}}
+              {{editor system.description target="system.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            {{else}}
+              <div class="editor-content">{{{enrichedDescription}}}</div>
+            {{/if}}
           </div>
         </div>
       </div>
@@ -46,6 +74,16 @@
           <div class="side-effects-header">
             <h3>{{localize 'ZWOLF.SideEffects'}}</h3>
             <p class="notes">{{localize 'ZWOLF.SideEffectsHint'}}</p>
+          </div>
+          
+          <!-- Knacks Provided Section -->
+          <div class="knacks-provided">
+            <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
+            <div class="form-group">
+              <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+              <input type="number" name="system.knacksProvided" value="{{system.knacksProvided}}" data-dtype="Number" min="0" max="10"/>
+              <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+            </div>
           </div>
           
           <!-- Progression Upgrades Section -->
@@ -155,7 +193,7 @@
               
               <div class="form-group">
                 <label>{{localize 'ZWOLF.Tags'}}</label>
-                <input type="text" name="system.grantedAbilities.{{index}}.tags" value="{{join ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+                <input type="text" name="system.grantedAbilities.{{index}}.tags" value="{{ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
                 <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
               </div>
               

@@ -4160,3 +4160,303 @@ select[name="system.sizeOptions"]:focus {
     min-height: 24px;
   }
 }
+
+/* Equipment Placement Control Styles */
+
+/* Placement Control Container */
+.zwolf-epic .placement-control {
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(120, 46, 34, 0.05);
+  border-radius: 4px;
+  border: 1px solid rgba(120, 46, 34, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .placement-control:hover {
+  background: rgba(120, 46, 34, 0.1);
+  border-color: rgba(120, 46, 34, 0.3);
+}
+
+/* Placement Control Label */
+.zwolf-epic .placement-control label {
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #782e22;
+  margin: 0;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Equipment Placement Select Dropdown */
+.zwolf-epic .equipment-placement-select {
+  flex: 1;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  color: #333;
+  font-family: inherit;
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.zwolf-epic .equipment-placement-select:hover {
+  border-color: #782e22;
+  background: #fafafa;
+}
+
+.zwolf-epic .equipment-placement-select:focus {
+  outline: none;
+  border-color: #782e22;
+  box-shadow: 0 0 0 2px rgba(120, 46, 34, 0.2);
+}
+
+/* Placement Warning Icon */
+.zwolf-epic .placement-warning {
+  color: #dc3545;
+  margin-left: 6px;
+  font-size: 0.9em;
+  animation: pulse-warning 2s ease-in-out infinite;
+}
+
+.zwolf-epic .placement-warning:hover {
+  color: #c82333;
+  transform: scale(1.1);
+}
+
+/* Required Placement Display */
+.zwolf-epic .required-placement {
+  color: #6c757d;
+  font-size: 0.8em;
+  font-style: italic;
+  background: rgba(108, 117, 125, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(108, 117, 125, 0.2);
+}
+
+/* Invalid Placement Styling */
+.zwolf-epic .equipment-item:has(.placement-warning) {
+  border-left: 3px solid #dc3545;
+  background: rgba(220, 53, 69, 0.02);
+}
+
+.zwolf-epic .equipment-item:has(.placement-warning) .placement-control {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.3);
+}
+
+.zwolf-epic .equipment-item:has(.placement-warning) .equipment-placement-select {
+  border-color: #dc3545;
+  background: rgba(220, 53, 69, 0.05);
+}
+
+/* Valid Placement Styling (when required placement is met) */
+.zwolf-epic .equipment-item:has(.required-placement):not(:has(.placement-warning)) {
+  border-left: 3px solid #28a745;
+  background: rgba(40, 167, 69, 0.02);
+}
+
+.zwolf-epic .equipment-item:has(.required-placement):not(:has(.placement-warning)) .placement-control {
+  background: rgba(40, 167, 69, 0.1);
+  border-color: rgba(40, 167, 69, 0.3);
+}
+
+/* Enhanced Item Details Layout */
+.zwolf-epic .equipment-item .item-details {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zwolf-epic .equipment-item .item-name {
+  font-weight: bold;
+  color: #782e22;
+  font-size: 0.95em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.zwolf-epic .equipment-item .item-properties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8em;
+  color: #666;
+}
+
+.zwolf-epic .equipment-item .item-properties > span {
+  background: rgba(248, 249, 250, 0.8);
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid #e9ecef;
+  white-space: nowrap;
+}
+
+/* Responsive Design for Placement Controls */
+@media (max-width: 768px) {
+  .zwolf-epic .placement-control {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  
+  .zwolf-epic .placement-control label {
+    text-align: center;
+    font-size: 0.8em;
+  }
+  
+  .zwolf-epic .equipment-placement-select {
+    width: 100%;
+    font-size: 0.8em;
+  }
+  
+  .zwolf-epic .equipment-item .item-properties {
+    font-size: 0.75em;
+    gap: 4px;
+  }
+}
+
+/* Small screen adjustments */
+@media (max-width: 480px) {
+  .zwolf-epic .equipment-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .zwolf-epic .equipment-item .item-controls {
+    align-self: flex-end;
+    flex-direction: row;
+  }
+  
+  .zwolf-epic .placement-control {
+    margin-top: 6px;
+    padding: 4px 6px;
+  }
+}
+
+/* Animation for warning pulse */
+@keyframes pulse-warning {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Tooltip Enhancement for Placement Requirements */
+.zwolf-epic .required-placement:hover {
+  background: rgba(108, 117, 125, 0.2);
+  border-color: rgba(108, 117, 125, 0.4);
+  cursor: help;
+}
+
+/* Focus States for Accessibility */
+.zwolf-epic .placement-control:focus-within {
+  outline: 2px solid #782e22;
+  outline-offset: 2px;
+}
+
+.zwolf-epic .equipment-placement-select:focus {
+  outline: none; /* We handle this with box-shadow above */
+}
+
+/* Loading State for Placement Changes */
+.zwolf-epic .equipment-placement-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+/* Enhanced visual feedback for successful placement */
+.zwolf-epic .equipment-item.placement-updated {
+  animation: placement-success 0.8s ease-out;
+}
+
+@keyframes placement-success {
+  0% {
+    background: rgba(40, 167, 69, 0.2);
+    transform: scale(1);
+  }
+  50% {
+    background: rgba(40, 167, 69, 0.3);
+    transform: scale(1.02);
+  }
+  100% {
+    background: transparent;
+    transform: scale(1);
+  }
+}
+
+/* Bulk Upgrades Section */
+.zwolf-epic .bulk-upgrades {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid #8B4513;
+  border-radius: 5px;
+  background: rgba(139, 69, 19, 0.05);
+}
+
+.zwolf-epic .bulk-upgrades h4 {
+  margin: 0 0 0.5rem 0;
+  color: #8B4513;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zwolf-epic .bulk-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zwolf-epic .bulk-input-group .input-suffix {
+  color: #666;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+/* Enhanced bulk display to show boosts */
+.zwolf-epic .bulk-section .bulk-display.boosted {
+  color: #28a745;
+  border-color: rgba(40, 167, 69, 0.4);
+  background: rgba(40, 167, 69, 0.05);
+}
+
+.zwolf-epic .bulk-boost-indicator {
+  font-size: 0.8em;
+  color: #28a745;
+  margin-left: 4px;
+  font-weight: normal;
+}
+
+/* CSS for ability tags styling */
+.ability-tags {
+  font-weight: normal;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.ability-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.ability-name .ability-tags {
+  margin-left: 0.25em;
+}
