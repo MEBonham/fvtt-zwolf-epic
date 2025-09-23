@@ -191,12 +191,14 @@
             "description": ""
           },
           "grantedAbilities": [],
+          "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
             "nightsightRadius": null,
-            "darkvisionRadius": null
+            "darkvisionRadius": null,
+            "knacksProvided": 0
           }
         },
         "tier2": {
@@ -204,12 +206,14 @@
             "description": ""
           },
           "grantedAbilities": [],
+          "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
             "nightsightRadius": null,
-            "darkvisionRadius": null
+            "darkvisionRadius": null,
+            "knacksProvided": 0
           }
         },
         "tier3": {
@@ -217,12 +221,14 @@
             "description": ""
           },
           "grantedAbilities": [],
+          "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
             "nightsightRadius": null,
-            "darkvisionRadius": null
+            "darkvisionRadius": null,
+            "knacksProvided": 0
           }
         },
         "tier4": {
@@ -230,12 +236,14 @@
             "description": ""
           },
           "grantedAbilities": [],
+          "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
             "nightsightRadius": null,
-            "darkvisionRadius": null
+            "darkvisionRadius": null,
+            "knacksProvided": 0
           }
         },
         "tier5": {
@@ -243,12 +251,14 @@
             "description": ""
           },
           "grantedAbilities": [],
+          "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
             "nightsightRadius": null,
-            "darkvisionRadius": null
+            "darkvisionRadius": null,
+            "knacksProvided": 0
           }
         }
       }

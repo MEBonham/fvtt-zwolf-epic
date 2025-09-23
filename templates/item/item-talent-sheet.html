@@ -31,7 +31,7 @@
           <p class="notes">{{localize 'ZWOLF.CharacterTagsHint'}}</p>
         </div>
 
-        <!-- Required Section -->
+        <!-- Required Section (single instance) -->
         <div class="form-group">
           <label>{{localize 'ZWOLF.Required'}}</label>
           <div class="form-fields">
@@ -39,30 +39,6 @@
               {{editor system.required target="system.required" button=true editable=editable engine="prosemirror" collaborate=false}}
             {{else}}
               <div class="editor-content">{{{enrichedRequired}}}</div>
-            {{/if}}
-          </div>
-        </div>
-
-        <!-- Required Section -->
-        <div class="form-group">
-          <label>{{localize 'ZWOLF.Required'}}</label>
-          <div class="form-fields">
-            {{#if editable}}
-              {{editor system.required target="system.required" button=true editable=editable engine="prosemirror" collaborate=false}}
-            {{else}}
-              <div class="editor-content">{{{enrichedRequired}}}</div>
-            {{/if}}
-          </div>
-        </div>
-
-        <!-- Description Section -->
-        <div class="form-group">
-          <label>{{localize 'ZWOLF.Description'}}</label>
-          <div class="form-fields">
-            {{#if editable}}
-              {{editor system.description target="system.description" button=true editable=editable engine="prosemirror" collaborate=false}}
-            {{else}}
-              <div class="editor-content">{{{enrichedDescription}}}</div>
             {{/if}}
           </div>
         </div>

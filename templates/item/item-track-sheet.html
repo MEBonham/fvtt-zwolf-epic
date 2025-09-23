@@ -66,8 +66,14 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+            <input type="text" name="system.tiers.tier1.characterTags" value="{{join system.tiers.tier1.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+            <p class="notes">{{localize 'ZWOLF.TierCharacterTagsHint'}}</p>
+          </div>
+
           <!-- Tier Granted Abilities -->
-          <details class="tier-optional-content">
+          <details class="tier-optional-content" data-tier="1">
             <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
             <div class="optional-content">
               <div class="granted-abilities">
@@ -181,6 +187,14 @@
                          value="{{system.tiers.tier1.sideEffects.darkvisionRadius}}" 
                          data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
                 </div>
+                <!-- In each tier's side effects section, add this after the vision radius fields -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+                  <input type="number" name="system.tiers.tier1.sideEffects.knacksProvided" 
+                  value="{{system.tiers.tier1.sideEffects.knacksProvided}}" 
+                  data-dtype="Number" min="0" placeholder="0"/>
+                  <p class="notes">{{localize 'ZWOLF.TierKnacksProvidedHint'}}</p>
+                </div>
               </div>
             </div>
           </details>
@@ -220,8 +234,14 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+            <input type="text" name="system.tiers.tier2.characterTags" value="{{join system.tiers.tier2.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+            <p class="notes">{{localize 'ZWOLF.TierCharacterTagsHint'}}</p>
+          </div>
+
           <!-- Tier Granted Abilities -->
-          <details class="tier-optional-content">
+          <details class="tier-optional-content" data-tier="2">
             <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
             <div class="optional-content">
               <div class="granted-abilities">
@@ -335,6 +355,14 @@
                          value="{{system.tiers.tier2.sideEffects.darkvisionRadius}}" 
                          data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
                 </div>
+                <!-- In each tier's side effects section, add this after the vision radius fields -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+                  <input type="number" name="system.tiers.tier2.sideEffects.knacksProvided" 
+                  value="{{system.tiers.tier2.sideEffects.knacksProvided}}" 
+                  data-dtype="Number" min="0" placeholder="0"/>
+                  <p class="notes">{{localize 'ZWOLF.TierKnacksProvidedHint'}}</p>
+                </div>
               </div>
             </div>
           </details>
@@ -379,8 +407,14 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+            <input type="text" name="system.tiers.tier3.characterTags" value="{{join system.tiers.tier3.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+            <p class="notes">{{localize 'ZWOLF.TierCharacterTagsHint'}}</p>
+          </div>
+
           <!-- Tier Granted Abilities -->
-          <details class="tier-optional-content">
+          <details class="tier-optional-content" data-tier="3">
             <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
             <div class="optional-content">
               <div class="granted-abilities">
@@ -494,6 +528,14 @@
                          value="{{system.tiers.tier3.sideEffects.darkvisionRadius}}" 
                          data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
                 </div>
+                <!-- In each tier's side effects section, add this after the vision radius fields -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+                  <input type="number" name="system.tiers.tier3.sideEffects.knacksProvided" 
+                  value="{{system.tiers.tier3.sideEffects.knacksProvided}}" 
+                  data-dtype="Number" min="0" placeholder="0"/>
+                  <p class="notes">{{localize 'ZWOLF.TierKnacksProvidedHint'}}</p>
+                </div>
               </div>
             </div>
           </details>
@@ -543,8 +585,14 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+            <input type="text" name="system.tiers.tier4.characterTags" value="{{join system.tiers.tier4.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+            <p class="notes">{{localize 'ZWOLF.TierCharacterTagsHint'}}</p>
+          </div>
+
           <!-- Tier Granted Abilities -->
-          <details class="tier-optional-content">
+          <details class="tier-optional-content" data-tier="4">
             <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
             <div class="optional-content">
               <div class="granted-abilities">
@@ -658,6 +706,14 @@
                          value="{{system.tiers.tier4.sideEffects.darkvisionRadius}}" 
                          data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
                 </div>
+                <!-- In each tier's side effects section, add this after the vision radius fields -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+                  <input type="number" name="system.tiers.tier4.sideEffects.knacksProvided" 
+                  value="{{system.tiers.tier4.sideEffects.knacksProvided}}" 
+                  data-dtype="Number" min="0" placeholder="0"/>
+                  <p class="notes">{{localize 'ZWOLF.TierKnacksProvidedHint'}}</p>
+                </div>
               </div>
             </div>
           </details>
@@ -712,8 +768,14 @@
             </div>
           </div>
 
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+            <input type="text" name="system.tiers.tier5.characterTags" value="{{join system.tiers.tier5.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+            <p class="notes">{{localize 'ZWOLF.TierCharacterTagsHint'}}</p>
+          </div>
+
           <!-- Tier Granted Abilities -->
-          <details class="tier-optional-content">
+          <details class="tier-optional-content" data-tier="5">
             <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
             <div class="optional-content">
               <div class="granted-abilities">
@@ -826,6 +888,14 @@
                   <input type="number" name="system.tiers.tier5.sideEffects.darkvisionRadius" 
                          value="{{system.tiers.tier5.sideEffects.darkvisionRadius}}" 
                          data-dtype="Number" min="0" step="0.5" placeholder="0.5"/>
+                </div>
+                <!-- In each tier's side effects section, add this after the vision radius fields -->
+                <div class="form-group">
+                  <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+                  <input type="number" name="system.tiers.tier5.sideEffects.knacksProvided" 
+                  value="{{system.tiers.tier5.sideEffects.knacksProvided}}" 
+                  data-dtype="Number" min="0" placeholder="0"/>
+                  <p class="notes">{{localize 'ZWOLF.TierKnacksProvidedHint'}}</p>
                 </div>
               </div>
             </div>

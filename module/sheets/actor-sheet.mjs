@@ -198,9 +198,56 @@ export class ZWolfActorSheet extends ActorSheet {
       awesome: Math.floor(1.2 * totalLevel + 0.80001)
     };
   }
+
+  /**
+   * Count the number of items with the VITALITY_BOOST_ITEM_NAME
+   * @returns {number} Count of vitality boost items
+   */
+  _countVitalityBoostItems() {
+    const count = this.actor.items.filter(item => 
+      item.name === ZWolfActorSheet.VITALITY_BOOST_ITEM_NAME
+    ).length;
+    
+    console.log(`Z-Wolf Epic | Found ${count} vitality boost items`);
+    return count;
+  }
+
+  /**
+   * Update the actor's vitalityBoostCount to match the actual number of vitality boost items
+   * @returns {Promise<boolean>} True if an update was made, false if no change needed
+   */
+  async _updateVitalityBoostCount() {
+    const actualCount = this._countVitalityBoostItems();
+    const currentCount = this.actor.system.vitalityBoostCount || 0;
+    
+    if (actualCount !== currentCount) {
+      console.log(`Z-Wolf Epic | Updating vitality boost count from ${currentCount} to ${actualCount}`);
+      await this.actor.update({ 'system.vitalityBoostCount': actualCount });
+      return true;
+    }
+    
+    return false;
+  }
+
+  /**
+   * Helper method to determine which tiers a track has unlocked
+   * @param {number} trackSlotIndex - The track's slot index (0-based)
+   * @param {number} characterLevel - The character's current level
+   * @returns {Array} Array of unlocked tier numbers (1-5)
+   */
+  _getTrackTierForLevel(trackSlotIndex, characterLevel) {
+    const tierLevels = [];
+    for (let tier = 1; tier <= 5; tier++) {
+      const tierLevel = trackSlotIndex + 1 + ((tier - 1) * 4);
+      if (characterLevel >= tierLevel) {
+        tierLevels.push(tier);
+      }
+    }
+    return tierLevels;
+  }
   
   /**
-   * Enhanced _applySideEffects method that filters equipment based on placement
+   * Enhanced _applySideEffects method that includes track tier side effects
    */
   _applySideEffects(ancestry = null, fundament = null, allItems = null) {
     // Define progression hierarchy for comparison
@@ -286,6 +333,18 @@ export class ZWolfActorSheet extends ActorSheet {
           break;
       }
     };
+
+    // Helper function to determine which tier a track slot has unlocked
+    const getTrackTierForLevel = (trackSlotIndex, characterLevel) => {
+      const tierLevels = [];
+      for (let tier = 1; tier <= 5; tier++) {
+        const tierLevel = trackSlotIndex + 1 + ((tier - 1) * 4);
+        if (characterLevel >= tierLevel) {
+          tierLevels.push(tier);
+        }
+      }
+      return tierLevels;
+    };
     
     // Check ancestry for side effects
     if (ancestry && ancestry.system && ancestry.system.sideEffects) {
@@ -307,11 +366,49 @@ export class ZWolfActorSheet extends ActorSheet {
     
     // Check all other items for side effects
     if (allItems) {
+      const characterLevel = this.actor.system.level || 0;
+      
       allItems.forEach(item => {
         // Skip ancestry and fundament as we already checked them
         if (item.type === 'ancestry' || item.type === 'fundament') return;
         
-        // NEW: Equipment placement filtering
+        // Handle track items with tier-based side effects
+        if (item.type === 'track') {
+          // Get the stored slot index, or use sequential order as fallback
+          const trackItems = this.actor.items.filter(i => i.type === 'track');
+          const trackSlotIndex = item.getFlag('zwolf-epic', 'slotIndex') ?? trackItems.findIndex(t => t.id === item.id);
+          const unlockedTiers = getTrackTierForLevel(trackSlotIndex, characterLevel);
+          
+          console.log(`Z-Wolf Epic | Track "${item.name}" in slot ${trackSlotIndex} has unlocked tiers: [${unlockedTiers.join(', ')}]`);
+          
+          // Check base track side effects (if any)
+          if (item.system && item.system.sideEffects) {
+            checkProgression(item.name, item.system.sideEffects, 'speedProgression');
+            checkProgression(item.name, item.system.sideEffects, 'toughnessTNProgression');  
+            checkProgression(item.name, item.system.sideEffects, 'destinyTNProgression');
+            checkVisionRadius(item.name, item.system.sideEffects, 'nightsightRadius');
+            checkVisionRadius(item.name, item.system.sideEffects, 'darkvisionRadius');
+          }
+          
+          // Check tier-specific side effects for unlocked tiers
+          unlockedTiers.forEach(tierNumber => {
+            const tierData = item.system.tiers?.[`tier${tierNumber}`];
+            
+            if (tierData && tierData.sideEffects) {
+              const tierSourceName = `${item.name} (Tier ${tierNumber})`;
+              
+              checkProgression(tierSourceName, tierData.sideEffects, 'speedProgression');
+              checkProgression(tierSourceName, tierData.sideEffects, 'toughnessTNProgression');
+              checkProgression(tierSourceName, tierData.sideEffects, 'destinyTNProgression');
+              checkVisionRadius(tierSourceName, tierData.sideEffects, 'nightsightRadius');
+              checkVisionRadius(tierSourceName, tierData.sideEffects, 'darkvisionRadius');
+            }
+          });
+          
+          return; // Skip the regular equipment check for tracks
+        }
+        
+        // Equipment placement filtering
         if (item.type === 'equipment') {
           const requiredPlacement = item.system.requiredPlacement;
           const currentPlacement = item.system.placement;
@@ -323,6 +420,7 @@ export class ZWolfActorSheet extends ActorSheet {
           }
         }
         
+        // Regular item side effects check
         if (item.system && item.system.sideEffects) {
           checkProgression(item.name, item.system.sideEffects, 'speedProgression');
           checkProgression(item.name, item.system.sideEffects, 'toughnessTNProgression');  
@@ -1513,7 +1611,7 @@ export class ZWolfActorSheet extends ActorSheet {
   }
 
   /**
-   * Enhanced _categorizeGrantedAbilities method that filters equipment based on placement
+   * Enhanced _categorizeGrantedAbilities method that includes track tier abilities and side effects
    */
   _categorizeGrantedAbilities() {
     const categories = {
@@ -1542,7 +1640,7 @@ export class ZWolfActorSheet extends ActorSheet {
       processedItems.add(item.id);
       console.log(`Z-Wolf Epic | Processing abilities from ${source}: ${item.name} (${item.type})`);
       
-      // NEW: Equipment placement filtering for granted abilities
+      // Equipment placement filtering for granted abilities
       if (item.type === 'equipment') {
         const requiredPlacement = item.system.requiredPlacement;
         const currentPlacement = item.system.placement;
@@ -1568,16 +1666,9 @@ export class ZWolfActorSheet extends ActorSheet {
             
             // Only add to categories that we support
             if (categories.hasOwnProperty(categoryKey)) {
-              const description = ability.description 
-                ? (typeof ability.description === 'string' 
-                  ? ability.description 
-                  : TextEditorImpl.enrichHTML(ability.description))
-                : 'No description provided.';
-
-              // FIXED: Include the tags field properly
               categories[categoryKey].push({
                 name: ability.name,
-                tags: ability.tags || '', // Add the tags field
+                tags: ability.tags || '',
                 description: ability.description || 'No description provided.',
                 itemName: item.name,
                 itemId: item.id
@@ -1595,9 +1686,83 @@ export class ZWolfActorSheet extends ActorSheet {
       }
     };
 
+    // Helper function to determine which tier a track slot has unlocked
+    const getTrackTierForLevel = (trackSlotIndex, characterLevel) => {
+      // Track slot indices: 0 = first track, 1 = second track, etc.
+      // Calculate what tiers this track has unlocked based on character level
+      
+      const tierLevels = [];
+      for (let tier = 1; tier <= 5; tier++) {
+        // Calculate the level when this track slot gets this tier
+        const tierLevel = trackSlotIndex + 1 + ((tier - 1) * 4);
+        if (characterLevel >= tierLevel) {
+          tierLevels.push(tier);
+        }
+      }
+      
+      return tierLevels;
+    };
+
     // Process all items owned by the actor
     console.log(`Z-Wolf Epic | Processing ${this.actor.items.size} owned items`);
-    this.actor.items.forEach(item => processItemAbilities(item, 'owned'));
+    
+    // First, process non-track items normally
+    this.actor.items.forEach(item => {
+      if (item.type !== 'track') {
+        processItemAbilities(item, 'owned');
+      }
+    });
+
+    // Then, process track items with tier-based abilities
+    const trackItems = this.actor.items.filter(item => item.type === 'track');
+    const characterLevel = this.actor.system.level || 0;
+    
+    console.log(`Z-Wolf Epic | Processing ${trackItems.length} track items for level ${characterLevel} character`);
+    
+    // Sort tracks by their slot assignment or creation order
+    trackItems.forEach((track, trackSlotIndex) => {
+      // Get the stored slot index, or fall back to sequential order
+      const actualSlotIndex = track.getFlag('zwolf-epic', 'slotIndex') ?? trackSlotIndex;
+      const unlockedTiers = getTrackTierForLevel(actualSlotIndex, characterLevel);
+      
+      console.log(`Z-Wolf Epic | Track "${track.name}" in slot ${actualSlotIndex} has unlocked tiers: [${unlockedTiers.join(', ')}]`);
+      
+      // Process base track abilities (if any)
+      processItemAbilities(track, `track-base`);
+      
+      // Process tier abilities for unlocked tiers
+      unlockedTiers.forEach(tierNumber => {
+        const tierData = track.system.tiers?.[`tier${tierNumber}`];
+        
+        if (tierData && tierData.grantedAbilities && Array.isArray(tierData.grantedAbilities)) {
+          console.log(`Z-Wolf Epic | Processing ${tierData.grantedAbilities.length} abilities from ${track.name} tier ${tierNumber}`);
+          
+          tierData.grantedAbilities.forEach((ability, index) => {
+            console.log(`Z-Wolf Epic | Processing tier ${tierNumber} ability ${index + 1}:`, ability);
+            
+            if (ability.name && ability.type) {
+              const categoryKey = ability.type;
+              
+              if (categories.hasOwnProperty(categoryKey)) {
+                categories[categoryKey].push({
+                  name: ability.name,
+                  tags: ability.tags || '',
+                  description: ability.description || 'No description provided.',
+                  itemName: `${track.name} (Tier ${tierNumber})`,
+                  itemId: track.id,
+                  tierSource: tierNumber
+                });
+                console.log(`Z-Wolf Epic | Added "${ability.name}" from ${track.name} tier ${tierNumber} to ${categoryKey} category`);
+              } else {
+                console.warn(`Z-Wolf Epic | Unknown category "${categoryKey}" for tier ability "${ability.name}"`);
+              }
+            } else {
+              console.warn(`Z-Wolf Epic | Tier ability missing required properties:`, ability);
+            }
+          });
+        }
+      });
+    });
 
     // Log final categories for debugging
     Object.keys(categories).forEach(category => {
@@ -1611,38 +1776,38 @@ export class ZWolfActorSheet extends ActorSheet {
   }
 
   /**
- * Calculate total knacks provided from ancestry, fundament, and all talents
- * @returns {number} Total knacks available
- */
-calculateTotalKnacksProvided() {
-  let totalKnacks = 0;
-  
-  // Get knacks from ancestry
-  if (this.actor.system.ancestryId) {
-    const ancestryItem = this.actor.items.get(this.actor.system.ancestryId);
-    if (ancestryItem && ancestryItem.system && ancestryItem.system.knacksProvided) {
-      totalKnacks += ancestryItem.system.knacksProvided;
+   * Calculate total knacks provided from ancestry, fundament, and all talents
+   * @returns {number} Total knacks available
+   */
+  calculateTotalKnacksProvided() {
+    let totalKnacks = 0;
+    
+    // Get knacks from ancestry
+    if (this.actor.system.ancestryId) {
+      const ancestryItem = this.actor.items.get(this.actor.system.ancestryId);
+      if (ancestryItem && ancestryItem.system && ancestryItem.system.knacksProvided) {
+        totalKnacks += ancestryItem.system.knacksProvided;
+      }
     }
+    
+    // Get knacks from fundament
+    if (this.actor.system.fundamentId) {
+      const fundamentItem = this.actor.items.get(this.actor.system.fundamentId);
+      if (fundamentItem && fundamentItem.system && fundamentItem.system.knacksProvided) {
+        totalKnacks += fundamentItem.system.knacksProvided;
+      }
+    }
+    
+    // Get knacks from all talent items
+    const talentItems = this.actor.items.filter(item => item.type === 'talent');
+    talentItems.forEach((talent, index) => {
+      if (talent.system && talent.system.knacksProvided) {
+        totalKnacks += talent.system.knacksProvided;
+      }
+    });
+    
+    return totalKnacks;
   }
-  
-  // Get knacks from fundament
-  if (this.actor.system.fundamentId) {
-    const fundamentItem = this.actor.items.get(this.actor.system.fundamentId);
-    if (fundamentItem && fundamentItem.system && fundamentItem.system.knacksProvided) {
-      totalKnacks += fundamentItem.system.knacksProvided;
-    }
-  }
-  
-  // Get knacks from all talent items
-  const talentItems = this.actor.items.filter(item => item.type === 'talent');
-  talentItems.forEach((talent, index) => {
-    if (talent.system && talent.system.knacksProvided) {
-      totalKnacks += talent.system.knacksProvided;
-    }
-  });
-  
-  return totalKnacks;
-}
 
   /**
    * Prepare slots array for items (knacks, tracks, talents)
@@ -1934,17 +2099,62 @@ calculateTotalKnacksProvided() {
   }
 
   /**
-   * Calculate character tags from all items that can provide them
-   * @param {Object} ancestry - The ancestry item object (for backwards compatibility)
+   * Calculate character tags from all items that can provide them, including track tiers
    * @returns {string} Comma-separated string of all character tags
    */
-  _calculateCharacterTags(ancestry = null) {
+  _calculateCharacterTags() {
     const allTags = [];
+    
+    // Helper function to determine which tier a track slot has unlocked
+    const getTrackTierForLevel = (trackSlotIndex, characterLevel) => {
+      const tierLevels = [];
+      for (let tier = 1; tier <= 5; tier++) {
+        const tierLevel = trackSlotIndex + 1 + ((tier - 1) * 4);
+        if (characterLevel >= tierLevel) {
+          tierLevels.push(tier);
+        }
+      }
+      return tierLevels;
+    };
+    
+    // Helper function to parse tags (handles both string and array formats)
+    const parseTags = (tags) => {
+      if (!tags) return [];
+      
+      if (Array.isArray(tags)) {
+        return tags.filter(tag => tag && tag.trim().length > 0);
+      } else if (typeof tags === 'string') {
+        return tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      }
+      
+      return [];
+    };
     
     // Collect tags from all items that have characterTags
     this.actor.items.forEach(item => {
-      if (item.system && item.system.characterTags && Array.isArray(item.system.characterTags)) {
-        const itemTags = item.system.characterTags.filter(tag => tag && tag.trim().length > 0);
+      // Handle track items with tier-based character tags
+      if (item.type === 'track') {
+        const trackItems = this.actor.items.filter(i => i.type === 'track');
+        const trackSlotIndex = item.getFlag('zwolf-epic', 'slotIndex') ?? trackItems.findIndex(t => t.id === item.id);
+        const characterLevel = this.actor.system.level || 0;
+        const unlockedTiers = getTrackTierForLevel(trackSlotIndex, characterLevel);
+        
+        // Collect character tags from unlocked tiers
+        unlockedTiers.forEach(tierNumber => {
+          const tierData = item.system.tiers?.[`tier${tierNumber}`];
+          if (tierData && tierData.characterTags) {
+            const tierTags = parseTags(tierData.characterTags);
+            allTags.push(...tierTags);
+            
+            if (tierTags.length > 0) {
+              console.log(`Z-Wolf Epic | Found character tags from ${item.name} tier ${tierNumber}:`, tierTags);
+            }
+          }
+        });
+      } 
+      // Handle regular items with characterTags
+      else if (item.system && item.system.characterTags) {
+        const itemTags = parseTags(item.system.characterTags);
         allTags.push(...itemTags);
         
         if (itemTags.length > 0) {
@@ -1963,57 +2173,6 @@ calculateTotalKnacksProvided() {
     
     // Default fallback
     return 'Humanoid';
-  }
-
-  /**
-   * Handle rolling Speed from the header
-   */
-  async _onSpeedRoll(event) {
-    event.preventDefault();
-    const element = event.currentTarget;
-    const modifier = parseInt(element.dataset.modifier) || 0;
-    const flavor = element.dataset.flavor || "Speed Check";
-    
-    // Get current net boosts from the UI
-    const netBoosts = ZWolfDice.getNetBoosts();
-    
-    // Roll using the ZWolfDice system
-    await ZWolfDice.roll({
-      netBoosts: netBoosts,
-      modifier: modifier,
-      flavor: flavor,
-      actor: this.actor
-    });
-  }
-
-  /**
-   * Count the number of items with the VITALITY_BOOST_ITEM_NAME
-   * @returns {number} Count of vitality boost items
-   */
-  _countVitalityBoostItems() {
-    const count = this.actor.items.filter(item => 
-      item.name === ZWolfActorSheet.VITALITY_BOOST_ITEM_NAME
-    ).length;
-    
-    console.log(`Z-Wolf Epic | Found ${count} vitality boost items`);
-    return count;
-  }
-
-  /**
-   * Update the actor's vitalityBoostCount to match the actual number of vitality boost items
-   * @returns {Promise<boolean>} True if an update was made, false if no change needed
-   */
-  async _updateVitalityBoostCount() {
-    const actualCount = this._countVitalityBoostItems();
-    const currentCount = this.actor.system.vitalityBoostCount || 0;
-    
-    if (actualCount !== currentCount) {
-      console.log(`Z-Wolf Epic | Updating vitality boost count from ${currentCount} to ${actualCount}`);
-      await this.actor.update({ 'system.vitalityBoostCount': actualCount });
-      return true;
-    }
-    
-    return false;
   }
 
   /**
