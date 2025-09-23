@@ -6,23 +6,14 @@
 export const ZWOLF = {};
 
 /**
- * The set of Ability Scores used within the system.
+ * The set of Attributes used within the system.
  * @type {Object}
  */
 ZWOLF.attributes = {
-  "might": "ZWOLF.AttributeMight",
   "agility": "ZWOLF.AttributeAgility", 
-  "intellect": "ZWOLF.AttributeIntellect",
-  "willpower": "ZWOLF.AttributeWillpower",
-  "presence": "ZWOLF.AttributePresence"
-};
-
-ZWOLF.attributeAbbreviations = {
-  "might": "ZWOLF.AttributeMightAbbr",
-  "agility": "ZWOLF.AttributeAgilityAbbr",
-  "intellect": "ZWOLF.AttributeIntellectAbbr", 
-  "willpower": "ZWOLF.AttributeWillpowerAbbr",
-  "presence": "ZWOLF.AttributePresenceAbbr"
+  "fortitude": "ZWOLF.AttributeFortitude",
+  "perception": "ZWOLF.AttributePerception",
+  "willpower": "ZWOLF.AttributeWillpower"
 };
 
 /**
@@ -78,10 +69,20 @@ ZWOLF.sizes = {
  * @type {Object}
  */
 ZWOLF.damageTypes = {
-  "physical": {
-    label: "ZWOLF.DamagePhysical",
-    icon: "icons/skills/melee/sword-damaged-broken-grey.webp",
+  "bludgeoning": {
+    label: "ZWOLF.DamageBludgeoning",
+    icon: "icons/skills/melee/unarmed-punch-fist.webp",
     color: "#808080"
+  },
+  "piercing": {
+    label: "ZWOLF.DamagePiercing",
+    icon: "icons/skills/melee/spear-tip-blood.webp",
+    color: "#800000"
+  },
+  "slashing": {
+    label: "ZWOLF.DamageSlashing",
+    icon: "icons/skills/melee/sword-damaged-broken-grey.webp",
+    color: "#8B4513"
   },
   "fire": {
     label: "ZWOLF.DamageFire",
@@ -98,10 +99,15 @@ ZWOLF.damageTypes = {
     icon: "icons/magic/lightning/bolt-strike-blue.webp",
     color: "#4169e1"
   },
-  "poison": {
-    label: "ZWOLF.DamagePoison",
+  "corrosion": {
+    label: "ZWOLF.DamageCorrosion",
     icon: "icons/consumables/potions/bottle-round-corked-green.webp",
     color: "#00ff00"
+  },
+  "force": {
+    label: "ZWOLF.DamageForce",
+    icon: "icons/magic/air/wind-vortex-blue.webp",
+    color: "#9370db"
   },
   "psychic": {
     label: "ZWOLF.DamagePsychic",
@@ -169,49 +175,87 @@ ZWOLF.conditions = {
     label: "ZWOLF.ConditionSuffused",
     icon: "icons/magic/light/orb-lightbulb-yellow.webp",
     description: "ZWOLF.ConditionSuffusedDesc"
+  },
+  "offGuard": {
+    label: "ZWOLF.ConditionOffGuard",
+    icon: "icons/skills/social/intimidation-impressing.webp",
+    description: "ZWOLF.ConditionOffGuardDesc"
+  },
+  "paralyzed": {
+    label: "ZWOLF.ConditionParalyzed",
+    icon: "icons/svg/paralysis.svg",
+    description: "ZWOLF.ConditionParalyzedDesc"
+  },
+  "momentum": {
+    label: "ZWOLF.ConditionMomentum",
+    icon: "icons/skills/movement/arrow-upward-yellow.webp",
+    description: "ZWOLF.ConditionMomentumDesc"
+  },
+  "grabbed": {
+    label: "ZWOLF.ConditionGrabbed",
+    icon: "icons/skills/melee/unarmed-punch-fist.webp",
+    description: "ZWOLF.ConditionGrabbedDesc"
+  },
+  "helpless": {
+    label: "ZWOLF.ConditionHelpless",
+    icon: "icons/skills/wounds/injury-triple-slash-blood.webp",
+    description: "ZWOLF.ConditionHelplessDesc"
+  },
+  "shaken": {
+    label: "ZWOLF.ConditionShaken",
+    icon: "icons/magic/control/fear-fright-monster-grin-red.webp",
+    description: "ZWOLF.ConditionShakenDesc"
+  },
+  "battered": {
+    label: "ZWOLF.ConditionBattered",
+    icon: "icons/skills/wounds/injury-pain-body-red.webp",
+    description: "ZWOLF.ConditionBatteredDesc"
+  },
+  "immobilized": {
+    label: "ZWOLF.ConditionImmobilized",
+    icon: "icons/magic/control/bind-shackles-rope.webp",
+    description: "ZWOLF.ConditionImmobilizedDesc"
+  },
+  "invisible": {
+    label: "ZWOLF.ConditionInvisible",
+    icon: "icons/magic/perception/eye-ringed-glow-black.webp",
+    description: "ZWOLF.ConditionInvisibleDesc"
+  },
+  "quickened": {
+    label: "ZWOLF.ConditionQuickened",
+    icon: "icons/magic/time/clock-time-white.webp",
+    description: "ZWOLF.ConditionQuickenedDesc"
   }
 };
 
 /**
- * Skill definitions and their associated attributes
+ * Skill definitions
  * @type {Object}
  */
 ZWOLF.skills = {
-  "combat": {
-    label: "ZWOLF.SkillCombat",
-    attribute: "might"
+  "acumen": {
+    label: "ZWOLF.SkillAcumen"
   },
   "athletics": {
-    label: "ZWOLF.SkillAthletics",
-    attribute: "agility"
+    label: "ZWOLF.SkillAthletics"
+  },
+  "brawn": {
+    label: "ZWOLF.SkillBrawn"
+  },
+  "dexterity": {
+    label: "ZWOLF.SkillDexterity"
+  },
+  "glibness": {
+    label: "ZWOLF.SkillGlibness"
+  },
+  "influence": {
+    label: "ZWOLF.SkillInfluence"
+  },
+  "insight": {
+    label: "ZWOLF.SkillInsight"
   },
   "stealth": {
-    label: "ZWOLF.SkillStealth",
-    attribute: "agility"
-  },
-  "knowledge": {
-    label: "ZWOLF.SkillKnowledge",
-    attribute: "intellect"
-  },
-  "perception": {
-    label: "ZWOLF.SkillPerception",
-    attribute: "intellect"
-  },
-  "magic": {
-    label: "ZWOLF.SkillMagic",
-    attribute: "willpower"
-  },
-  "resolve": {
-    label: "ZWOLF.SkillResolve",
-    attribute: "willpower"
-  },
-  "persuasion": {
-    label: "ZWOLF.SkillPersuasion",
-    attribute: "presence"
-  },
-  "deception": {
-    label: "ZWOLF.SkillDeception",
-    attribute: "presence"
+    label: "ZWOLF.SkillStealth"
   }
 };
 
@@ -237,76 +281,29 @@ ZWOLF.areaTypes = {
     template: "circle",
     icon: "icons/svg/circle.svg"
   },
-  "wall": {
-    label: "ZWOLF.AreaWall",
+  "thickLine": {
+    label: "ZWOLF.AreaThickLine",
     template: "ray",
-    width: 2, // 2 meters wide for wall effects
+    width: 2,
     icon: "icons/svg/wall.svg"
   }
 };
 
 /**
- * Item types that can be equipped
- * @type {Array}
- */
-ZWOLF.equipableTypes = ["equipment", "weapon", "armor"];
-
-/**
- * Resistance levels
+ * Spell seeds for magic categorization
  * @type {Object}
  */
-ZWOLF.resistanceLevels = {
-  "-2": "ZWOLF.Vulnerable2x",    // Double damage
-  "-1": "ZWOLF.Vulnerable",       // +50% damage
-  "0": "ZWOLF.Normal",           // Normal damage
-  "1": "ZWOLF.Resistant",        // -50% damage
-  "2": "ZWOLF.Resistant2x",      // -75% damage
-  "3": "ZWOLF.Immune"           // No damage
-};
-
-/**
- * Range categories for gridless measurement
- * @type {Object}
- */
-ZWOLF.ranges = {
-  "touch": {
-    label: "ZWOLF.RangeTouch",
-    distance: 1
-  },
-  "close": {
-    label: "ZWOLF.RangeClose",
-    distance: 5
-  },
-  "short": {
-    label: "ZWOLF.RangeShort",
-    distance: 10
-  },
-  "medium": {
-    label: "ZWOLF.RangeMedium",
-    distance: 20
-  },
-  "long": {
-    label: "ZWOLF.RangeLong",
-    distance: 40
-  },
-  "extreme": {
-    label: "ZWOLF.RangeExtreme",
-    distance: 80
-  },
-  "sight": {
-    label: "ZWOLF.RangeSight",
-    distance: null
-  }
-};
-
-/**
- * Spell schools for magic categorization
- * @type {Object}
- */
-ZWOLF.spellSchools = {
-  "elemental": "ZWOLF.SchoolElemental",
-  "divine": "ZWOLF.SchoolDivine",
-  "arcane": "ZWOLF.SchoolArcane",
-  "primal": "ZWOLF.SchoolPrimal",
-  "psychic": "ZWOLF.SchoolPsychic"
+ZWOLF.spellSeeds = {
+  "aether": "ZWOLF.SeedAether",
+  "air": "ZWOLF.SeedAir",
+  "animal": "ZWOLF.SeedAnimal",
+  "earth": "ZWOLF.SeedEarth",
+  "fire": "ZWOLF.SeedFire",
+  "frost": "ZWOLF.SeedFrost",
+  "glory": "ZWOLF.SeedGlory",
+  "lightning": "ZWOLF.SeedLightning",
+  "mind": "ZWOLF.SeedMind",
+  "plant": "ZWOLF.SeedPlant",
+  "shadow": "ZWOLF.SeedShadow",
+  "water": "ZWOLF.SeedWater"
 };

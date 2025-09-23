@@ -3,6 +3,7 @@ export const preloadHandlebarsTemplates = async function() {
     // Actor templates
     "systems/zwolf-epic/templates/actor/actor-character-sheet.html",
     "systems/zwolf-epic/templates/actor/actor-eidolon-sheet.html", 
+    "systems/zwolf-epic/templates/actor/actor-mook-sheet.html",
     "systems/zwolf-epic/templates/actor/actor-spawn-sheet.html",
     
     // Item templates - ADD THESE

@@ -1,128 +1,101 @@
 {
   "Actor": {
-    "types": ["pc", "npc", "eidolon", "spawn"],
+    "types": ["pc", "npc", "eidolon", "mook", "spawn"],
     "templates": {
       "base": {
         "vitalityPoints": {
-          "value": 10,
+          "value": 12,
           "min": 0,
-          "max": 10
+          "max": 12
         },
-        "biography": "",
         "languages": "",
         "liabilities": "",
-        "notes": ""
+        "notes": "",
+        "size": "medium",
+        "tags": "Humanoid",
+        "nightsight": 1
       },
       "character": {
         "level": 3,
-        "size": "medium",
-        "tags": "Humanoid",
-        "ancestryId": null,
-        "fundamentId": null,
-        "wealth": 10,
         "staminaPoints": {
           "value": 4,
           "min": 0,
           "max": 4
         },
         "coastNumber": 4,
-        "vision": {
-          "nightsightRadius": 1,
-          "darkvisionRadius": 0.5
+        "speed": {
+          "progression": null
         },
+        "vitalityBoostCount": 0,
+        "buildPointsLocked": false
+      },
+      "attributesAndSkills": {
         "attributes": {
           "agility": {
-            "value": 0,
             "progression": "moderate"
           },
           "fortitude": {
-            "value": 0,
             "progression": "moderate"
           },
           "perception": {
-            "value": 0,
             "progression": "moderate"
           },
           "willpower": {
-            "value": 0,
             "progression": "moderate"
           }
         },
         "skills": {
           "acumen": {
-            "value": 0,
             "progression": "mediocre"
           },
           "athletics": {
-            "value": 0,
             "progression": "mediocre"
           },
           "brawn": {
-            "value": 0,
             "progression": "mediocre"
           },
           "dexterity": {
-            "value": 0,
             "progression": "mediocre"
           },
           "glibness": {
-            "value": 0,
             "progression": "mediocre"
           },
           "influence": {
-            "value": 0,
             "progression": "mediocre"
           },
           "insight": {
-            "value": 0,
             "progression": "mediocre"
           },
           "stealth": {
-            "value": 0,
             "progression": "mediocre"
           }
-        },
-        "speed": {
-          "value": 0,
-          "progression": null
-        },
-        "vitalityBoostCount": 0,
-        "buildPointsLocked": false
+        }
+      },
+      "summoned": {
+        "baseCreatureId": null
       }
     },
     "pc": {
-      "templates": ["base", "character"],
+      "templates": ["base", "character", "attributesAndSkills"],
       "wealth": 10,
       "karmaPoints": {
         "value": 1,
         "min": 0,
         "max": 3
-      },
-      "xp": {
-        "value": 0,
-        "total": 0
       }
     },
     "npc": {
-      "templates": ["base", "character"],
-      "wealth": 0,
-      "cr": 0
+      "templates": ["base", "character", "attributesAndSkills"],
+      "wealth": 0
     },
     "eidolon": {
-      "templates": ["base"],
-      "level": 1,
-      "bond": "",
-      "essence": {
-        "value": 10,
-        "max": 10
-      },
-      "abilities": []
+      "templates": ["base", "summoned", "attributesAndSkills"]
+    },
+    "mook": {
+      "templates": ["base", "summoned"]
     },
     "spawn": {
-      "templates": ["base"],
-      "swarmId": "",
-      "swarmCount": 1,
-      "swarmTotal": 10
+      "templates": ["base", "summoned"]
     }
   },
   "Item": {
@@ -130,20 +103,15 @@
     "templates": {
       "base": {
         "description": "",
-        "grantedAbilities": []
-      },
-      "physical": {
-        "quantity": 1,
-        "weight": 0,
-        "value": 0
+        "grantedAbilities": {}
       },
       "sideEffectsCapable": {
         "sideEffects": {
           "speedProgression": "",
           "toughnessTNProgression": "",
           "destinyTNProgression": "",
-          "nightsightRadius": null,
-          "darkvisionRadius": null,
+          "nightsight": null,
+          "darkvision": null,
           "maxBulkBoost": 0
         }
       }
@@ -169,12 +137,12 @@
     "equipment": {
       "templates": ["base", "sideEffectsCapable"],
       "tags": [],
-      "quantity": "1",
+      "quantity": 1,
       "placement": "stowed",
       "requiredPlacement": "",
       "price": 0,
       "bulk": 0,
-      "structure": 0
+      "structure": 10
     },
     "knack": {
       "templates": ["base", "sideEffectsCapable"],
@@ -187,77 +155,67 @@
       "required": "",
       "tiers": {
         "tier1": {
-          "talentMenu": {
-            "description": ""
-          },
-          "grantedAbilities": [],
+          "talentMenu": {},
+          "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
-            "nightsightRadius": null,
-            "darkvisionRadius": null,
+            "nightsight": null,
+            "darkvision": null,
             "knacksProvided": 0
           }
         },
         "tier2": {
-          "talentMenu": {
-            "description": ""
-          },
-          "grantedAbilities": [],
+          "talentMenu": {},
+          "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
-            "nightsightRadius": null,
-            "darkvisionRadius": null,
+            "nightsight": null,
+            "darkvision": null,
             "knacksProvided": 0
           }
         },
         "tier3": {
-          "talentMenu": {
-            "description": ""
-          },
-          "grantedAbilities": [],
+          "talentMenu": {},
+          "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
-            "nightsightRadius": null,
-            "darkvisionRadius": null,
+            "nightsight": null,
+            "darkvision": null,
             "knacksProvided": 0
           }
         },
         "tier4": {
-          "talentMenu": {
-            "description": ""
-          },
-          "grantedAbilities": [],
+          "talentMenu": {},
+          "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
-            "nightsightRadius": null,
-            "darkvisionRadius": null,
+            "nightsight": null,
+            "darkvision": null,
             "knacksProvided": 0
           }
         },
         "tier5": {
-          "talentMenu": {
-            "description": ""
-          },
-          "grantedAbilities": [],
+          "talentMenu": {},
+          "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
             "destinyTNProgression": "",
-            "nightsightRadius": null,
-            "darkvisionRadius": null,
+            "nightsight": null,
+            "darkvision": null,
             "knacksProvided": 0
           }
         }
