@@ -16,9 +16,8 @@ export class ZWolfChat {
       const messageData = {
         speaker: rollData.actor ? ChatMessage.getSpeaker({ actor: rollData.actor }) : ChatMessage.getSpeaker(),
         flavor: rollData.flavor || ZWOLF_CONSTANTS.MESSAGES.DEFAULT_FLAVOR,
-        roll: rollData.roll,
+        roll: [rollData.roll],
         content: await this._createRollContent(rollData),
-        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
         sound: CONFIG.sounds.dice
       };
       
@@ -149,7 +148,7 @@ export class ZWolfChat {
     const messageData = {
       speaker: ChatMessage.getSpeaker(),
       content: `<div class="zwolf-notification zwolf-${type}">${message}</div>`,
-      type: CONST.CHAT_MESSAGE_TYPES.OOC
+      type: CONST.CHAT_MESSAGE_STYLES.OOC
     };
     
     return await ChatMessage.create(messageData);
@@ -181,7 +180,7 @@ export class ZWolfChat {
     const messageData = {
       speaker: ChatMessage.getSpeaker(),
       content: content,
-      type: CONST.CHAT_MESSAGE_TYPES.OOC
+      type: CONST.CHAT_MESSAGE_STYLES.OOC
     };
     
     return await ChatMessage.create(messageData);
