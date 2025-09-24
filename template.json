@@ -131,8 +131,8 @@
       "buildPoints": 0,
       "knacksProvided": 0,
       "requiredKnackTag": "",
-      "vitalityFunction": "",
-      "coastFunction": ""
+      "vitalityKey": "",
+      "coastKey": ""
     },
     "equipment": {
       "templates": ["base", "sideEffectsCapable"],
