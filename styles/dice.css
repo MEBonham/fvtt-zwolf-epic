@@ -3,16 +3,55 @@
  * CSS styles for the boost control panel and roll results
  */
 
+:root {
+  /* Primary Colors */
+  --z-wolf-primary: #2c5aa0;
+  --z-wolf-primary-light: #4a7bc8;
+  --z-wolf-primary-dark: #1e3d6f;
+  
+  /* Secondary Colors */
+  --z-wolf-secondary: #8b4513;
+  --z-wolf-accent: #d4af37;
+  
+  /* UI Colors */
+  --z-wolf-background: #f5f5f5;
+  --z-wolf-surface: #ffffff;
+  --z-wolf-border: #cccccc;
+  --z-wolf-text: #333333;
+  --z-wolf-text-muted: #666666;
+  
+  /* Status Colors */
+  --z-wolf-success: #28a745;
+  --z-wolf-warning: #ffc107;
+  --z-wolf-danger: #dc3545;
+  --z-wolf-info: #17a2b8;
+  
+  /* Z-Wolf Specific Colors */
+  --z-wolf-boost: var(--z-wolf-primary);
+  --z-wolf-boost-light: var(--z-wolf-primary-light);
+  --z-wolf-jinx: var(--z-wolf-danger);
+  --z-wolf-jinx-light: #ff6666;
+  --z-wolf-crit-trigger: var(--z-wolf-warning);
+  --z-wolf-key-die: var(--z-wolf-primary);
+  
+  /* Transparency levels */
+  --z-wolf-alpha-10: 0.1;
+  --z-wolf-alpha-20: 0.2;
+  --z-wolf-alpha-30: 0.3;
+  --z-wolf-alpha-50: 0.5;
+  --z-wolf-alpha-80: 0.8;
+}
+
 /* ===== BOOST CONTROL PANEL ===== */
 
 .zwolf-boost-control {
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid #444;
+  background: rgba(0, 0, 0, var(--z-wolf-alpha-80));
+  border: 1px solid var(--z-wolf-text-muted);
   border-radius: 5px;
   padding: 10px;
-  margin: 5px;
-  color: #fff;
-  width: calc(100% - 10px);
+  margin: 5px 5px 5px 15px;
+  color: var(--z-wolf-surface);
+  width: calc(100% - 20px);
   box-sizing: border-box;
   position: relative;
   z-index: 100;
@@ -36,13 +75,13 @@
 
 /* Active state styling */
 .zwolf-boost-control.boost-active {
-  border-color: #4a90e2;
-  box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+  border-color: var(--z-wolf-boost);
+  box-shadow: 0 0 5px rgba(44, 90, 160, var(--z-wolf-alpha-30));
 }
 
 .zwolf-boost-control.jinx-active {
-  border-color: #e24a4a;
-  box-shadow: 0 0 5px rgba(226, 74, 74, 0.3);
+  border-color: var(--z-wolf-jinx);
+  box-shadow: 0 0 5px rgba(220, 53, 69, var(--z-wolf-alpha-30));
 }
 
 /* Header section */
@@ -55,7 +94,7 @@
 }
 
 .zwolf-boost-header i {
-  color: #4a90e2;
+  color: var(--z-wolf-boost);
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1.2em;
@@ -64,7 +103,7 @@
 .zwolf-icon-button {
   background: none;
   border: none;
-  color: #4a90e2;
+  color: var(--z-wolf-boost);
   cursor: pointer !important;
   pointer-events: auto !important;
   padding: 0;
@@ -75,9 +114,9 @@
 }
 
 .zwolf-icon-button:hover {
-  color: #6bb3ff;
+  color: var(--z-wolf-boost-light);
   transform: rotate(15deg) scale(1.1);
-  text-shadow: 0 0 8px rgba(74, 144, 226, 0.8);
+  text-shadow: 0 0 8px rgba(44, 90, 160, var(--z-wolf-alpha-80));
 }
 
 .zwolf-boost-label {
@@ -95,9 +134,9 @@
 .zwolf-boost-inputs button {
   flex: 0 0 30px;
   height: 28px;
-  border: 1px solid #444;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  border: 1px solid var(--z-wolf-text-muted);
+  background: rgba(255, 255, 255, var(--z-wolf-alpha-10));
+  color: var(--z-wolf-surface);
   border-radius: 3px;
   cursor: pointer;
   display: flex;
@@ -106,8 +145,8 @@
 }
 
 .zwolf-boost-inputs button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: #4a90e2;
+  background: rgba(255, 255, 255, var(--z-wolf-alpha-20));
+  border-color: var(--z-wolf-boost);
   transform: translateY(-1px);
 }
 
@@ -118,9 +157,9 @@
 #zwolf-net-boosts {
   flex: 1;
   text-align: center;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid #444;
-  color: #fff;
+  background: rgba(255, 255, 255, var(--z-wolf-alpha-10));
+  border: 1px solid var(--z-wolf-text-muted);
+  color: var(--z-wolf-surface);
   border-radius: 3px;
   padding: 0 5px;
   font-weight: bold;
@@ -128,8 +167,8 @@
 
 #zwolf-net-boosts:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 3px rgba(74, 144, 226, 0.5);
+  border-color: var(--z-wolf-boost);
+  box-shadow: 0 0 3px rgba(44, 90, 160, var(--z-wolf-alpha-50));
 }
 
 /* Quick boost buttons */
@@ -141,9 +180,9 @@
 .zwolf-quick-boost {
   flex: 1;
   padding: 4px;
-  border: 1px solid #444;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  border: 1px solid var(--z-wolf-text-muted);
+  background: rgba(255, 255, 255, var(--z-wolf-alpha-10));
+  color: var(--z-wolf-surface);
   border-radius: 3px;
   cursor: pointer;
   font-size: 0.9em;
@@ -152,40 +191,40 @@
 }
 
 .zwolf-quick-boost:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, var(--z-wolf-alpha-20));
   transform: translateY(-1px);
 }
 
 /* Jinx buttons (negative values) */
 .zwolf-quick-boost[data-value^="-"] {
-  border-color: #e24a4a;
-  color: #ff9999;
+  border-color: var(--z-wolf-jinx);
+  color: var(--z-wolf-jinx-light);
 }
 
 .zwolf-quick-boost[data-value^="-"]:hover {
-  background: rgba(226, 74, 74, 0.2);
-  border-color: #ff6666;
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-20));
+  border-color: var(--z-wolf-jinx-light);
 }
 
 /* Boost buttons (positive values) */
 .zwolf-quick-boost:not([data-value^="-"]) {
-  border-color: #4a90e2;
-  color: #99ccff;
+  border-color: var(--z-wolf-boost);
+  color: var(--z-wolf-boost-light);
 }
 
 .zwolf-quick-boost:not([data-value^="-"]):hover {
-  background: rgba(74, 144, 226, 0.2);
-  border-color: #6bb3ff;
+  background: rgba(44, 90, 160, var(--z-wolf-alpha-20));
+  border-color: var(--z-wolf-boost-light);
 }
 
 /* ===== ROLL RESULT STYLES ===== */
 
 .zwolf-roll {
   padding: 10px;
-  border: 1px solid #444;
+  border: 1px solid var(--z-wolf-text-muted);
   border-radius: 5px;
   margin: 5px 0;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, var(--z-wolf-alpha-10));
   transition: all 0.3s ease;
 }
 
@@ -193,7 +232,7 @@
   font-weight: bold;
   font-size: 1.1em;
   margin-bottom: 8px;
-  color: #ccc;
+  color: var(--z-wolf-border);
 }
 
 /* Individual die results */
@@ -202,27 +241,27 @@
   min-width: 30px;
   padding: 3px 6px;
   margin: 2px;
-  border: 1px solid #666;
+  border: 1px solid var(--z-wolf-text-muted);
   border-radius: 3px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, var(--z-wolf-alpha-10));
   font-weight: bold;
   transition: all 0.2s ease;
 }
 
 /* Key die highlighting */
 .zwolf-roll .key-die {
-  border-color: #4a90e2;
-  background: rgba(74, 144, 226, 0.3);
-  color: #fff;
-  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  border-color: var(--z-wolf-key-die);
+  background: rgba(44, 90, 160, var(--z-wolf-alpha-30));
+  color: var(--z-wolf-surface);
+  box-shadow: 0 0 5px rgba(44, 90, 160, var(--z-wolf-alpha-50));
   transform: scale(1.05);
 }
 
 /* Critical trigger highlighting */
 .zwolf-roll .crit-trigger {
-  border-color: #ffa500;
-  background: rgba(255, 165, 0, 0.2);
+  border-color: var(--z-wolf-crit-trigger);
+  background: rgba(255, 193, 7, var(--z-wolf-alpha-20));
   color: #ffcc66;
   animation: pulse 2s infinite;
 }
@@ -241,15 +280,15 @@
 }
 
 .zwolf-roll .boost-jinx-info.boost {
-  color: #4a90e2;
-  background: rgba(74, 144, 226, 0.1);
-  border-left: 3px solid #4a90e2;
+  color: var(--z-wolf-boost);
+  background: rgba(44, 90, 160, var(--z-wolf-alpha-10));
+  border-left: 3px solid var(--z-wolf-boost);
 }
 
 .zwolf-roll .boost-jinx-info.jinx {
-  color: #e24a4a;
-  background: rgba(226, 74, 74, 0.1);
-  border-left: 3px solid #e24a4a;
+  color: var(--z-wolf-jinx);
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-10));
+  border-left: 3px solid var(--z-wolf-jinx);
 }
 
 /* Roll sections */
@@ -262,14 +301,14 @@
 
 .zwolf-roll .original-order {
   font-size: 0.9em;
-  color: #999;
+  color: var(--z-wolf-text-muted);
   font-style: italic;
 }
 
 .zwolf-roll .final-result {
   font-size: 1.2em;
-  color: #4a90e2;
-  text-shadow: 0 0 3px rgba(74, 144, 226, 0.3);
+  color: var(--z-wolf-boost);
+  text-shadow: 0 0 3px rgba(44, 90, 160, var(--z-wolf-alpha-30));
 }
 
 /* Critical chance notifications */
@@ -287,41 +326,41 @@
 }
 
 .zwolf-roll .crit-success {
-  color: #00ff00;
-  background: rgba(0, 255, 0, 0.1);
+  color: var(--z-wolf-success);
+  background: rgba(40, 167, 69, var(--z-wolf-alpha-10));
 }
 
 .zwolf-roll .crit-failure {
-  color: #ff0000;
-  background: rgba(255, 0, 0, 0.1);
+  color: var(--z-wolf-danger);
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-10));
 }
 
 .zwolf-roll .crit-both {
-  color: #ffd700;
-  background: rgba(255, 215, 0, 0.1);
+  color: var(--z-wolf-accent);
+  background: rgba(212, 175, 55, var(--z-wolf-alpha-10));
 }
 
 /* Roll border effects based on crit status */
 .zwolf-roll.crit-success-chance {
-  border-color: #00ff00;
-  box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+  border-color: var(--z-wolf-success);
+  box-shadow: 0 0 5px rgba(40, 167, 69, var(--z-wolf-alpha-30));
 }
 
 .zwolf-roll.crit-failure-chance {
-  border-color: #ff0000;
-  box-shadow: 0 0 5px rgba(255, 0, 0, 0.3);
+  border-color: var(--z-wolf-danger);
+  box-shadow: 0 0 5px rgba(220, 53, 69, var(--z-wolf-alpha-30));
 }
 
 .zwolf-roll.crit-both {
-  border-color: #ffd700;
-  box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+  border-color: var(--z-wolf-accent);
+  box-shadow: 0 0 5px rgba(212, 175, 55, var(--z-wolf-alpha-30));
 }
 
 /* Target and outcome */
 .zwolf-roll .roll-target {
   margin-top: 8px;
   font-weight: bold;
-  color: #ccc;
+  color: var(--z-wolf-border);
 }
 
 .zwolf-roll .roll-outcome {
@@ -334,15 +373,15 @@
 }
 
 .zwolf-roll .roll-outcome.success {
-  color: #00ff00;
-  background: rgba(0, 255, 0, 0.1);
-  border: 1px solid rgba(0, 255, 0, 0.3);
+  color: var(--z-wolf-success);
+  background: rgba(40, 167, 69, var(--z-wolf-alpha-10));
+  border: 1px solid rgba(40, 167, 69, var(--z-wolf-alpha-30));
 }
 
 .zwolf-roll .roll-outcome.failure {
-  color: #ff0000;
-  background: rgba(255, 0, 0, 0.1);
-  border: 1px solid rgba(255, 0, 0, 0.3);
+  color: var(--z-wolf-danger);
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-10));
+  border: 1px solid rgba(220, 53, 69, var(--z-wolf-alpha-30));
 }
 
 /* ===== NOTIFICATION STYLES ===== */
@@ -355,28 +394,28 @@
 }
 
 .zwolf-notification.zwolf-info {
-  background: rgba(74, 144, 226, 0.1);
-  border-left: 3px solid #4a90e2;
-  color: #4a90e2;
+  background: rgba(23, 162, 184, var(--z-wolf-alpha-10));
+  border-left: 3px solid var(--z-wolf-info);
+  color: var(--z-wolf-info);
 }
 
 .zwolf-notification.zwolf-warning {
-  background: rgba(255, 193, 7, 0.1);
-  border-left: 3px solid #ffc107;
-  color: #ffc107;
+  background: rgba(255, 193, 7, var(--z-wolf-alpha-10));
+  border-left: 3px solid var(--z-wolf-warning);
+  color: var(--z-wolf-warning);
 }
 
 .zwolf-notification.zwolf-error {
-  background: rgba(220, 53, 69, 0.1);
-  border-left: 3px solid #dc3545;
-  color: #dc3545;
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-10));
+  border-left: 3px solid var(--z-wolf-danger);
+  color: var(--z-wolf-danger);
 }
 
 /* ===== ROLL SUMMARY STYLES ===== */
 
 .zwolf-roll-summary {
-  background: rgba(0, 0, 0, 0.1);
-  border: 1px solid #444;
+  background: rgba(0, 0, 0, var(--z-wolf-alpha-10));
+  border: 1px solid var(--z-wolf-text-muted);
   border-radius: 5px;
   padding: 10px;
   margin: 5px 0;
@@ -384,15 +423,15 @@
 
 .zwolf-roll-summary h3 {
   margin: 0 0 10px 0;
-  color: #4a90e2;
-  border-bottom: 1px solid #444;
+  color: var(--z-wolf-boost);
+  border-bottom: 1px solid var(--z-wolf-text-muted);
   padding-bottom: 5px;
 }
 
 .zwolf-roll-summary .summary-roll {
   margin: 5px 0;
   padding: 3px 0;
-  border-bottom: 1px dotted #666;
+  border-bottom: 1px dotted var(--z-wolf-text-muted);
 }
 
 .zwolf-roll-summary .summary-roll:last-child {
@@ -432,31 +471,31 @@
 
 .zwolf-boost-control button:focus,
 .zwolf-boost-control input:focus {
-  outline: 2px solid #4a90e2;
+  outline: 2px solid var(--z-wolf-boost);
   outline-offset: 2px;
 }
 
 .zwolf-boost-control button:focus-visible,
 .zwolf-boost-control input:focus-visible {
-  outline: 2px solid #4a90e2;
+  outline: 2px solid var(--z-wolf-boost);
   outline-offset: 2px;
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .zwolf-boost-control {
-    border: 2px solid #fff;
-    background: #000;
+    border: 2px solid var(--z-wolf-surface);
+    background: var(--z-wolf-text);
   }
   
   .zwolf-roll .key-die {
-    border: 2px solid #fff;
-    background: #000;
+    border: 2px solid var(--z-wolf-surface);
+    background: var(--z-wolf-text);
   }
   
   .zwolf-roll .crit-trigger {
-    border: 2px solid #ffff00;
-    background: #000;
+    border: 2px solid var(--z-wolf-warning);
+    background: var(--z-wolf-text);
   }
 }
 

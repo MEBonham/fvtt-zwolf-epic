@@ -7,12 +7,12 @@
 import { ZWolfActor } from "./documents/Actor.mjs";
 import { ZWolfItem } from "./documents/Item.mjs";
 // Import sheet classes.
-import { ZWolfActorSheet } from "./sheets/actor-sheet.mjs";
-import { ZWolfItemSheet } from "./sheets/item-sheet.mjs";
+import ZWolfActorSheet from "./sheets/actor-sheet.mjs";
+import ZWolfItemSheet from "./sheets/item-sheet.mjs";
 // Import helper/utility classes and constants.
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
-import { ZWolfDice } from "./helpers/dice.mjs";
+import { ZWolfDice } from "./dice/index.mjs";  // Updated import path
 import { ZWolfVision } from "./helpers/vision.mjs";
 
 /* -------------------------------------------- */
@@ -26,12 +26,10 @@ Hooks.once('init', async function() {
   game.zwolf = {
     ZWolfActor,
     ZWolfItem,
-    rollDice: ZWolfDice.roll,
-    vision: ZWolfVision
+    vision: ZWolfVision,
+    // Helper function for macros and console access
+    roll: ZWolfDice.roll.bind(ZWolfDice)
   };
-
-  // Also expose ZWolfDice globally for easier access
-  window.ZWolfDice = ZWolfDice;
 
   // Add custom constants for configuration.
   CONFIG.ZWOLF = ZWOLF;
@@ -40,12 +38,53 @@ Hooks.once('init', async function() {
   ZWolfVision.initialize();
 
   /**
-   * Set an initiative formula for the system
-   * @type {String}
+   * Set a custom initiative system that uses Z-Wolf dice mechanics
    */
   CONFIG.Combat.initiative = {
-    formula: "1d12 + @attributes.agility.value",
+    formula: "1d12 + @attributes.agility.value", // Fallback formula
     decimals: 2
+  };
+
+  // Override the initiative rolling to use Z-Wolf dice system
+  Combat.prototype.rollInitiative = async function(ids, {formula=null, updateTurn=true, messageOptions={}} = {}) {
+    // Normalize the ID array
+    ids = typeof ids === "string" ? [ids] : ids;
+    
+    const updates = [];
+    const messages = [];
+    
+    for (let id of ids) {
+      const combatant = this.combatants.get(id);
+      if (!combatant?.actor) continue;
+      
+      // Get the actor's agility modifier
+      const agilityMod = combatant.actor.system.attributes?.agility?.value || 0; // TODO: multiply by 1.01; use Progression system
+      
+      // Use Z-Wolf dice system for initiative
+      const rollResult = await ZWolfDice.roll({
+        netBoosts: 0, // Could be modified by conditions/effects
+        modifier: agilityMod,
+        flavor: `Initiative Roll - ${combatant.name}`
+      });
+      
+      // Update the combatant's initiative
+      updates.push({
+        _id: id,
+        initiative: rollResult.finalResult
+      });
+    }
+    
+    // Update all combatants
+    if (updates.length) {
+      await this.updateEmbeddedDocuments("Combatant", updates);
+    }
+    
+    // Optionally advance the turn order
+    if (updateTurn && this.combatant?.initiative === null) {
+      await this.nextTurn();
+    }
+    
+    return this;
   };
 
   // Configure gridless gameplay
@@ -81,6 +120,122 @@ Hooks.once('init', async function() {
   // Preload Handlebars templates.
   return preloadHandlebarsTemplates();
 });
+
+/**
+ * Combat Tracker enhancement hooks for Z-Wolf Epic
+ */
+
+export function registerCombatTrackerHooks() {
+  
+  /**
+   * Add enhanced initiative rolling to combat tracker
+   */
+  Hooks.on('renderCombatTracker', (app, html, data) => {
+    addInitiativeBoostButton(html);
+  });
+}
+
+/**
+ * Add initiative boost button to combat tracker
+ * @param {HTMLElement} html - The combat tracker HTML element
+ */
+function addInitiativeBoostButton(html) {
+  const $html = $(html);
+  const header = $html.find('.combat-tracker-header');
+  
+  // Only add button if header exists and button hasn't been added yet
+  if (header.length && !header.find('.zwolf-initiative-boost').length) {
+    const boostButton = createInitiativeButton();
+    header.find('.combat-controls').prepend(boostButton);
+    attachInitiativeButtonHandler(boostButton);
+  }
+}
+
+/**
+ * Create the initiative boost button element
+ * @returns {jQuery} The button element
+ */
+function createInitiativeButton() {
+  return $(`
+    <a class="combat-control zwolf-initiative-boost" title="Roll Initiative with Current Boosts/Jinxes">
+      <i class="fas fa-dice-d12"></i>
+    </a>
+  `);
+}
+
+/**
+ * Attach click handler to initiative button
+ * @param {jQuery} button - The button element
+ */
+function attachInitiativeButtonHandler(button) {
+  button.on('click', async (event) => {
+    event.preventDefault();
+    await handleInitiativeRoll();
+  });
+}
+
+/**
+ * Handle the initiative roll for selected tokens
+ */
+async function handleInitiativeRoll() {
+  const combat = game.combat;
+  if (!combat) {
+    return ui.notifications.warn("No active combat");
+  }
+  
+  const controlled = canvas.tokens.controlled;
+  if (!controlled.length) {
+    return ui.notifications.warn("No tokens selected");
+  }
+  
+  const netBoosts = ZWolfDice.getNetBoosts();
+  
+  for (const token of controlled) {
+    await rollInitiativeForToken(token, combat, netBoosts);
+  }
+}
+
+/**
+ * Roll initiative for a specific token
+ * @param {Token} token - The token to roll for
+ * @param {Combat} combat - The active combat
+ * @param {number} netBoosts - Current net boosts/jinxes
+ */
+async function rollInitiativeForToken(token, combat, netBoosts) {
+  const combatant = combat.combatants.find(c => c.tokenId === token.id);
+  if (!combatant) return;
+  
+  const agilityMod = token.actor.system.attributes?.agility?.value || 0;
+  
+  const rollResult = await ZWolfDice.roll({
+    netBoosts: netBoosts,
+    modifier: agilityMod,
+    flavor: generateInitiativeFlavor(netBoosts, combatant.name),
+    actor: token.actor
+  });
+  
+  await combat.updateEmbeddedDocuments("Combatant", [{
+    _id: combatant.id,
+    initiative: rollResult.finalResult
+  }]);
+}
+
+/**
+ * Generate flavor text for initiative roll
+ * @param {number} netBoosts - Net boosts/jinxes
+ * @param {string} name - Combatant name
+ * @returns {string} Flavor text
+ */
+function generateInitiativeFlavor(netBoosts, name) {
+  let boostText = 'No Boosts';
+  if (netBoosts > 0) {
+    boostText = `${netBoosts} Boost${netBoosts > 1 ? 's' : ''}`;
+  } else if (netBoosts < 0) {
+    boostText = `${Math.abs(netBoosts)} Jinx${Math.abs(netBoosts) > 1 ? 'es' : ''}`;
+  }
+  
+  return `Initiative Roll (${boostText}) - ${name}`;
+}
 
 /* -------------------------------------------- */
 /*  Handlebars Helpers                          */

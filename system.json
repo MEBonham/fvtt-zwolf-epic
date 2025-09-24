@@ -14,7 +14,10 @@
     "discord": "https://discord.gg/qU83g3F2qY"
   }],
   "esmodules": ["module/zwolf-epic.mjs"],
-  "styles": ["css/zwolf-epic.css"],
+  "styles": [
+    "styles/zwolf-epic.css",
+    "styles/dice.css"
+  ],
   "scripts": [],
   "packs": [],
   "languages": [

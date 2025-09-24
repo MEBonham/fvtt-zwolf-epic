@@ -1,0 +1,23 @@
+:root {
+  /* Primary Colors */
+  --z-wolf-primary: #2c5aa0;
+  --z-wolf-primary-light: #4a7bc8;
+  --z-wolf-primary-dark: #1e3d6f;
+  
+  /* Secondary Colors */
+  --z-wolf-secondary: #8b4513;
+  --z-wolf-accent: #d4af37;
+  
+  /* UI Colors */
+  --z-wolf-background: #f5f5f5;
+  --z-wolf-surface: #ffffff;
+  --z-wolf-border: #cccccc;
+  --z-wolf-text: #333333;
+  --z-wolf-text-muted: #666666;
+  
+  /* Status Colors */
+  --z-wolf-success: #28a745;
+  --z-wolf-warning: #ffc107;
+  --z-wolf-danger: #dc3545;
+  --z-wolf-info: #17a2b8;
+}

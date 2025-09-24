@@ -1,283 +1,244 @@
 /**
- * Z-Wolf Epic UI Management
- * Handles the boost/jinx control panel and user interface
+ * Z-Wolf Epic Chat Message Formatting
+ * Handles the creation and formatting of roll result chat messages
  */
 
 import { ZWOLF_CONSTANTS } from './dice-constants.mjs';
 
-export class ZWolfUI {
+export class ZWolfChat {
   /**
-   * Get the current net boosts value from the UI
-   * @returns {number} The current net boosts value
+   * Create a chat message for a roll result
+   * @param {Object} rollData - The roll result data
+   * @returns {Promise<ChatMessage>} The created chat message
    */
-  static getNetBoosts() {
-    const input = document.getElementById(ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT);
-    return parseInt(input?.value) || 0;
-  }
-  
-  /**
-   * Set the net boosts value in the UI
-   * @param {number} value - The value to set
-   */
-  static setNetBoosts(value) {
-    const input = document.getElementById(ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT);
-    if (input) {
-      const clampedValue = Math.max(
-        ZWOLF_CONSTANTS.MIN_BOOSTS, 
-        Math.min(ZWOLF_CONSTANTS.MAX_BOOSTS, parseInt(value) || 0)
-      );
-      input.value = clampedValue;
-      this.updateNetBoostsDisplay();
+  static async createChatMessage(rollData) {
+    try {
+      const messageData = {
+        speaker: rollData.actor ? ChatMessage.getSpeaker({ actor: rollData.actor }) : ChatMessage.getSpeaker(),
+        flavor: rollData.flavor || ZWOLF_CONSTANTS.MESSAGES.DEFAULT_FLAVOR,
+        roll: rollData.roll,
+        content: await this._createRollContent(rollData),
+        type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+        sound: CONFIG.sounds.dice
+      };
+      
+      return await ChatMessage.create(messageData);
+    } catch (error) {
+      console.error("Z-Wolf Epic | Error creating chat message:", error);
+      ui.notifications.error("Failed to create chat message. Check console for details.");
+      throw error;
     }
   }
   
   /**
-   * Update the net boosts display to show current state
+   * Create the HTML content for the roll result
+   * @private
+   * @param {Object} rollData - The roll result data
+   * @returns {Promise<string>} HTML content for the chat message
    */
-  static updateNetBoostsDisplay() {
-    const input = document.getElementById(ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT);
-    const label = document.querySelector(ZWOLF_CONSTANTS.ELEMENTS.BOOST_LABEL);
-    const container = document.querySelector(ZWOLF_CONSTANTS.ELEMENTS.BOOST_CONTROL);
+  static async _createRollContent(rollData) {
+    const {
+      diceResults, sortedDice, keyDie, keyDieIndex, keyDiePosition,
+      modifier, finalResult, targetNumber, success, netBoosts,
+      critSuccessChance, critFailureChance
+    } = rollData;
     
-    if (!input || !label) return;
+    // Create visual representation of sorted dice
+    const sortedDiceDisplay = this._createDiceDisplay(sortedDice, keyDieIndex, critSuccessChance, critFailureChance, keyDiePosition);
     
-    const value = parseInt(input.value) || 0;
+    // Determine overall crit status class
+    const critClass = this._determineCritClass(critSuccessChance, critFailureChance);
     
-    // Update label text and styling
-    this._updateLabelAndStyling(label, container, value);
+    // Build boosts/jinxes display
+    const boostJinxDisplay = this._createBoostJinxDisplay(netBoosts);
+    
+    // Build main content
+    let content = this._buildMainContent({
+      critClass,
+      diceCount: sortedDice.length,
+      modifier,
+      boostJinxDisplay,
+      sortedDiceDisplay,
+      diceResults,
+      keyDiePosition,
+      keyDie,
+      finalResult
+    });
+    
+    // Add crit chance notifications
+    content += this._createCritNotifications(critSuccessChance, critFailureChance);
+    
+    // Add target and outcome if applicable
+    content += this._createTargetOutcome(targetNumber, success);
+    
+    content += `</div>`;
+    
+    return content;
   }
 
   /**
-   * Update label text and container styling based on boost value
+   * Create visual representation of dice with highlighting
    * @private
    */
-  static _updateLabelAndStyling(label, container, value) {
-    if (value > 0) {
-      label.textContent = `Boosts: ${value}`;
-      container?.classList.remove(ZWOLF_CONSTANTS.CSS_CLASSES.JINX_ACTIVE);
-      container?.classList.add(ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_ACTIVE);
-    } else if (value < 0) {
-      label.textContent = `Jinxes: ${Math.abs(value)}`;
-      container?.classList.remove(ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_ACTIVE);
-      container?.classList.add(ZWOLF_CONSTANTS.CSS_CLASSES.JINX_ACTIVE);
-    } else {
-      label.textContent = 'Net Boosts: 0';
-      container?.classList.remove(
-        ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_ACTIVE, 
-        ZWOLF_CONSTANTS.CSS_CLASSES.JINX_ACTIVE
-      );
-    }
+  static _createDiceDisplay(sortedDice, keyDieIndex, critSuccessChance, critFailureChance, keyDiePosition) {
+    return sortedDice.map((die, index) => {
+      const isKey = index === keyDieIndex;
+      const isAboveKey = index === keyDieIndex + 1;
+      const isBelowKey = index === keyDieIndex - 1;
+      
+      let classes = [ZWOLF_CONSTANTS.CSS_CLASSES.DIE_RESULT];
+      let title = '';
+      
+      if (isKey) {
+        classes.push(ZWOLF_CONSTANTS.CSS_CLASSES.KEY_DIE);
+        title = `Key Die (${keyDiePosition})`;
+      } else if (isAboveKey && critSuccessChance) {
+        classes.push(ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_TRIGGER);
+        title = 'Crit Success Trigger!';
+      } else if (isBelowKey && critFailureChance) {
+        classes.push(ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_TRIGGER);
+        title = 'Crit Failure Trigger!';
+      }
+      
+      return `<span class="${classes.join(' ')}" title="${title}">${die}</span>`;
+    }).join(' ');
   }
-  
+
   /**
-   * Create the boost control HTML
-   * @returns {string} HTML string for the boost control panel
+   * Determine the overall critical status CSS class
+   * @private
    */
-  static createBoostControl() {
+  static _determineCritClass(critSuccessChance, critFailureChance) {
+    if (critSuccessChance && critFailureChance) {
+      return ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_BOTH;
+    } else if (critSuccessChance) {
+      return ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_SUCCESS_CHANCE;
+    } else if (critFailureChance) {
+      return ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_FAILURE_CHANCE;
+    }
+    return '';
+  }
+
+  /**
+   * Create the boosts/jinxes display section
+   * @private
+   */
+  static _createBoostJinxDisplay(netBoosts) {
+    if (netBoosts === 0) return '';
+    
+    const boostType = netBoosts > 0 ? 'Boosts' : 'Jinxes';
+    const boostColor = netBoosts > 0 ? 'boost' : 'jinx';
+    
     return `
-      <div class="${ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_CONTROL}">
-        <div class="zwolf-boost-header">
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.QUICK_ROLL}" class="zwolf-icon-button" title="Quick roll with current boosts">
-            <i class="fas fa-dice-d12"></i>
-          </button>
-          <span class="zwolf-boost-label">Net Boosts: 0</span>
-        </div>
-        <div class="zwolf-boost-inputs">
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_MINUS}" title="Remove Boost / Add Jinx">
-            <i class="fas fa-minus"></i>
-          </button>
-          <input type="number" id="${ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT}" 
-                 value="0" min="${ZWOLF_CONSTANTS.MIN_BOOSTS}" max="${ZWOLF_CONSTANTS.MAX_BOOSTS}" 
-                 title="Positive = Boosts, Negative = Jinxes"/>
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_PLUS}" title="Add Boost / Remove Jinx">
-            <i class="fas fa-plus"></i>
-          </button>
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_RESET}" title="Reset to 0">
-            <i class="fas fa-undo"></i>
-          </button>
-        </div>
-        <div class="zwolf-boost-quick">
-          ${this._createQuickBoostButtons()}
-        </div>
+      <div class="boost-jinx-info ${boostColor}">
+        <strong>Net ${boostType}:</strong> ${Math.abs(netBoosts)}
       </div>
     `;
   }
 
   /**
-   * Create quick boost buttons HTML
+   * Build the main content structure
    * @private
    */
-  static _createQuickBoostButtons() {
-    const buttons = [];
-    
-    // Jinx buttons (-3 to -1)
-    for (let i = -3; i <= -1; i++) {
-      const absValue = Math.abs(i);
-      const title = absValue === 1 ? '1 Jinx' : `${absValue} Jinxes`;
-      buttons.push(`<button class="zwolf-quick-boost" data-value="${i}" title="${title}">${i}</button>`);
-    }
-    
-    // Boost buttons (+1 to +3)
-    for (let i = 1; i <= 3; i++) {
-      const title = i === 1 ? '1 Boost' : `${i} Boosts`;
-      buttons.push(`<button class="zwolf-quick-boost" data-value="${i}" title="${title}">+${i}</button>`);
-    }
-    
-    return buttons.join('');
-  }
-  
-  /**
-   * Initialize event listeners for boost controls using event delegation
-   */
-  static initializeEventListeners() {
-    // Main click handler for all buttons
-    document.addEventListener('click', async (event) => {
-      await this._handleButtonClick(event);
-    });
-    
-    // Input change handler
-    document.addEventListener('change', (event) => {
-      if (event.target.id === ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT) {
-        this.updateNetBoostsDisplay();
-      }
-    });
-    
-    // Prevent input keydown from interfering with chat
-    document.addEventListener('keydown', (event) => {
-      if (event.target.id === ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT) {
-        event.stopPropagation();
-      }
-    });
+  static _buildMainContent({critClass, diceCount, modifier, boostJinxDisplay, sortedDiceDisplay, diceResults, keyDiePosition, keyDie, finalResult}) {
+    return `
+      <div class="zwolf-roll ${critClass}">
+        <div class="roll-formula">${diceCount}d12 + ${modifier}</div>
+        ${boostJinxDisplay}
+        <div class="dice-results">
+          <strong>Dice (sorted):</strong> ${sortedDiceDisplay}
+        </div>
+        <div class="original-order">
+          <strong>Original roll:</strong> ${diceResults.join(', ')}
+        </div>
+        <div class="key-die-info">
+          <strong>Key Die (${keyDiePosition}):</strong> ${keyDie} + ${modifier} modifier = <strong class="final-result">${finalResult}</strong>
+        </div>
+    `;
   }
 
   /**
-   * Handle button click events
+   * Create critical chance notification section
    * @private
    */
-  static async _handleButtonClick(event) {
-    const target = event.target.closest('button');
-    if (!target) return;
+  static _createCritNotifications(critSuccessChance, critFailureChance) {
+    if (!critSuccessChance && !critFailureChance) return '';
     
-    const id = target.id;
-    const current = this.getNetBoosts();
+    let content = `<div class="crit-chances">`;
     
-    try {
-      switch (id) {
-        case ZWOLF_CONSTANTS.ELEMENTS.BOOST_PLUS:
-          this.setNetBoosts(current + 1);
-          break;
-          
-        case ZWOLF_CONSTANTS.ELEMENTS.BOOST_MINUS:
-          this.setNetBoosts(current - 1);
-          break;
-          
-        case ZWOLF_CONSTANTS.ELEMENTS.BOOST_RESET:
-          this.setNetBoosts(0);
-          break;
-          
-        case ZWOLF_CONSTANTS.ELEMENTS.QUICK_ROLL:
-          event.preventDefault();
-          event.stopPropagation();
-          await this._performQuickRoll(current);
-          break;
-      }
-      
-      // Handle quick boost buttons
-      if (target.classList.contains('zwolf-quick-boost')) {
-        const value = parseInt(target.dataset.value);
-        if (!isNaN(value)) {
-          this.setNetBoosts(value);
-        }
-      }
-    } catch (error) {
-      console.error("Z-Wolf Epic | Error handling button click:", error);
-      ui.notifications.error("Button action failed. Check console for details.");
+    if (critSuccessChance && critFailureChance) {
+      content += `<strong class="crit-both">${ZWOLF_CONSTANTS.CRIT_MESSAGES.WILD_CARD}</strong>`;
+    } else if (critSuccessChance) {
+      content += `<strong class="crit-success">${ZWOLF_CONSTANTS.CRIT_MESSAGES.SUCCESS}</strong>`;
+    } else if (critFailureChance) {
+      content += `<strong class="crit-failure">${ZWOLF_CONSTANTS.CRIT_MESSAGES.FAILURE}</strong>`;
     }
+    
+    content += `</div>`;
+    return content;
   }
 
   /**
-   * Perform a quick roll with current boosts
+   * Create target number and outcome section
    * @private
    */
-  static async _performQuickRoll(netBoosts) {
-    // Dynamic import to avoid circular dependency
-    const { ZWolfDiceCore } = await import('./dice-core.mjs');
-    const { ZWolfChat } = await import('./dice-chat.mjs');
+  static _createTargetOutcome(targetNumber, success) {
+    if (targetNumber === null) return '';
     
-    const rollResult = await ZWolfDiceCore.roll({
-      netBoosts: netBoosts,
-      modifier: 0,
-      flavor: "Quick Z-Wolf Roll"
+    return `
+      <div class="roll-target">
+        <strong>Target:</strong> ${targetNumber}
+      </div>
+      <div class="roll-outcome ${success ? 'success' : 'failure'}">
+        <strong>${success ? 'SUCCESS!' : 'FAILURE'}</strong>
+      </div>
+    `;
+  }
+
+  /**
+   * Create a simple notification message
+   * @param {string} message - The message to display
+   * @param {string} type - Message type (info, warning, error)
+   */
+  static async createNotification(message, type = 'info') {
+    const messageData = {
+      speaker: ChatMessage.getSpeaker(),
+      content: `<div class="zwolf-notification zwolf-${type}">${message}</div>`,
+      type: CONST.CHAT_MESSAGE_TYPES.OOC
+    };
+    
+    return await ChatMessage.create(messageData);
+  }
+
+  /**
+   * Create a roll summary for multiple rolls
+   * @param {Array} rolls - Array of roll results
+   * @param {string} title - Title for the summary
+   */
+  static async createRollSummary(rolls, title = "Roll Summary") {
+    if (!rolls || rolls.length === 0) return;
+    
+    let content = `<div class="zwolf-roll-summary">`;
+    content += `<h3>${title}</h3>`;
+    
+    rolls.forEach((roll, index) => {
+      content += `
+        <div class="summary-roll">
+          <strong>Roll ${index + 1}:</strong> 
+          ${roll.flavor} - Result: ${roll.finalResult}
+          ${roll.success !== null ? ` (${roll.success ? 'Success' : 'Failure'})` : ''}
+        </div>
+      `;
     });
     
-    if (rollResult) {
-      await ZWolfChat.createChatMessage(rollResult);
-      
-      // Auto-reset if enabled
-      if (this._shouldAutoReset()) {
-        this.setNetBoosts(0);
-      }
-    }
-  }
-
-  /**
-   * Check if auto-reset is enabled
-   * @private
-   */
-  static _shouldAutoReset() {
-    try {
-      return game.settings.get(game.system.id, ZWOLF_CONSTANTS.SETTINGS.AUTO_RESET_BOOSTS);
-    } catch (error) {
-      console.warn("Z-Wolf Epic | Could not read auto-reset setting, defaulting to true");
-      return true;
-    }
-  }
-  
-  /**
-   * Add boost controls to the chat interface
-   * @param {jQuery|HTMLElement} html - The chat HTML element
-   */
-  static addToChat(html) {
-    const $html = html instanceof jQuery ? html : $(html);
+    content += `</div>`;
     
-    // Check if controls already exist
-    if ($html.find(ZWOLF_CONSTANTS.ELEMENTS.BOOST_CONTROL).length > 0) {
-      return;
-    }
+    const messageData = {
+      speaker: ChatMessage.getSpeaker(),
+      content: content,
+      type: CONST.CHAT_MESSAGE_TYPES.OOC
+    };
     
-    const controlHtml = this.createBoostControl();
-    const $control = $(controlHtml);
-    
-    // Insert after chat form (below chat input)
-    const chatForm = $html.find('#chat-form');
-    if (chatForm.length > 0) {
-      chatForm.after($control);
-    } else {
-      // Fallback if chat form not found
-      $html.append($control);
-    }
-    
-    // Initialize display after short delay to ensure DOM is ready
-    setTimeout(() => {
-      this.updateNetBoostsDisplay();
-    }, 100);
-  }
-
-  /**
-   * Remove boost controls from the interface
-   */
-  static removeFromChat() {
-    document.querySelectorAll(ZWOLF_CONSTANTS.ELEMENTS.BOOST_CONTROL).forEach(el => {
-      el.remove();
-    });
-  }
-
-  /**
-   * Refresh the boost controls (remove and re-add)
-   * @param {jQuery|HTMLElement} html - The chat HTML element
-   */
-  static refreshControls(html) {
-    this.removeFromChat();
-    this.addToChat(html);
+    return await ChatMessage.create(messageData);
   }
 }

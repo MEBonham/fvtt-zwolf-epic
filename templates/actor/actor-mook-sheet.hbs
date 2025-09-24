@@ -1,0 +1,28 @@
+<form class="{{cssClass}} mook-sheet" autocomplete="off">
+  
+  {{> "systems/z-wolf-epic/templates/actor/partials/mook-header.hbs"}}
+
+  <div class="sheet-container">
+    
+    {{> "systems/z-wolf-epic/templates/actor/partials/mook-sidebar.hbs"}}
+
+    <div class="sheet-main-content">
+      
+      <!-- Navigation Tabs -->
+      <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item active" data-tab="main">Main</a>
+        <a class="item" data-tab="configure">Configure</a>
+      </nav>
+
+      <section class="sheet-body">
+        <div class="tab main active" data-group="primary" data-tab="main">
+          {{> "systems/z-wolf-epic/templates/actor/partials/character-sheet-main-tab.hbs"}}
+        </div>
+
+        <div class="tab configure" data-group="primary" data-tab="configure">
+          {{> "systems/z-wolf-epic/templates/actor/partials/mook-configure-tab.hbs"}}
+        </div>
+      </section>
+    </div>
+  </div>
+</form>

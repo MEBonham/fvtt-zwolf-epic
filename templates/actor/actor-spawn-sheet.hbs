@@ -1,0 +1,17 @@
+<form class="{{cssClass}} spawn-sheet" autocomplete="off">
+  
+  {{> "systems/z-wolf-epic/templates/actor/partials/spawn-header.hbs"}}
+
+  <div class="sheet-container spawn-container">
+    
+    {{> "systems/z-wolf-epic/templates/actor/partials/character-sheet-sidebar.hbs"}}
+
+    <div class="sheet-main-content spawn-main">
+      
+      <!-- No navigation tabs for spawns - direct abilities display -->
+      <section class="sheet-body spawn-body">
+        {{> "systems/z-wolf-epic/templates/actor/partials/spawn-abilities.hbs"}}
+      </section>
+    </div>
+  </div>
+</form>
