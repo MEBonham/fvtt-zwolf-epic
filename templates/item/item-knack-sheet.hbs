@@ -1,0 +1,82 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <div class="item-sheet-content">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div class="header-fields">
+        <h1 class="charname">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'ZWOLF.ItemName'}}"/>
+        </h1>
+        <div class="item-subtitle">{{localize 'ZWOLF.ItemTypeKnack'}}</div>
+      </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+      <a class="item" data-tab="details">{{localize 'ZWOLF.Details'}}</a>
+      <a class="item" data-tab="sideeffects">{{localize 'ZWOLF.SideEffects'}}</a>
+      <a class="item" data-tab="abilities">{{localize 'ZWOLF.GrantedAbilities'}}</a>
+    </nav>
+
+    <section class="sheet-body">
+      <div class="tab" data-group="primary" data-tab="details">
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Tags'}}</label>
+          <input type="text" name="system.tags" value="{{join system.tags}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+          <p class="notes">{{localize 'ZWOLF.TagsHint'}}</p>
+        </div>
+
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+          <input type="text" name="system.characterTags" value="{{join system.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+          <p class="notes">{{localize 'ZWOLF.CharacterTagsHint'}}</p>
+        </div>
+
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Required'}}</label>
+          <div class="form-fields">
+            {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+          </div>
+        </div>
+      </div>
+
+      <div class="tab" data-group="primary" data-tab="sideeffects">
+        <div class="side-effects">
+          <div class="side-effects-header">
+            <h3>{{localize 'ZWOLF.SideEffects'}}</h3>
+            <p class="notes">{{localize 'ZWOLF.SideEffectsHint'}}</p>
+          </div>
+          
+          {{> side-effects-form 
+              sideEffects=system.sideEffects 
+              pathPrefix="system.sideEffects"
+              showKnacksProvided=false
+              showMaxBulkBoost=false}}
+        </div>
+      </div>
+
+      <div class="tab" data-group="primary" data-tab="abilities">
+        <div class="granted-abilities">
+          <div class="abilities-header">
+            <h3>{{localize 'ZWOLF.GrantedAbilities'}}</h3>
+            <a class="ability-control" data-action="add-ability" title="{{localize 'ZWOLF.AddAbility'}}">
+              <i class="fas fa-plus"></i>
+            </a>
+          </div>
+          
+          <div class="abilities-list">
+            {{#each system.grantedAbilities as |ability index|}}
+            {{> ability-item 
+                ability=ability 
+                index=index 
+                nameTarget=(concat "system.grantedAbilities." index ".name")
+                tagsTarget=(concat "system.grantedAbilities." index ".tags")
+                typeTarget=(concat "system.grantedAbilities." index ".type")
+                descriptionTarget=(concat "system.grantedAbilities." index ".description")
+                deleteAction="delete-ability"
+                editable=../editable}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</form>

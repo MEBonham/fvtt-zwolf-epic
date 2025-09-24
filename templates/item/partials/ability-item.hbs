@@ -1,0 +1,51 @@
+<!-- Reusable Ability Item Component -->
+<!-- Usage: {{> ability-item ability=ability index=index nameTarget="..." tagsTarget="..." typeTarget="..." descriptionTarget="..." deleteAction="delete-ability" editable=editable}} -->
+
+<div class="ability-item" data-ability-index="{{index}}">
+  <div class="ability-controls">
+    <a class="ability-control" 
+       data-action="{{deleteAction}}" 
+       data-ability-index="{{index}}" 
+       {{#if tierNumber}}data-tier="{{tierNumber}}"{{/if}}
+       title="{{localize 'ZWOLF.DeleteAbility'}}">
+      <i class="fas fa-trash"></i>
+    </a>
+  </div>
+  
+  <div class="form-group">
+    <label>{{localize 'ZWOLF.Name'}}</label>
+    <input type="text" name="{{nameTarget}}" value="{{ability.name}}" placeholder="{{localize 'ZWOLF.AbilityNamePlaceholder'}}"/>
+  </div>
+  
+  <div class="form-group">
+    <label>{{localize 'ZWOLF.Tags'}}</label>
+    <input type="text" name="{{tagsTarget}}" value="{{ability.tags}}" placeholder="{{localize 'ZWOLF.AbilityTagsPlaceholder'}}"/>
+    <p class="notes">{{localize 'ZWOLF.AbilityTagsHint'}}</p>
+  </div>
+  
+  <div class="form-group">
+    <label>{{localize 'ZWOLF.Type'}}</label>
+    <select name="{{typeTarget}}">
+      <option value="passive" {{selected 'passive' ability.type}}>{{localize 'ZWOLF.Passive'}}</option>
+      <option value="exoticSenses" {{selected 'exoticSenses' ability.type}}>{{localize 'ZWOLF.ExoticSenses'}}</option>
+      <option value="dominantAction" {{selected 'dominantAction' ability.type}}>{{localize 'ZWOLF.DominantAction'}}</option>
+      <option value="swiftAction" {{selected 'swiftAction' ability.type}}>{{localize 'ZWOLF.SwiftAction'}}</option>
+      <option value="reaction" {{selected 'reaction' ability.type}}>{{localize 'ZWOLF.Reaction'}}</option>
+      <option value="freeAction" {{selected 'freeAction' ability.type}}>{{localize 'ZWOLF.FreeAction'}}</option>
+      <option value="strike" {{selected 'strike' ability.type}}>{{localize 'ZWOLF.Strike'}}</option>
+      <option value="journey" {{selected 'journey' ability.type}}>{{localize 'ZWOLF.Journeying'}}</option>
+      <option value="miscellaneous" {{selected 'miscellaneous' ability.type}}>{{localize 'ZWOLF.Miscellaneous'}}</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label>{{localize 'ZWOLF.Description'}}</label>
+    <div class="form-fields">
+      {{#if editable}}
+        {{editor ability.description target=descriptionTarget button=true editable=editable engine="prosemirror" collaborate=false}}
+      {{else}}
+        <div class="editor-content">{{{ability.enrichedDescription}}}</div>
+      {{/if}}
+    </div>
+  </div>
+</div>

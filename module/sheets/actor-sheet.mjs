@@ -1,4 +1,4 @@
-export default class ZWolfActorSheet extends ActorSheet {
+export default class ZWolfActorSheet extends foundry.appv1.sheets.ActorSheet {
   
   /** @override */
   static get defaultOptions() {

@@ -3,7 +3,7 @@ import { ZWolfSheetMixin } from '../mixins/sheet-mixin.mjs';
 /**
  * Extend the basic ItemSheet for Z-Wolf Epic items
  */
-export default class ZWolfItemSheet extends ZWolfSheetMixin(ItemSheet) {
+export default class ZWolfItemSheet extends ZWolfSheetMixin(foundry.appv1.sheets.ItemSheet) {
   
   /** @override */
   static get defaultOptions() {

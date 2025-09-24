@@ -520,3 +520,159 @@
     animation: none;
   }
 }
+
+/* ===== COMPACT DICE ROLL STYLES ===== */
+/* Add these styles to your existing dice.css file */
+
+.zwolf-roll-compact {
+  background: var(--z-wolf-surface);
+  border: 1px solid var(--z-wolf-border);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 4px 0;
+  text-align: center;
+  max-width: 250px;
+  transition: all 0.3s ease;
+}
+
+.zwolf-roll-compact .roll-main {
+  cursor: help;
+  margin-bottom: 8px;
+}
+
+.zwolf-roll-compact .roll-stat {
+  font-size: 14px;
+  color: var(--z-wolf-text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.zwolf-roll-compact .roll-result-big {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--z-wolf-primary);
+  line-height: 1;
+}
+
+/* Compact crit status styling for the main container */
+.zwolf-roll-compact.crit-success-chance {
+  border-left: 4px solid var(--z-wolf-success);
+}
+
+.zwolf-roll-compact.crit-success-chance .roll-result-big {
+  color: var(--z-wolf-success);
+}
+
+.zwolf-roll-compact.crit-failure-chance {
+  border-left: 4px solid var(--z-wolf-danger);
+}
+
+.zwolf-roll-compact.crit-failure-chance .roll-result-big {
+  color: var(--z-wolf-danger);
+}
+
+.zwolf-roll-compact.crit-both {
+  border-left: 4px solid var(--z-wolf-accent);
+  background: linear-gradient(45deg, 
+    rgba(40, 167, 69, var(--z-wolf-alpha-10)) 0%, 
+    rgba(220, 53, 69, var(--z-wolf-alpha-10)) 50%, 
+    rgba(40, 167, 69, var(--z-wolf-alpha-10)) 100%);
+}
+
+.zwolf-roll-compact.crit-both .roll-result-big {
+  color: var(--z-wolf-accent);
+}
+
+/* Compact crit notification styling */
+.zwolf-roll-compact .crit-notification {
+  margin: 6px 0;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.zwolf-roll-compact .crit-notification .crit-success {
+  background: rgba(40, 167, 69, var(--z-wolf-alpha-20));
+  color: var(--z-wolf-success);
+}
+
+.zwolf-roll-compact .crit-notification .crit-failure {
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-20));
+  color: var(--z-wolf-danger);
+}
+
+.zwolf-roll-compact .crit-notification .crit-both {
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--z-wolf-accent);
+}
+
+/* Compact target and outcome styling */
+.zwolf-roll-compact .roll-outcome-compact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--z-wolf-border);
+  font-size: 12px;
+}
+
+.zwolf-roll-compact .roll-outcome-compact .target {
+  color: var(--z-wolf-text-muted);
+  font-weight: 500;
+}
+
+.zwolf-roll-compact .roll-outcome-compact .outcome {
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.zwolf-roll-compact .roll-outcome-compact .outcome.success {
+  background: rgba(40, 167, 69, var(--z-wolf-alpha-20));
+  color: var(--z-wolf-success);
+}
+
+.zwolf-roll-compact .roll-outcome-compact .outcome.failure {
+  background: rgba(220, 53, 69, var(--z-wolf-alpha-20));
+  color: var(--z-wolf-danger);
+}
+
+/* Compact hover effect for tooltip */
+.zwolf-roll-compact .roll-main:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+/* Responsive design for compact rolls */
+@media (max-width: 600px) {
+  .zwolf-roll-compact {
+    max-width: 200px;
+    padding: 10px;
+  }
+  
+  .zwolf-roll-compact .roll-result-big {
+    font-size: 28px;
+  }
+  
+  .zwolf-roll-compact .roll-stat {
+    font-size: 12px;
+  }
+}
+
+/* Reduced motion support for compact rolls */
+@media (prefers-reduced-motion: reduce) {
+  .zwolf-roll-compact,
+  .zwolf-roll-compact .roll-main {
+    transition: none;
+  }
+}

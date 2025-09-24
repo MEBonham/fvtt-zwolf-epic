@@ -1,0 +1,51 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+  <div class="item-sheet-content">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64"/>
+      <div class="header-fields">
+        <h1 class="charname">
+          <input name="name" type="text" value="{{item.name}}" placeholder="{{localize 'ZWOLF.ItemName'}}"/>
+        </h1>
+        <div class="item-subtitle">{{localize 'ZWOLF.ItemTypeTrack'}}</div>
+      </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+      <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
+      <a class="item" data-tab="tier1">{{localize 'ZWOLF.Tier'}} 1</a>
+      <a class="item" data-tab="tier2">{{localize 'ZWOLF.Tier'}} 2</a>
+      <a class="item" data-tab="tier3">{{localize 'ZWOLF.Tier'}} 3</a>
+      <a class="item" data-tab="tier4">{{localize 'ZWOLF.Tier'}} 4</a>
+      <a class="item" data-tab="tier5">{{localize 'ZWOLF.Tier'}} 5</a>
+    </nav>
+
+    <section class="sheet-body">
+      <!-- Basics Tab -->
+      <div class="tab" data-group="primary" data-tab="basics">
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Tags'}}</label>
+          <input type="text" name="system.tags" value="{{join system.tags}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+          <p class="notes">{{localize 'ZWOLF.TagsHint'}}</p>
+        </div>
+
+        <div class="form-group">
+          <label>{{localize 'ZWOLF.Required'}}</label>
+          <div class="form-fields">
+            {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tier Tabs - Using Reusable Component -->
+      {{#each (range 1 6) as |tierNumber|}}
+      <div class="tab" data-group="primary" data-tab="tier{{tierNumber}}">
+        {{> tier-template 
+            tierNumber=tierNumber 
+            tierData=(lookup system.tiers (concat "tier" tierNumber))
+            allTierData=system.tiers 
+            editable=editable}}
+      </div>
+      {{/each}}
+    </section>
+  </div>
+</form>

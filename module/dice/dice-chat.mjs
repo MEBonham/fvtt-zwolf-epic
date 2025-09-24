@@ -31,41 +31,33 @@ export class ZWolfChat {
   }
   
   /**
-   * Create the HTML content for the roll result
+   * Create the HTML content for the roll result (compact version)
    * @private
    * @param {Object} rollData - The roll result data
    * @returns {Promise<string>} HTML content for the chat message
    */
   static async _createRollContent(rollData) {
     const {
-      diceResults, sortedDice, keyDie, keyDieIndex, keyDiePosition,
-      modifier, finalResult, targetNumber, success, netBoosts,
+      diceResults, finalResult, flavor, targetNumber, success,
       critSuccessChance, critFailureChance
     } = rollData;
     
-    // Create visual representation of sorted dice
-    const sortedDiceDisplay = this._createDiceDisplay(sortedDice, keyDieIndex, critSuccessChance, critFailureChance, keyDiePosition);
+    // Create tooltip with original roll details
+    const tooltipContent = this._createTooltipContent(rollData);
     
     // Determine overall crit status class
     const critClass = this._determineCritClass(critSuccessChance, critFailureChance);
     
-    // Build boosts/jinxes display
-    const boostJinxDisplay = this._createBoostJinxDisplay(netBoosts);
+    // Build compact main content
+    let content = `
+      <div class="zwolf-roll-compact ${critClass}">
+        <div class="roll-main" title="${tooltipContent}">
+          <div class="roll-stat">${flavor || 'Roll'}</div>
+          <div class="roll-result-big">${finalResult}</div>
+        </div>
+    `;
     
-    // Build main content
-    let content = this._buildMainContent({
-      critClass,
-      diceCount: sortedDice.length,
-      modifier,
-      boostJinxDisplay,
-      sortedDiceDisplay,
-      diceResults,
-      keyDiePosition,
-      keyDie,
-      finalResult
-    });
-    
-    // Add crit chance notifications
+    // Add crit notifications
     content += this._createCritNotifications(critSuccessChance, critFailureChance);
     
     // Add target and outcome if applicable
@@ -77,31 +69,22 @@ export class ZWolfChat {
   }
 
   /**
-   * Create visual representation of dice with highlighting
+   * Create tooltip content with detailed roll information
    * @private
    */
-  static _createDiceDisplay(sortedDice, keyDieIndex, critSuccessChance, critFailureChance, keyDiePosition) {
-    return sortedDice.map((die, index) => {
-      const isKey = index === keyDieIndex;
-      const isAboveKey = index === keyDieIndex + 1;
-      const isBelowKey = index === keyDieIndex - 1;
-      
-      let classes = [ZWOLF_CONSTANTS.CSS_CLASSES.DIE_RESULT];
-      let title = '';
-      
-      if (isKey) {
-        classes.push(ZWOLF_CONSTANTS.CSS_CLASSES.KEY_DIE);
-        title = `Key Die (${keyDiePosition})`;
-      } else if (isAboveKey && critSuccessChance) {
-        classes.push(ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_TRIGGER);
-        title = 'Crit Success Trigger!';
-      } else if (isBelowKey && critFailureChance) {
-        classes.push(ZWOLF_CONSTANTS.CSS_CLASSES.CRIT_TRIGGER);
-        title = 'Crit Failure Trigger!';
-      }
-      
-      return `<span class="${classes.join(' ')}" title="${title}">${die}</span>`;
-    }).join(' ');
+  static _createTooltipContent(rollData) {
+    const { diceResults, sortedDice, keyDie, keyDiePosition, modifier, netBoosts } = rollData;
+    
+    let tooltip = `Original Roll: ${diceResults.join(', ')}`;
+    tooltip += `\nSorted: ${sortedDice.join(', ')}`;
+    tooltip += `\nKey Die (${keyDiePosition}): ${keyDie}`;
+    if (modifier !== 0) tooltip += ` + ${modifier} modifier`;
+    if (netBoosts !== 0) {
+      const boostType = netBoosts > 0 ? 'Boosts' : 'Jinxes';
+      tooltip += `\nNet ${boostType}: ${Math.abs(netBoosts)}`;
+    }
+    
+    return tooltip;
   }
 
   /**
@@ -120,58 +103,20 @@ export class ZWolfChat {
   }
 
   /**
-   * Create the boosts/jinxes display section
-   * @private
-   */
-  static _createBoostJinxDisplay(netBoosts) {
-    if (netBoosts === 0) return '';
-    
-    const boostType = netBoosts > 0 ? 'Boosts' : 'Jinxes';
-    const boostColor = netBoosts > 0 ? 'boost' : 'jinx';
-    
-    return `
-      <div class="boost-jinx-info ${boostColor}">
-        <strong>Net ${boostType}:</strong> ${Math.abs(netBoosts)}
-      </div>
-    `;
-  }
-
-  /**
-   * Build the main content structure
-   * @private
-   */
-  static _buildMainContent({critClass, diceCount, modifier, boostJinxDisplay, sortedDiceDisplay, diceResults, keyDiePosition, keyDie, finalResult}) {
-    return `
-      <div class="zwolf-roll ${critClass}">
-        <div class="roll-formula">${diceCount}d12 + ${modifier}</div>
-        ${boostJinxDisplay}
-        <div class="dice-results">
-          <strong>Dice (sorted):</strong> ${sortedDiceDisplay}
-        </div>
-        <div class="original-order">
-          <strong>Original roll:</strong> ${diceResults.join(', ')}
-        </div>
-        <div class="key-die-info">
-          <strong>Key Die (${keyDiePosition}):</strong> ${keyDie} + ${modifier} modifier = <strong class="final-result">${finalResult}</strong>
-        </div>
-    `;
-  }
-
-  /**
-   * Create critical chance notification section
+   * Create critical chance notification section (compact)
    * @private
    */
   static _createCritNotifications(critSuccessChance, critFailureChance) {
     if (!critSuccessChance && !critFailureChance) return '';
     
-    let content = `<div class="crit-chances">`;
+    let content = `<div class="crit-notification">`;
     
     if (critSuccessChance && critFailureChance) {
-      content += `<strong class="crit-both">${ZWOLF_CONSTANTS.CRIT_MESSAGES.WILD_CARD}</strong>`;
+      content += `<span class="crit-both">${ZWOLF_CONSTANTS.CRIT_MESSAGES.WILD_CARD}</span>`;
     } else if (critSuccessChance) {
-      content += `<strong class="crit-success">${ZWOLF_CONSTANTS.CRIT_MESSAGES.SUCCESS}</strong>`;
+      content += `<span class="crit-success">${ZWOLF_CONSTANTS.CRIT_MESSAGES.SUCCESS}</span>`;
     } else if (critFailureChance) {
-      content += `<strong class="crit-failure">${ZWOLF_CONSTANTS.CRIT_MESSAGES.FAILURE}</strong>`;
+      content += `<span class="crit-failure">${ZWOLF_CONSTANTS.CRIT_MESSAGES.FAILURE}</span>`;
     }
     
     content += `</div>`;
@@ -179,18 +124,18 @@ export class ZWolfChat {
   }
 
   /**
-   * Create target number and outcome section
+   * Create target number and outcome section (compact)
    * @private
    */
   static _createTargetOutcome(targetNumber, success) {
     if (targetNumber === null) return '';
     
     return `
-      <div class="roll-target">
-        <strong>Target:</strong> ${targetNumber}
-      </div>
-      <div class="roll-outcome ${success ? 'success' : 'failure'}">
-        <strong>${success ? 'SUCCESS!' : 'FAILURE'}</strong>
+      <div class="roll-outcome-compact">
+        <span class="target">vs ${targetNumber}</span>
+        <span class="outcome ${success ? 'success' : 'failure'}">
+          ${success ? 'SUCCESS' : 'FAILURE'}
+        </span>
       </div>
     `;
   }

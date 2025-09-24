@@ -1,5 +1,5 @@
 export const preloadHandlebarsTemplates = async function() {
-  return loadTemplates([
+  return foundry.applications.handlebars.loadTemplates([
     // Actor templates
     "systems/zwolf-epic/templates/actor/actor-character-sheet.hbs", 
     "systems/zwolf-epic/templates/actor/actor-mook-sheet.hbs",

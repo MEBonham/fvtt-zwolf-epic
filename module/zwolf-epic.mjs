@@ -105,14 +105,14 @@ Hooks.once('init', async function() {
   };
 
   // Register sheet application classes
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("zwolf-epic", ZWolfActorSheet, {
+  foundry.documents.collections.Actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);
+  foundry.documents.collections.Actors.registerSheet("zwolf-epic", ZWolfActorSheet, {
     types: ["pc", "npc", "eidolon", "mook", "spawn"],
     makeDefault: true,
     label: "Z-Wolf Epic Character Sheet"
   });
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
+  foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
+  foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
     types: ["ancestry", "fundament", "equipment", "knack", "track", "talent"],
     makeDefault: true
   });
@@ -316,6 +316,18 @@ Handlebars.registerHelper('math', function(lvalue, operator, rvalue) {
     '/': lvalue / rvalue,
     '%': lvalue % rvalue
   }[operator];
+});
+
+Handlebars.registerHelper('range', function(start, end) {
+  const result = [];
+  for (let i = start; i <= end; i++) {
+    result.push(i);
+  }
+  return result;
+});
+
+Handlebars.registerHelper('lookup', function(obj, key) {
+  return obj[key];
 });
 
 /* -------------------------------------------- */
