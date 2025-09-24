@@ -61,13 +61,14 @@ Hooks.once('init', async function() {
     character: "Player Character",
     npc: "Non-Player Character",
     eidolon: "Eidolon",
+    mook: "Mook",
     spawn: "Spawn"
   };
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
   Actors.registerSheet("zwolf-epic", ZWolfActorSheet, {
-    types: ["pc", "npc", "eidolon", "spawn"],
+    types: ["pc", "npc", "eidolon", "mook", "spawn"],
     makeDefault: true,
     label: "Z-Wolf Epic Character Sheet"
   });

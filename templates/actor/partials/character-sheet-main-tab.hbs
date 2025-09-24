@@ -1,0 +1,177 @@
+<!-- Main Content Area -->
+<div class="sheet-main-content">
+
+<!-- Navigation Tabs -->
+<nav class="sheet-tabs tabs" data-group="primary">
+<a class="item active" data-tab="main">Main</a>
+<a class="item" data-tab="biography">Biography</a>
+<a class="item" data-tab="inventory">Inventory</a>
+<a class="item" data-tab="configure">Configure</a>
+</nav>
+
+<!-- Sheet Body -->
+<section class="sheet-body">
+
+<!-- Main Tab -->
+<div class="tab main active" data-group="primary" data-tab="main">
+  <div class="abilities-accordion">
+    
+    <!-- Passive Abilities -->
+    <details class="ability-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-shield-alt"></i>
+        Passive Abilities
+        <span class="ability-count">({{abilityCategories.passive.length}})</span>
+      </summary>
+      <div class="ability-list">
+        {{#if abilityCategories.passive.length}}
+          {{#each abilityCategories.passive as |ability|}}
+            <details class="ability-item">
+              <summary class="ability-name">
+                {{ability.name}}
+                {{#if ability.tags}}
+                  <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                {{/if}}
+              </summary>
+              <div class="ability-description">{{{ability.description}}}</div>
+            </details>
+          {{/each}}
+        {{else}}
+          <div class="no-abilities">No passive abilities available</div>
+        {{/if}}
+      </div>
+    </details>
+
+    <!-- Dominant Actions -->
+    <details class="ability-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-fist-raised"></i>
+        Dominant Actions
+        <span class="ability-count">({{math abilityCategories.dominantAction.length "+" abilityCategories.strike.length}})</span>
+      </summary>
+      <div class="ability-list">
+        
+        <!-- Standard Dominant Actions -->
+        {{#if abilityCategories.dominantAction.length}}
+          <div class="ability-subsection">
+            <h6 class="ability-subsection-header" style="width: 100%; text-align: center;">General Actions</h6>
+            {{#each abilityCategories.dominantAction as |ability|}}
+              <details class="ability-item">
+                <summary class="ability-name">
+                  {{ability.name}}
+                  {{#if ability.tags}}
+                    <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                  {{/if}}
+                </summary>
+                <div class="ability-description">{{{ability.description}}}</div>
+              </details>
+            {{/each}}
+          </div>
+        {{/if}}
+        
+        <!-- Strike Actions -->
+        {{#if abilityCategories.strike.length}}
+          <div class="ability-subsection">
+            <h6 class="ability-subsection-header" style="width: 100%; text-align: center;">Strike Actions</h6>
+            {{#each abilityCategories.strike as |ability|}}
+              <details class="ability-item strike-ability">
+                <summary class="ability-name">
+                  {{ability.name}}
+                  {{#if ability.tags}}
+                    <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                  {{/if}}
+                </summary>
+                <div class="ability-description">{{{ability.description}}}</div>
+              </details>
+            {{/each}}
+          </div>
+        {{/if}}
+        
+        <!-- No abilities message -->
+        {{#unless (or abilityCategories.dominantAction.length abilityCategories.strike.length)}}
+          <div class="no-abilities">No dominant actions available</div>
+        {{/unless}}
+        
+      </div>
+    </details>
+
+    <!-- Swift Actions -->
+    <details class="ability-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-running"></i>
+        Swift Actions
+        <span class="ability-count">({{abilityCategories.swiftAction.length}})</span>
+      </summary>
+      <div class="ability-list">
+        {{#if abilityCategories.swiftAction.length}}
+          {{#each abilityCategories.swiftAction as |ability|}}
+            <details class="ability-item">
+              <summary class="ability-name">
+                {{ability.name}}
+                {{#if ability.tags}}
+                  <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                {{/if}}
+              </summary>
+              <div class="ability-description">{{{ability.description}}}</div>
+            </details>
+          {{/each}}
+        {{else}}
+          <div class="no-abilities">No swift actions available</div>
+        {{/if}}
+      </div>
+    </details>
+
+    <!-- Reactions -->
+    <details class="ability-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-bolt"></i>
+        Reactions
+        <span class="ability-count">({{abilityCategories.reaction.length}})</span>
+      </summary>
+      <div class="ability-list">
+        {{#if abilityCategories.reaction.length}}
+          {{#each abilityCategories.reaction as |ability|}}
+            <details class="ability-item">
+              <summary class="ability-name">
+                {{ability.name}}
+                {{#if ability.tags}}
+                  <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                {{/if}}
+              </summary>
+              <div class="ability-description">{{{ability.description}}}</div>
+            </details>
+          {{/each}}
+        {{else}}
+          <div class="no-abilities">No reactions available</div>
+        {{/if}}
+      </div>
+    </details>
+
+    <!-- Free Actions -->
+    <details class="ability-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-hand-point-up"></i>
+        Free Actions
+        <span class="ability-count">({{abilityCategories.free.length}})</span>
+      </summary>
+      <div class="ability-list">
+        {{#if abilityCategories.free.length}}
+          {{#each abilityCategories.free as |ability|}}
+            <details class="ability-item">
+              <summary class="ability-name">
+                {{ability.name}}
+                {{#if ability.tags}}
+                  <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+                {{/if}}
+              </summary>
+              <div class="ability-description">{{{ability.description}}}</div>
+            </details>
+          {{/each}}
+        {{else}}
+          <div class="no-abilities">No free actions available</div>
+        {{/if}}
+      </div>
+    </details>
+
+  </div>
+</div>

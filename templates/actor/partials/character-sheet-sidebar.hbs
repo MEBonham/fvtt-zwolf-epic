@@ -1,0 +1,39 @@
+<!-- Progressions Sidebar -->
+<aside class="progressions-sidebar">
+  <div class="progressions-container"><!-- Updated progression groups section for actor-character-sheet.html -->
+
+  <!-- Dynamic Progression Groups -->
+  {{#each progressions as |progression key|}}
+  <div class="progression-group {{key}}" data-progression="{{key}}">
+    <div class="progression-header">
+      <span class="progression-name">
+        <i class="fas fa-dice-d12 progression-die" 
+          data-progression="{{key}}" 
+          data-bonus="{{progression.bonus}}"
+          title="Roll {{progression.name}} ({{#if (gte progression.bonus 0)}}+{{/if}}{{progression.bonus}})"></i>
+        {{progression.name}}
+      </span>
+      <span class="progression-bonus">{{#if (gte progression.bonus 0)}}+{{/if}}{{progression.bonus}}</span>
+    </div>
+    <div class="progression-content">
+      <div class="progression-stats">
+        {{#if progression.stats.length}}
+          {{#each progression.stats as |stat|}}
+          <div class="stat-item">
+            <div class="stat-rollable" data-stat="{{stat.key}}" data-type="{{stat.type}}" data-progression="{{key}}">
+              <span class="stat-icon {{stat.type}}"></span>
+              <span class="stat-name">{{stat.name}}</span>
+            </div>
+            <span class="stat-value">{{#if (gte stat.value 0)}}+{{/if}}{{stat.value}}</span>
+          </div>
+          {{/each}}
+        {{else}}
+          <div class="stat-placeholder">No stats assigned yet</div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+  {{/each}}
+    
+  </div>
+</aside>
