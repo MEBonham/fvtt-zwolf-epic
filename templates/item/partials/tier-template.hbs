@@ -1,51 +1,45 @@
-<!-- Reusable Tier Template Component -->
-<!-- Usage: {{> tier-template tierNumber=1 tierData=system.tiers.tier1 allTierData=system.tiers editable=editable}} -->
-
 <div class="tier-content" data-tier="{{tierNumber}}">
   <div class="tier-header">
-    <h3>{{localize 'ZWOLF.Tier'}} {{tierNumber}}</h3>
-    <p class="notes">{{localize 'ZWOLF.TierHint'}}</p>
+    <h3>Tier {{tierNumber}}</h3>
+    <p class="notes">Configure tier {{tierNumber}} of this track</p>
   </div>
 
   <!-- Talent Menu Section -->
-  <div class="talent-menu editable-menu">
-    <div class="talent-menu-header">
-      <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} {{tierNumber}} {{localize 'ZWOLF.TalentMenu'}}</h4>
-    </div>
-
-    <!-- Show all previous tier menus as read-only -->
-    {{#each (range 1 tierNumber) as |prevTier|}}
+  <div class="talent-menu">
     <div class="form-group">
-      <label><i class="fas fa-star"></i> {{localize 'ZWOLF.Tier'}} {{prevTier}} {{localize 'ZWOLF.TalentMenu'}}</label>
-      <div class="editor-content readonly-content">{{{lookup (lookup allTierData (concat "tier" prevTier)) "talentMenu.enrichedDescription"}}}</div>
-    </div>
-    {{/each}}
-
-    <!-- Current tier menu (editable) -->
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.AvailableTalents'}}</label>
-      <div class="form-fields">
-        {{editor tierData.talentMenu.description target=(concat "system.tiers.tier" tierNumber ".talentMenu.description") button=true editable=editable engine="prosemirror" collaborate=false}}
+      <label>Talent Menu</label>
+      <div class="editor-container">
+        {{editor tierData.talentMenu target=(concat "system.tiers.tier" tierNumber ".talentMenu") button=true owner=../owner editable=../editable}}
       </div>
-      <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
+      <p class="notes">List talents available at this tier</p>
     </div>
   </div>
 
   <!-- Character Tags -->
   <div class="form-group">
-    <label>{{localize 'ZWOLF.CharacterTags'}}</label>
-    <input type="text" name="system.tiers.tier{{tierNumber}}.characterTags" value="{{join tierData.characterTags}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
-    <p class="notes">{{localize 'ZWOLF.TierCharacterTagsHint'}}</p>
+    <label>Character Tags</label>
+    <input type="text" name="system.tiers.tier{{tierNumber}}.characterTags" value="{{join tierData.characterTags}}" placeholder="Tag1, Tag2"/>
+    <p class="notes">Tags added to characters at this tier</p>
   </div>
+
+  <!-- Side Effects Section -->
+  <details class="tier-optional-content">
+    <summary><i class="fas fa-cog"></i> Side Effects</summary>
+    <div class="optional-content">
+      {{> side-effects-form 
+          sideEffects=tierData.sideEffects 
+          pathPrefix=(concat "system.tiers.tier" tierNumber ".sideEffects")}}
+    </div>
+  </details>
 
   <!-- Granted Abilities Section -->
   <details class="tier-optional-content" data-tier="{{tierNumber}}">
-    <summary><i class="fas fa-magic"></i> {{localize 'ZWOLF.TierGrantedAbilities'}}</summary>
+    <summary><i class="fas fa-magic"></i> Granted Abilities</summary>
     <div class="optional-content">
       <div class="granted-abilities">
         <div class="abilities-header">
-          <h4>{{localize 'ZWOLF.GrantedAbilities'}}</h4>
-          <a class="ability-control" data-action="add-tier-ability" data-tier="{{tierNumber}}" title="{{localize 'ZWOLF.AddAbility'}}">
+          <h4>Granted Abilities</h4>
+          <a class="ability-control" data-action="add-tier-ability" data-tier="{{tierNumber}}" title="Add Ability">
             <i class="fas fa-plus"></i>
           </a>
         </div>
@@ -65,17 +59,6 @@
           {{/each}}
         </div>
       </div>
-    </div>
-  </details>
-
-  <!-- Side Effects Section -->
-  <details class="tier-optional-content">
-    <summary><i class="fas fa-cog"></i> {{localize 'ZWOLF.TierSideEffects'}}</summary>
-    <div class="optional-content">
-      {{> side-effects-form 
-          sideEffects=tierData.sideEffects 
-          pathPrefix=(concat "system.tiers.tier" tierNumber ".sideEffects")
-          showKnacksProvided=true}}
     </div>
   </details>
 </div>

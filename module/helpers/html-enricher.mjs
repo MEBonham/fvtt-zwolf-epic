@@ -4,6 +4,7 @@ const TextEditorImpl = foundry.applications.ux.TextEditor.implementation;
 
 /**
  * Helper class for enriching HTML content with links, references, etc.
+ * Designed to handle both array and object data structures robustly.
  */
 export class HtmlEnricher {
 
@@ -47,34 +48,79 @@ export class HtmlEnricher {
   }
 
   /**
+   * Helper method to determine if data should be treated as a collection
+   * @param {*} data - Data to check
+   * @returns {boolean} - True if it's a non-empty array or object with numeric keys
+   */
+  static isCollection(data) {
+    if (Array.isArray(data)) {
+      return true;
+    }
+    if (data && typeof data === 'object') {
+      const keys = Object.keys(data);
+      return keys.length > 0 && keys.some(key => !isNaN(parseInt(key)));
+    }
+    return false;
+  }
+
+  /**
+   * Helper method to iterate over collections (arrays or objects) safely
+   * @param {Array|Object} collection - Collection to iterate
+   * @param {Function} callback - Callback function (item, index/key) => enrichedItem
+   * @returns {Array|Object} - Result in same format as input
+   */
+  static async mapCollection(collection, callback) {
+    if (Array.isArray(collection)) {
+      const result = [];
+      for (let i = 0; i < collection.length; i++) {
+        if (collection[i] !== undefined && collection[i] !== null) {
+          result[i] = await callback(collection[i], i);
+        }
+      }
+      return result;
+    } else if (collection && typeof collection === 'object') {
+      const result = {};
+      for (const [key, item] of Object.entries(collection)) {
+        if (item !== undefined && item !== null) {
+          result[key] = await callback(item, key);
+        }
+      }
+      return result;
+    }
+    return collection;
+  }
+
+  /**
    * Enrich granted abilities descriptions
-   * @param {Array} abilities - Array of granted abilities
+   * @param {Array|Object} abilities - Array or object of granted abilities
    * @param {Item} item - The item for context
-   * @returns {Promise<Array>} - Abilities with enriched descriptions
+   * @returns {Promise<Object|Array>} - Abilities with enriched descriptions (preserves input format)
    */
   static async enrichGrantedAbilities(abilities, item) {
-    if (!Array.isArray(abilities)) {
-      return [];
+    if (!this.isCollection(abilities)) {
+      // Return empty structure matching expected format
+      return Array.isArray(abilities) ? [] : {};
     }
 
-    const enrichedAbilities = [];
-    for (let i = 0; i < abilities.length; i++) {
-      const ability = { ...abilities[i] };
+    return await this.mapCollection(abilities, async (ability, index) => {
+      if (!ability || typeof ability !== 'object') {
+        return ability;
+      }
+
+      const enrichedAbility = { ...ability };
       
       if (ability.description) {
-        ability.enrichedDescription = await this.enrichContent(
+        enrichedAbility.enrichedDescription = await this.enrichContent(
           ability.description,
           item,
-          `ability ${i} description`
+          `ability ${index} description`
         );
       } else {
-        ability.enrichedDescription = "";
+        enrichedAbility.enrichedDescription = "";
       }
       
-      enrichedAbilities.push(ability);
-    }
-
-    return enrichedAbilities;
+      return enrichedAbility;
+    });
   }
 
   /**
@@ -85,6 +131,10 @@ export class HtmlEnricher {
    * @returns {Promise<Object>} - Enriched tier data
    */
   static async enrichTrackTierData(tierData, tierNum, item) {
+    if (!tierData || typeof tierData !== 'object') {
+      return tierData;
+    }
+
     const enriched = { ...tierData };
 
     // Enrich talent menu description
@@ -96,8 +146,8 @@ export class HtmlEnricher {
       );
     }
 
-    // Enrich granted abilities for this tier
-    if (enriched.grantedAbilities && Array.isArray(enriched.grantedAbilities)) {
+    // Enrich granted abilities for this tier - handle both arrays and objects
+    if (this.isCollection(enriched.grantedAbilities)) {
       enriched.grantedAbilities = await this.enrichGrantedAbilities(
         enriched.grantedAbilities,
         item
@@ -114,6 +164,10 @@ export class HtmlEnricher {
    * @returns {Promise<Object>} - Enriched tiers data
    */
   static async enrichAllTrackTiers(tiersData, item) {
+    if (!tiersData || typeof tiersData !== 'object') {
+      return tiersData;
+    }
+
     const enrichedTiers = { ...tiersData };
 
     for (let tierNum = 1; tierNum <= 5; tierNum++) {
@@ -132,32 +186,109 @@ export class HtmlEnricher {
 
   /**
    * Enrich ancestry knack menus
-   * @param {Array} knackMenus - Array of knack menus
+   * @param {Array|Object} knackMenus - Array or object of knack menus
    * @param {Item} item - The item for context
-   * @returns {Promise<Array>} - Enriched knack menus
+   * @returns {Promise<Array|Object>} - Enriched knack menus (preserves input format)
    */
   static async enrichKnackMenus(knackMenus, item) {
-    if (!Array.isArray(knackMenus)) {
-      return [];
+    if (!this.isCollection(knackMenus)) {
+      // Return empty structure matching expected format
+      return Array.isArray(knackMenus) ? [] : {};
     }
 
-    const enrichedMenus = [];
-    for (let i = 0; i < knackMenus.length; i++) {
-      const menu = { ...knackMenus[i] };
+    return await this.mapCollection(knackMenus, async (menu, index) => {
+      if (!menu || typeof menu !== 'object') {
+        return menu;
+      }
+
+      const enrichedMenu = { ...menu };
       
       if (menu.description) {
-        menu.enrichedDescription = await this.enrichContent(
+        enrichedMenu.enrichedDescription = await this.enrichContent(
           menu.description,
           item,
-          `knack menu ${i} description`
+          `knack menu ${index} description`
         );
       } else {
-        menu.enrichedDescription = "";
+        enrichedMenu.enrichedDescription = "";
       }
       
-      enrichedMenus.push(menu);
+      return enrichedMenu;
+    });
+  }
+
+  /**
+   * Generic method to enrich any collection of items with descriptions
+   * @param {Array|Object} collection - Collection of items to enrich
+   * @param {Item} item - The item for context
+   * @param {string} collectionName - Name for logging purposes
+   * @returns {Promise<Array|Object>} - Enriched collection (preserves input format)
+   */
+  static async enrichDescriptions(collection, item, collectionName = 'items') {
+    if (!this.isCollection(collection)) {
+      return collection;
     }
 
-    return enrichedMenus;
+    return await this.mapCollection(collection, async (collectionItem, index) => {
+      if (!collectionItem || typeof collectionItem !== 'object') {
+        return collectionItem;
+      }
+
+      const enrichedItem = { ...collectionItem };
+      
+      // Enrich main description field
+      if (collectionItem.description) {
+        enrichedItem.enrichedDescription = await this.enrichContent(
+          collectionItem.description,
+          item,
+          `${collectionName} ${index} description`
+        );
+      }
+      
+      // Also handle nested descriptions if they exist
+      const descriptionFields = ['details', 'effect', 'summary', 'notes'];
+      for (const field of descriptionFields) {
+        if (collectionItem[field] && typeof collectionItem[field] === 'string') {
+          enrichedItem[`enriched${field.charAt(0).toUpperCase() + field.slice(1)}`] = await this.enrichContent(
+            collectionItem[field],
+            item,
+            `${collectionName} ${index} ${field}`
+          );
+        }
+      }
+      
+      return enrichedItem;
+    });
+  }
+
+  /**
+   * Enrich any object that may contain description fields
+   * @param {Object} data - Data object to enrich
+   * @param {Item} item - The item for context
+   * @param {string} dataName - Name for logging purposes
+   * @returns {Promise<Object>} - Enriched data object
+   */
+  static async enrichObject(data, item, dataName = 'object') {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    const enriched = { ...data };
+    
+    // Standard description fields to enrich
+    const descriptionFields = ['description', 'details', 'effect', 'summary', 'notes', 'flavor'];
+    
+    for (const field of descriptionFields) {
+      if (data[field] && typeof data[field] === 'string') {
+        const enrichedFieldName = `enriched${field.charAt(0).toUpperCase() + field.slice(1)}`;
+        enriched[enrichedFieldName] = await this.enrichContent(
+          data[field],
+          item,
+          `${dataName} ${field}`
+        );
+      }
+    }
+    
+    return enriched;
   }
 }

@@ -111,10 +111,11 @@ Hooks.once('init', async function() {
     makeDefault: true,
     label: "Z-Wolf Epic Character Sheet"
   });
-  foundry.documents.collections.Items.unregisterSheet("core", foundry.appv1.sheets.ItemSheet);
+  foundry.documents.collections.Items.unregisterSheet("core", foundry.applications.sheets.ItemSheetV2);
   foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
     types: ["ancestry", "fundament", "equipment", "knack", "track", "talent"],
-    makeDefault: true
+    makeDefault: true,
+    label: "Z-Wolf Epic Item Sheet"
   });
 
   // Preload Handlebars templates.
@@ -328,6 +329,10 @@ Handlebars.registerHelper('range', function(start, end) {
 
 Handlebars.registerHelper('lookup', function(obj, key) {
   return obj[key];
+});
+
+Handlebars.registerHelper('extractNumber', function(str) {
+  return str.replace(/\D/g, '');
 });
 
 /* -------------------------------------------- */

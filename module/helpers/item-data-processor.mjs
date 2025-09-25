@@ -33,22 +33,42 @@ export class ItemDataProcessor {
 
   /**
    * Ensure granted abilities array has proper structure
-   * @param {Array} abilities - Raw abilities array
-   * @returns {Array} - Validated abilities array
+   * @param {Array|Object} abilities - Raw abilities array or object
+   * @returns {Object} - Validated abilities as object (not array)
    */
   static validateGrantedAbilities(abilities) {
-    if (!Array.isArray(abilities)) {
-      return [];
+    // Always return an object, not an array - this matches your data structure
+    const result = {};
+    
+    if (Array.isArray(abilities)) {
+      // Convert array to object
+      abilities.forEach((ability, index) => {
+        if (ability) {  // Only include non-null/undefined abilities
+          result[index.toString()] = {
+            name: ability.name || "",
+            tags: typeof ability.tags === 'string' ? ability.tags : "",
+            type: ability.type || "passive", 
+            description: ability.description || ""
+          };
+        }
+      });
+    } else if (abilities && typeof abilities === 'object') {
+      // Clean up object, preserving existing structure
+      Object.keys(abilities).forEach(key => {
+        const index = parseInt(key);
+        if (!isNaN(index) && abilities[key]) {  // Only include valid indices with data
+          result[key] = {
+            name: abilities[key].name || "",
+            tags: typeof abilities[key].tags === 'string' ? abilities[key].tags : "",
+            type: abilities[key].type || "passive",
+            description: abilities[key].description || ""
+          };
+        }
+      });
     }
-
-    return abilities.map((ability, index) => {
-      return {
-        name: ability.name || "",
-        tags: typeof ability.tags === 'string' ? ability.tags : "",
-        type: ability.type || "passive",
-        description: ability.description || ""
-      };
-    });
+    
+    // Don't auto-fill missing indices - let deletions stay deleted
+    return result;
   }
 
   /**

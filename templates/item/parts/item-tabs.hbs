@@ -1,0 +1,19 @@
+{{!-- templates/item/parts/item-tabs.hbs --}}
+<nav class="sheet-tabs tabs" data-group="primary">
+  {{#if (eq itemType "fundament")}}
+    <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
+    <a class="item" data-tab="formulae">{{localize 'ZWOLF.Formulae'}}</a>
+    <a class="item" data-tab="abilities">{{localize 'ZWOLF.GrantedAbilities'}}</a>
+  {{else if (eq itemType "track")}}
+    <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
+    <a class="item" data-tab="tiers">{{localize 'ZWOLF.Tiers'}}</a>
+  {{else}}
+    <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
+    {{#if system.grantedAbilities}}
+      <a class="item" data-tab="abilities">{{localize 'ZWOLF.GrantedAbilities'}}</a>
+    {{/if}}
+    {{#if (or (eq itemType "knack") (eq itemType "talent") (eq itemType "ancestry") (eq itemType "equipment"))}}
+      <a class="item" data-tab="effects">{{localize 'ZWOLF.Effects'}}</a>
+    {{/if}}
+  {{/if}}
+</nav>

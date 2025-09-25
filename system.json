@@ -15,8 +15,11 @@
   }],
   "esmodules": ["module/zwolf-epic.mjs"],
   "styles": [
+    "styles/variables.css",
     "styles/zwolf-epic.css",
-    "styles/dice.css"
+    "styles/dice.css",
+    "styles/item-sheets.css",
+    "styles/editor-styles.css"
   ],
   "scripts": [],
   "packs": [],
@@ -27,8 +30,10 @@
       "path": "lang/en.json"
     }
   ],
-  "gridDistance": 1,
-  "gridUnits": "m",
+  "grid": {
+    "distance": 1,
+    "units": "m"
+  },
   "primaryTokenAttribute": "vitalityPoints",
   "secondaryTokenAttribute": null,
   "url": "https://github.com/MEBonham/fvtt-zwolf-epic",

@@ -49,18 +49,28 @@ export class ZWolfItem extends Item {
    * @param {Object} abilityData - Optional initial ability data
    * @returns {Promise<void>}
    */
-  async addGrantedAbility(abilityData = {}) {
+  async addGrantedAbility() {
+    const abilities = this.system.grantedAbilities || {};
+    
+    // Find the next available index
+    const indices = Object.keys(abilities).map(k => parseInt(k)).filter(n => !isNaN(n));
+    const nextIndex = indices.length > 0 ? Math.max(...indices) + 1 : 0;
+    
+    // Create new ability object
     const newAbility = {
-      name: abilityData.name || "",
-      tags: abilityData.tags || "", // Always a string
-      type: abilityData.type || "passive",
-      description: abilityData.description || ""
+      name: "",
+      tags: "",
+      type: "passive",
+      description: ""
     };
-
-    const abilities = foundry.utils.duplicate(this.system.grantedAbilities || []);
-    abilities.push(newAbility);
-
-    await this.update({ "system.grantedAbilities": abilities });
+    
+    // Add to abilities object
+    abilities[nextIndex] = newAbility;
+    
+    // Update the document
+    await this.update({
+      [`system.grantedAbilities`]: abilities
+    });
   }
 
   /**
@@ -69,12 +79,15 @@ export class ZWolfItem extends Item {
    * @returns {Promise<void>}
    */
   async removeGrantedAbility(index) {
-    const abilities = foundry.utils.duplicate(this.system.grantedAbilities || []);
+    const abilities = foundry.utils.deepClone(this.system.grantedAbilities || {});
     
-    if (index >= 0 && index < abilities.length) {
-      abilities.splice(index, 1);
-      await this.update({ "system.grantedAbilities": abilities });
-    }
+    // Remove the ability at the given index
+    delete abilities[index];
+    
+    // Update the document
+    await this.update({
+      [`system.grantedAbilities`]: abilities
+    });
   }
 
   /**
@@ -286,59 +299,5 @@ export class ZWolfItem extends Item {
         <div class="item-description">${description}</div>
       </div>`;
     }
-  }
-
-  /**
-   * Test fundament functions with mock data
-   * @param {Object} testData - Test parameters
-   * @returns {Object} - Test results
-   */
-  testFunctions(testData = {}) {
-    if (this.type !== 'fundament') {
-      return { error: "Function testing only available for fundament items" };
-    }
-
-    const mockData = {
-      level: testData.level || 1,
-      vitalityBoostCount: testData.vitalityBoostCount || 0,
-      attributes: testData.attributes || {
-        agility: 2, fortitude: 2, perception: 2, willpower: 2
-      },
-      skills: testData.skills || {
-        acumen: 1, athletics: 1, brawn: 1, dexterity: 1,
-        glibness: 1, influence: 1, insight: 1, stealth: 1
-      }
-    };
-
-    const results = {
-      level: mockData.level,
-      vitalityBoosts: mockData.vitalityBoostCount
-    };
-
-    // Test vitality function
-    try {
-      const vitalityFunction = this.system.vitalityFunction || "";
-      if (vitalityFunction.trim()) {
-        results.vitality = ItemDataProcessor.evaluateFunction(vitalityFunction, mockData);
-      } else {
-        results.vitalityError = "No vitality function defined";
-      }
-    } catch (error) {
-      results.vitalityError = error.message;
-    }
-
-    // Test coast function
-    try {
-      const coastFunction = this.system.coastFunction || "";
-      if (coastFunction.trim()) {
-        results.coast = ItemDataProcessor.evaluateFunction(coastFunction, mockData);
-      } else {
-        results.coastError = "No coast function defined";
-      }
-    } catch (error) {
-      results.coastError = error.message;
-    }
-
-    return results;
   }
 }

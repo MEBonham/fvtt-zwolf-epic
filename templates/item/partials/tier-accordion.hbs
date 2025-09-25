@@ -1,0 +1,60 @@
+<details class="tier-accordion-section" data-tier="{{tierNumber}}">
+  <summary class="tier-accordion-header">
+    <i class="fas fa-chevron-right accordion-icon"></i>
+    <span class="tier-title">Tier {{tierNumber}}</span>
+    <span class="tier-talent-preview">{{{tierData.enrichedTalentMenu}}}</span>
+  </summary>
+  
+  <div class="tier-accordion-content">
+    <!-- Talent Menu Section -->
+    <div class="talent-menu">
+      <div class="form-group">
+        <label>Talent Menu</label>
+        <div class="editor-container">
+          {{editor tierData.talentMenu target=(concat "system.tiers.tier" tierNumber ".talentMenu") button=true owner=../owner editable=../editable}}
+        </div>
+        <p class="notes">List talents available at this tier</p>
+      </div>
+    </div>
+
+    <!-- Character Tags -->
+    <div class="form-group">
+      <label>Character Tags</label>
+      <input type="text" name="system.tiers.tier{{tierNumber}}.characterTags" value="{{join tierData.characterTags}}" placeholder="Tag1, Tag2"/>
+      <p class="notes">Tags added to characters at this tier</p>
+    </div>
+
+    <!-- Side Effects Section (no longer in details) -->
+    <div class="tier-side-effects">
+      <h4><i class="fas fa-cog"></i> Side Effects</h4>
+      {{> side-effects-form 
+          sideEffects=tierData.sideEffects 
+          pathPrefix=(concat "system.tiers.tier" tierNumber ".sideEffects")}}
+    </div>
+
+    <!-- Granted Abilities Section (no longer in details) -->
+    <div class="tier-granted-abilities" data-tier="{{tierNumber}}">
+      <div class="abilities-header">
+        <h4><i class="fas fa-magic"></i> Granted Abilities</h4>
+        <a class="ability-control" data-action="add-tier-ability" data-tier="{{tierNumber}}" title="Add Ability">
+          <i class="fas fa-plus"></i>
+        </a>
+      </div>
+      
+      <div class="abilities-list">
+        {{#each tierData.grantedAbilities as |ability index|}}
+        {{> ability-item 
+            ability=ability 
+            index=index 
+            nameTarget=(concat "system.tiers.tier" ../tierNumber ".grantedAbilities." index ".name")
+            tagsTarget=(concat "system.tiers.tier" ../tierNumber ".grantedAbilities." index ".tags")
+            typeTarget=(concat "system.tiers.tier" ../tierNumber ".grantedAbilities." index ".type")
+            descriptionTarget=(concat "system.tiers.tier" ../tierNumber ".grantedAbilities." index ".description")
+            deleteAction="delete-tier-ability"
+            tierNumber=../tierNumber
+            editable=../editable}}
+        {{/each}}
+      </div>
+    </div>
+  </div>
+</details>

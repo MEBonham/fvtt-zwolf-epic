@@ -1,9 +1,6 @@
-<!-- Reusable Side Effects Form Component -->
-<!-- Usage: {{> side-effects-form sideEffects=system.sideEffects pathPrefix="system.sideEffects" showKnacksProvided=false showMaxBulkBoost=false}} -->
-
+{{!-- templates/item/partials/side-effects-form.hbs --}}
 <div class="side-effects-form">
   
-  {{#if showKnacksProvided}}
   <!-- Knacks Provided Section (Talents and Tiers only) -->
   <div class="knacks-provided">
     <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
@@ -15,7 +12,6 @@
       <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
     </div>
   </div>
-  {{/if}}
   
   <!-- Progression Upgrades Section -->
   <div class="progression-upgrades">
@@ -70,7 +66,7 @@
         <input type="number" name="{{pathPrefix}}.nightsightRadius" 
                value="{{sideEffects.nightsightRadius}}" 
                data-dtype="Number" min="0" step="0.5" 
-               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 1.0" style="width: 120px;"/>
+               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 1.0"/>
         <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
       </div>
       <p class="notes">{{localize 'ZWOLF.NightsightRadiusHint'}}</p>
@@ -83,14 +79,13 @@
         <input type="number" name="{{pathPrefix}}.darkvisionRadius" 
                value="{{sideEffects.darkvisionRadius}}" 
                data-dtype="Number" min="0" step="0.5" 
-               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 0.5" style="width: 120px;"/>
+               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 0.5"/>
         <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
       </div>
       <p class="notes">{{localize 'ZWOLF.DarkvisionRadiusHint'}}</p>
     </div>
   </div>
 
-  {{#if showMaxBulkBoost}}
   <!-- Bulk Capacity Upgrades Section (Equipment only) -->
   <div class="bulk-upgrades">
     <h4><i class="fas fa-weight-hanging"></i> {{localize 'ZWOLF.BulkCapacityUpgrades'}}</h4>
@@ -103,13 +98,12 @@
         <input type="number" name="{{pathPrefix}}.maxBulkBoost" 
                value="{{sideEffects.maxBulkBoost}}" 
                data-dtype="Number" min="0" step="1" 
-               placeholder="0" style="width: 120px;"/>
+               placeholder="0"/>
         <span class="input-suffix">{{localize 'ZWOLF.Bulk'}}</span>
       </div>
       <p class="notes">{{localize 'ZWOLF.MaxBulkBoostHint'}}</p>
     </div>
   </div>
-  {{/if}}
   
   <!-- Placeholder for Future Side Effects -->
   <div class="future-side-effects">

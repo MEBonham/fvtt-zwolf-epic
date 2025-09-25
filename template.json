@@ -119,17 +119,17 @@
     "ancestry": {
       "templates": ["base", "sideEffectsCapable"],
       "buildPoints": 0,
-      "ancestryTags": [],
+      "tags": [],
       "characterTags": [],
       "sizeOptions": ["medium"],
       "required": "",
       "knacksProvided": 0,
-      "knackMenus": []
+      "knackMenu": ""
     },
     "fundament": {
       "templates": ["base", "sideEffectsCapable"],
-      "buildPoints": 0,
-      "knacksProvided": 0,
+      "buildPoints": 15,
+      "knacksProvided": 4,
       "requiredKnackTag": "",
       "vitalityKey": "",
       "coastKey": ""
@@ -155,7 +155,7 @@
       "required": "",
       "tiers": {
         "tier1": {
-          "talentMenu": {},
+          "talentMenu": "",
           "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
@@ -168,7 +168,7 @@
           }
         },
         "tier2": {
-          "talentMenu": {},
+          "talentMenu": "",
           "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
@@ -181,7 +181,7 @@
           }
         },
         "tier3": {
-          "talentMenu": {},
+          "talentMenu": "",
           "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
@@ -194,7 +194,7 @@
           }
         },
         "tier4": {
-          "talentMenu": {},
+          "talentMenu": "",
           "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {
@@ -207,7 +207,7 @@
           }
         },
         "tier5": {
-          "talentMenu": {},
+          "talentMenu": "",
           "grantedAbilities": {},
           "characterTags": [],
           "sideEffects": {

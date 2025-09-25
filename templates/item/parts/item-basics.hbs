@@ -1,0 +1,229 @@
+{{!-- templates/item/parts/item-basics.hbs --}}
+<div class="tab" data-group="primary" data-tab="basics">
+  {{#if (eq itemType "fundament")}}
+    <div class="fundament-basics">
+      <div class="compact-form-group">
+        <label>{{localize 'ZWOLF.BuildPoints'}}</label>
+        <input type="number" name="system.buildPoints" value="{{system.buildPoints}}" data-dtype="Number" min="0"/>
+      </div>
+
+      <div class="compact-form-group">
+        <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+        <input type="number" name="system.knacksProvided" value="{{system.knacksProvided}}" data-dtype="Number" min="0"/>
+        <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+      </div>
+
+      <div class="compact-form-group basics-full-width">
+        <label>{{localize 'ZWOLF.RequiredKnackTag'}}</label>
+        <input type="text" name="system.requiredKnackTag" value="{{system.requiredKnackTag}}" placeholder="{{localize 'ZWOLF.RequiredKnackTagPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.RequiredKnackTagHint'}}</p>
+      </div>
+    </div>
+  {{else if (eq itemType "knack")}}
+    <div class="knack-basics">
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Tags'}}</label>
+        <input type="text" name="system.tags" value="{{tagsString}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.KnackTagsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+        <input type="text" name="system.characterTags" value="{{characterTagsString}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.CharacterTagsHint'}}</p>
+      </div>
+    </div>
+  {{else if (eq itemType "equipment")}}
+    <div class="equipment-basics">
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Tags'}}</label>
+        <input type="text" name="system.tags" value="{{tagsString}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.TagsHint'}}</p>
+      </div>
+
+      <!-- Physical Properties -->
+      <div class="form-group">
+        <div class="form-fields">
+          <div class="form-group stacked">
+            <label>{{localize 'ZWOLF.Quantity'}}</label>
+            <select name="system.quantity">
+              <option value="1" {{selected '1' system.quantity}}>1</option>
+              <option value="many" {{selected 'many' system.quantity}}>{{localize 'ZWOLF.Many'}}</option>
+            </select>
+            <p class="notes">{{localize 'ZWOLF.QuantityHint'}}</p>
+          </div>
+          <div class="form-group stacked">
+            <label>{{localize 'ZWOLF.Price'}}</label>
+            <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" min="0" step="0.01"/>
+            <p class="notes">{{localize 'ZWOLF.PriceHint'}}</p>
+          </div>
+          <div class="form-group stacked">
+            <label>{{localize 'ZWOLF.Bulk'}}</label>
+            <input type="number" name="system.bulk" value="{{system.bulk}}" data-dtype="Number" min="0" step="0.1"/>
+            <p class="notes">{{localize 'ZWOLF.BulkHint'}}</p>
+          </div>
+          <div class="form-group stacked">
+            <label>{{localize 'ZWOLF.Structure'}}</label>
+            <input type="number" name="system.structure" value="{{system.structure}}" data-dtype="Number" min="0"/>
+            <p class="notes">{{localize 'ZWOLF.StructureHint'}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placement -->
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Placement'}}</label>
+        <select name="system.placement" {{#unless item.actor}}disabled{{/unless}}>
+          <option value="stowed" {{selected 'stowed' system.placement}}>{{localize 'ZWOLF.Stowed'}}</option>
+          <option value="wielded" {{selected 'wielded' system.placement}}>{{localize 'ZWOLF.Wielded'}}</option>
+          <option value="worn" {{selected 'worn' system.placement}}>{{localize 'ZWOLF.Worn'}}</option>
+          <option value="readily-available" {{selected 'readily-available' system.placement}}>{{localize 'ZWOLF.ReadilyAvailable'}}</option>
+          <option value="not-carried" {{selected 'not-carried' system.placement}}>{{localize 'ZWOLF.NotCarried'}}</option>
+        </select>
+        {{#if item.actor}}
+          <p class="notes">{{localize 'ZWOLF.PlacementHint'}}</p>
+        {{else}}
+          <p class="notes">{{localize 'ZWOLF.PlacementDisabledHint'}}</p>
+        {{/if}}
+      </div>
+
+      <!-- Required Placement -->
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.RequiredPlacement'}}</label>
+        <select name="system.requiredPlacement" data-dtype="String">
+          <option value="" {{selected '' system.requiredPlacement}}>{{localize 'ZWOLF.NoRequirement'}}</option>
+          <option value="wielded" {{selected 'wielded' system.requiredPlacement}}>{{localize 'ZWOLF.Wielded'}}</option>
+          <option value="worn" {{selected 'worn' system.requiredPlacement}}>{{localize 'ZWOLF.Worn'}}</option>
+          <option value="readily_available" {{selected 'readily_available' system.requiredPlacement}}>{{localize 'ZWOLF.ReadilyAvailable'}}</option>
+          <option value="stowed" {{selected 'stowed' system.requiredPlacement}}>{{localize 'ZWOLF.Stowed'}}</option>
+          <option value="not_carried" {{selected 'not_carried' system.requiredPlacement}}>{{localize 'ZWOLF.NotCarried'}}</option>
+        </select>
+        <p class="notes">{{localize 'ZWOLF.RequiredPlacementHint'}}</p>
+        
+        {{#if system.requiredPlacement}}
+          <div class="placement-warning-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>{{localize 'ZWOLF.PlacementRequirementActive'}}:</strong> 
+            {{localize 'ZWOLF.PlacementRequirementActiveDescription' placement=system.requiredPlacement}}
+          </div>
+        {{/if}}
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Description'}}</label>
+        <div class="editor-container">
+          {{editor system.description target="system.description" button=true owner=owner editable=editable}}
+        </div>
+      </div>
+    </div>
+  {{else if (eq itemType "talent")}}
+    <div class="talent-basics">
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Tags'}}</label>
+        <input type="text" name="system.tags" value="{{tagsString}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.TalentTagsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+        <input type="text" name="system.characterTags" value="{{characterTagsString}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.CharacterTagsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Required'}}</label>
+        <div class="editor-container">
+          {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+        </div>
+        <p class="notes">{{localize 'ZWOLF.TalentRequiredHint'}}</p>
+      </div>
+
+      {{#if system.required}}
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+        <input type="number" name="system.knacksProvided" value="{{system.knacksProvided}}" data-dtype="Number" min="0" readonly/>
+        <p class="notes">{{localize 'ZWOLF.TalentKnacksProvidedHint'}}</p>
+      </div>
+      {{/if}}
+    </div>
+  {{else if (eq itemType "ancestry")}}
+    <div class="ancestry-basics">
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.BuildPoints'}}</label>
+        <input type="number" name="system.buildPoints" value="{{system.buildPoints}}" data-dtype="Number" min="0"/>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Tags'}}</label>
+        <input type="text" name="system.tags" value="{{tagsString}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.AncestryTagsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.CharacterTags'}}</label>
+        <input type="text" name="system.characterTags" value="{{characterTagsString}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.CharacterTagsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Required'}}</label>
+        <div class="editor-container">
+          {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.SizeOptions'}}</label>
+        <select name="system.sizeOptions" multiple size="8" style="width: 100%;">
+          <option value="diminutive" {{#if (includes system.sizeOptions "diminutive")}}selected{{/if}}>{{localize 'ZWOLF.Diminutive'}}</option>
+          <option value="tiny" {{#if (includes system.sizeOptions "tiny")}}selected{{/if}}>{{localize 'ZWOLF.Tiny'}}</option>
+          <option value="small" {{#if (includes system.sizeOptions "small")}}selected{{/if}}>{{localize 'ZWOLF.Small'}}</option>
+          <option value="medium" {{#if (includes system.sizeOptions "medium")}}selected{{/if}}>{{localize 'ZWOLF.Medium'}}</option>
+          <option value="large" {{#if (includes system.sizeOptions "large")}}selected{{/if}}>{{localize 'ZWOLF.Large'}}</option>
+          <option value="huge" {{#if (includes system.sizeOptions "huge")}}selected{{/if}}>{{localize 'ZWOLF.Huge'}}</option>
+          <option value="gargantuan" {{#if (includes system.sizeOptions "gargantuan")}}selected{{/if}}>{{localize 'ZWOLF.Gargantuan'}}</option>
+          <option value="colossal" {{#if (includes system.sizeOptions "colossal")}}selected{{/if}}>{{localize 'ZWOLF.Colossal'}}</option>
+        </select>
+        <p class="notes">{{localize 'ZWOLF.SizeOptionsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+        <input type="number" name="system.knacksProvided" value="{{system.knacksProvided}}" data-dtype="Number" min="0"/>
+        <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.KnackMenu'}}</label>
+        <div class="editor-container">
+          {{editor system.knackMenu target="system.knackMenu" button=true owner=owner editable=editable}}
+        </div>
+        <p class="notes">{{localize 'ZWOLF.KnackMenuHint'}}</p>
+      </div>
+    </div>
+  {{else if (eq itemType "track")}}
+    <div class="track-basics">
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Tags'}}</label>
+        <input type="text" name="system.tags" value="{{tagsString}}" placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"/>
+        <p class="notes">{{localize 'ZWOLF.TrackTagsHint'}}</p>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Required'}}</label>
+        <div class="editor-container">
+          {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+        </div>
+        <p class="notes">{{localize 'ZWOLF.TrackRequiredHint'}}</p>
+      </div>
+    </div>
+  {{else}}
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.Description'}}</label>
+      <div class="editor-container">
+        {{editor system.description target="system.description" button=true owner=owner editable=editable}}
+      </div>
+    </div>
+  {{/if}}
+</div>
