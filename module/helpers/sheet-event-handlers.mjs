@@ -2,6 +2,7 @@
 
 import { ZWolfDice } from "../dice/index.mjs";
 import { RestHandler } from "./rest-handler.mjs";
+import { ActorDataCalculator } from "./actor-data-calculator.mjs";
 
 export class SheetEventHandlers {
   
@@ -156,33 +157,47 @@ export class SheetEventHandlers {
     });
   }
 
-  async _onStatRoll(event) {
-    event.preventDefault();
-    const element = event.currentTarget;
-    const statKey = element.dataset.stat;
-    const statType = element.dataset.type;
-    const progression = element.dataset.progression;
-    
-    // Get progression bonuses
-    const level = this.actor.system.level ?? 0;
-    const progressionOnlyLevel = this._getProgressionOnlyLevel();
-    const bonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
-    const modifier = bonuses[progression];
-    
-    // Create flavor text
-    const statNameEl = element.querySelector('.stat-name');
-    const statName = statNameEl ? statNameEl.textContent : statKey;
-    const flavor = `${statName} (${progression.charAt(0).toUpperCase() + progression.slice(1)})`;
-    
-    const netBoosts = ZWolfDice.getNetBoosts();
-    
-    await ZWolfDice.roll({
-      netBoosts: netBoosts,
-      modifier: modifier,
-      flavor: flavor,
-      actor: this.actor
-    });
-  }
+async _onStatRoll(event) {
+  event.preventDefault();
+  const element = event.currentTarget;
+  
+  console.log("Z-Wolf | Element HTML:", element.outerHTML);
+  console.log("Z-Wolf | All datasets:", element.dataset);
+  
+  const statKey = element.dataset.stat;
+  const statType = element.dataset.type;
+  const progression = element.dataset.progression;
+  // ... rest of method
+  
+  console.log("Z-Wolf | _onStatRoll - statKey:", statKey);
+  console.log("Z-Wolf | _onStatRoll - statType:", statType);
+  console.log("Z-Wolf | _onStatRoll - progression:", progression);
+  
+  // Get progression bonuses
+  const level = this.actor.system.level ?? 0;
+  const progressionOnlyLevel = this._getProgressionOnlyLevel();
+  const bonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+  const modifier = bonuses[progression];
+  
+  console.log("Z-Wolf | _onStatRoll - bonuses:", bonuses);
+  console.log("Z-Wolf | _onStatRoll - modifier for", progression, ":", modifier);
+  
+  // Create flavor text
+  const statNameEl = element.querySelector('.stat-name');
+  const statName = statNameEl ? statNameEl.textContent : statKey;
+  const flavor = `${statName} (${progression.charAt(0).toUpperCase() + progression.slice(1)})`;
+  
+  console.log("Z-Wolf | _onStatRoll - flavor:", flavor);
+  
+  const netBoosts = ZWolfDice.getNetBoosts();
+  
+  await ZWolfDice.roll({
+    netBoosts: netBoosts,
+    modifier: modifier,
+    flavor: flavor,
+    actor: this.actor
+  });
+}
 
   async _onSpeedRoll(event) {
     event.preventDefault();
@@ -216,7 +231,7 @@ export class SheetEventHandlers {
 
   async _onProgressionSliderChange(event) {
     event.preventDefault();
-  
+
     // Check if sliders are locked
     const isLocked = this.actor.system.buildPointsLocked || false;
     if (isLocked) {
@@ -246,11 +261,101 @@ export class SheetEventHandlers {
     }
     
     if (updatePath && newProgression) {
-      await this.actor.update({ [updatePath]: newProgression });
+      // Update without triggering render
+      await this.actor.update({ [updatePath]: newProgression }, { render: false });
       console.log(`Z-Wolf Epic | Updated ${statKey} (${statType}) to ${newProgression}`);
       
-      this.sheet.render(false);
+      // Manually update the display
+      this._updateBuildPointsDisplay();
     }
+  }
+
+  /**
+   * Update the build points display and progression values without full re-render
+   */
+  _updateBuildPointsDisplay() {
+    console.log("Z-Wolf Epic | _updateBuildPointsDisplay called");
+    
+    const html = this.sheet.element;
+    const calculator = new ActorDataCalculator(this.actor);
+    
+    // Get level and progression data
+    const level = this.actor.system.level ?? 0;
+    const progressionOnlyLevel = calculator._getProgressionOnlyLevel(this.actor);
+    
+    console.log("Z-Wolf Epic | Level:", level, "Progression Only:", progressionOnlyLevel);
+    
+    // Calculate values
+    const buildPoints = calculator._calculateTotalBP(
+      this.actor.system,
+      this.actor.items.get(this.actor.system.ancestryId)?.toObject(),
+      this.actor.items.get(this.actor.system.fundamentId)?.toObject()
+    );
+    const progressionBonuses = calculator._calculateProgressionBonuses(level, progressionOnlyLevel);
+    
+    console.log("Z-Wolf Epic | Build Points:", buildPoints);
+    console.log("Z-Wolf Epic | Progression Bonuses:", progressionBonuses);
+    
+    // Update the BP total display
+    const bpTotalEl = html.querySelector('.bp-total');
+    console.log("Z-Wolf Epic | BP Total Element:", bpTotalEl);
+    
+    if (bpTotalEl) {
+      bpTotalEl.textContent = `${buildPoints.total} / ${buildPoints.max} BP`;
+      
+      // Update classes for visual feedback
+      bpTotalEl.classList.remove('negative', 'over-max', 'at-max');
+      if (buildPoints.total < 0) {
+        bpTotalEl.classList.add('negative');
+      } else if (buildPoints.total > buildPoints.max) {
+        bpTotalEl.classList.add('over-max');
+      } else if (buildPoints.total === buildPoints.max) {
+        bpTotalEl.classList.add('at-max');
+      }
+    }
+    
+    // Update the breakdown
+    const breakdownEl = html.querySelector('.bp-breakdown');
+    console.log("Z-Wolf Epic | BP Breakdown Element:", breakdownEl);
+    
+    if (breakdownEl) {
+      breakdownEl.innerHTML = `
+        <span class="bp-breakdown-item">Attributes: ${buildPoints.attributes} BP</span>
+        <span class="bp-breakdown-divider">•</span>
+        <span class="bp-breakdown-item">Skills: ${buildPoints.skills} BP</span>
+      `;
+    }
+    
+    // Update progression values in sidebar for all attributes and skills
+    const statRollables = html.querySelectorAll('.stat-rollable');
+    console.log("Z-Wolf Epic | Found stat-rollable elements:", statRollables.length);
+    
+    statRollables.forEach(rollableEl => {
+      const statKey = rollableEl.dataset.stat;
+      const statType = rollableEl.dataset.type;
+      
+      if (statKey && statType) {
+        let progression;
+        if (statType === 'attribute') {
+          progression = this.actor.system.attributes[statKey]?.progression || 'moderate';
+        } else if (statType === 'skill') {
+          progression = this.actor.system.skills[statKey]?.progression || 'mediocre';
+        }
+        
+        if (progression && progressionBonuses[progression] !== undefined) {
+          const statItem = rollableEl.closest('.stat-item');
+          const valueEl = statItem?.querySelector('.stat-value');
+          if (valueEl) {
+            const bonus = progressionBonuses[progression];
+            const newText = bonus >= 0 ? `+${bonus}` : `${bonus}`;
+            console.log(`Z-Wolf Epic | Updating ${statKey} (${statType}) to ${newText}`);
+            valueEl.textContent = newText;
+          }
+        }
+      }
+    });
+    
+    console.log("Z-Wolf Epic | _updateBuildPointsDisplay completed");
   }
 
   async _onLevelChange(event) {

@@ -1,3 +1,67 @@
+/* ===== CHAT SIDEBAR LAYOUT FIX ===== */
+div#sidebar-content > section {
+  padding: 1px !important;
+}
+
+/* Only apply flex layout when chat tab is active */
+#sidebar #chat.chat-sidebar.active {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align to left instead of stretch or flex-end */
+}
+
+/* Hide chat when not active */
+#sidebar #chat.chat-sidebar:not(.active) {
+  display: none;
+}
+
+#sidebar #chat.active .chat-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  width: 100%; /* Full width for scroll area */
+}
+
+#sidebar #chat.active .chat-form {
+  flex: 0 0 auto;
+  width: 100%; /* Full width */
+  padding: 0 8px; /* Add horizontal padding */
+  box-sizing: border-box;
+}
+
+#sidebar #chat.active #chat-controls {
+  margin-bottom: 4px;
+}
+
+#sidebar #chat.active textarea#chat-message {
+  width: 100%; /* Full width within padded parent */
+  box-sizing: border-box;
+}
+
+#sidebar #chat.active .zwolf-boost-control {
+  flex: 0 0 auto;
+  margin: 0 8px 8px 8px; /* Match form padding */
+  width: calc(100% - 16px); /* Account for margins */
+  box-sizing: border-box;
+}
+
+/* ===== SIDEBAR TAB VISIBILITY FIX ===== */
+/* Ensure only active sidebar tabs are visible */
+#sidebar .sidebar-tab {
+  display: none;
+}
+
+#sidebar .sidebar-tab.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Specifically for chat tab */
+#sidebar #chat.sidebar-tab.active {
+  display: flex;
+  flex-direction: column;
+}
+
 /* ===== BOOST CONTROL PANEL ===== */
 
 .zwolf-boost-control {
@@ -5,9 +69,9 @@
   border: 1px solid var(--z-wolf-text-muted);
   border-radius: 5px;
   padding: 10px;
-  margin: 5px 5px 5px 15px;
+  margin: 0;
   color: var(--z-wolf-surface);
-  width: calc(100% - 20px);
+  width: 100%;
   box-sizing: border-box;
   position: relative;
   z-index: 100;

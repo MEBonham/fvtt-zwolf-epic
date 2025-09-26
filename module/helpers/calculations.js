@@ -21,12 +21,12 @@ export const COAST_FUNCTIONS = {
 };
 
 // Helper functions to get the actual calculation function
-export function calculateVitality(functionKey, level, attributes, skills, vitalityBoostCount) {
+export function calculateVitality(functionKey, level, vitalityBoostCount) {
   const func = VITALITY_FUNCTIONS[functionKey] || VITALITY_FUNCTIONS.standard;
   return func(level, vitalityBoostCount);
 }
 
-export function calculateCoast(functionKey, level, attributes, skills) {
+export function calculateCoast(functionKey, level) {
   const func = COAST_FUNCTIONS[functionKey] || COAST_FUNCTIONS.standard;
   return func(level);
 }

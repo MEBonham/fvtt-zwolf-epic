@@ -108,6 +108,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   /** @override */
   _onRender(context, options) {
     console.log("🟡 _onRender called");
+    console.log("🟡 Actor type:", this.document.type);
     console.log("🟡 Context:", context);
     console.log("🟡 Element:", this.element);
     
@@ -123,9 +124,10 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
       dropHandler.bindDropZones(this.element);
     }
     
-    // Apply lock state (only for characters)
-    if (this.document.type === "character") {
+    // Apply lock state for all character types (pc, npc, eidolon)
+    if (['pc', 'npc', 'eidolon'].includes(this.document.type)) {
       const isLocked = this.document.system.buildPointsLocked || false;
+      console.log("🟡 Applying lock state:", isLocked);
       eventHandlers.updateSliderStates(isLocked);
     }
     
@@ -139,7 +141,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     
     // Handle rich text editor saves
     for (const [key, value] of Object.entries(submitData)) {
-      if (typeof value === 'staring' && value.includes('<') && this._isRichTextField(key)) {
+      if (typeof value === 'string' && value.includes('<') && this._isRichTextField(key)) {
         const { EditorSaveHandler } = await import("../helpers/editor-save-handler.mjs");
         
         const handled = await EditorSaveHandler.handleEditorSave(this.document, key, null, value);

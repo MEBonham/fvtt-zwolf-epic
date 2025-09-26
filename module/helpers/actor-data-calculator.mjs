@@ -1,4 +1,5 @@
 // /helpers/actor-data-calculator.mjs - All data preparation and calculation logic
+import { calculateVitality, calculateCoast } from "./calculations.js";
 
 export class ActorDataCalculator {
   
@@ -727,33 +728,42 @@ export class ActorDataCalculator {
         }
       }
       
-      if (item.system && item.system.grantedAbilities && Array.isArray(item.system.grantedAbilities)) {
-        console.log(`Z-Wolf Epic | Found ${item.system.grantedAbilities.length} granted abilities in ${item.name}`);
+      if (item.system && item.system.grantedAbilities) {
+        // Convert to array of abilities, whether it's an object or already an array
+        const abilitiesArray = Array.isArray(item.system.grantedAbilities) 
+          ? item.system.grantedAbilities 
+          : Object.values(item.system.grantedAbilities);
         
-        item.system.grantedAbilities.forEach((ability, index) => {
-          console.log(`Z-Wolf Epic | Processing ability ${index + 1}:`, ability);
+        if (abilitiesArray.length > 0) {
+          console.log(`Z-Wolf Epic | Found ${abilitiesArray.length} granted abilities in ${item.name}`);
           
-          if (ability.name && ability.type) {
-            const categoryKey = ability.type;
+          abilitiesArray.forEach((ability, index) => {
+            console.log(`Z-Wolf Epic | Processing ability ${index + 1}:`, ability);
             
-            console.log(`Z-Wolf Epic | Ability "${ability.name}" has type "${ability.type}" (category: ${categoryKey})`);
-            
-            if (categories.hasOwnProperty(categoryKey)) {
-              categories[categoryKey].push({
-                name: ability.name,
-                tags: ability.tags || '',
-                description: ability.description || 'No description provided.',
-                itemName: item.name,
-                itemId: item.id
-              });
-              console.log(`Z-Wolf Epic | Added "${ability.name}" to ${categoryKey} category with tags: "${ability.tags || 'none'}"`);
+            if (ability.name && ability.type) {
+              const categoryKey = ability.type;
+              
+              console.log(`Z-Wolf Epic | Ability "${ability.name}" has type "${ability.type}" (category: ${categoryKey})`);
+              
+              if (categories.hasOwnProperty(categoryKey)) {
+                categories[categoryKey].push({
+                  name: ability.name,
+                  tags: ability.tags || '',
+                  description: ability.description || 'No description provided.',
+                  itemName: item.name,
+                  itemId: item.id
+                });
+                console.log(`Z-Wolf Epic | Added "${ability.name}" to ${categoryKey} category with tags: "${ability.tags || 'none'}"`);
+              } else {
+                console.warn(`Z-Wolf Epic | Unknown category "${categoryKey}" for ability "${ability.name}"`);
+              }
             } else {
-              console.warn(`Z-Wolf Epic | Unknown category "${categoryKey}" for ability "${ability.name}"`);
+              console.warn(`Z-Wolf Epic | Ability missing required properties:`, ability);
             }
-          } else {
-            console.warn(`Z-Wolf Epic | Ability missing required properties:`, ability);
-          }
-        });
+          });
+        } else {
+          console.log(`Z-Wolf Epic | No grantedAbilities found in ${item.name} (${source})`);
+        }
       } else {
         console.log(`Z-Wolf Epic | No grantedAbilities found in ${item.name} (${source})`);
       }
@@ -799,32 +809,39 @@ export class ActorDataCalculator {
       unlockedTiers.forEach(tierNumber => {
         const tierData = track.system.tiers?.[`tier${tierNumber}`];
         
-        if (tierData && tierData.grantedAbilities && Array.isArray(tierData.grantedAbilities)) {
-          console.log(`Z-Wolf Epic | Processing ${tierData.grantedAbilities.length} abilities from ${track.name} tier ${tierNumber}`);
+        if (tierData && tierData.grantedAbilities) {
+          // Convert to array, whether it's an object or already an array
+          const tierAbilitiesArray = Array.isArray(tierData.grantedAbilities)
+            ? tierData.grantedAbilities
+            : Object.values(tierData.grantedAbilities);
           
-          tierData.grantedAbilities.forEach((ability, index) => {
-            console.log(`Z-Wolf Epic | Processing tier ${tierNumber} ability ${index + 1}:`, ability);
+          if (tierAbilitiesArray.length > 0) {
+            console.log(`Z-Wolf Epic | Processing ${tierAbilitiesArray.length} abilities from ${track.name} tier ${tierNumber}`);
             
-            if (ability.name && ability.type) {
-              const categoryKey = ability.type;
+            tierAbilitiesArray.forEach((ability, index) => {
+              console.log(`Z-Wolf Epic | Processing tier ${tierNumber} ability ${index + 1}:`, ability);
               
-              if (categories.hasOwnProperty(categoryKey)) {
-                categories[categoryKey].push({
-                  name: ability.name,
-                  tags: ability.tags || '',
-                  description: ability.description || 'No description provided.',
-                  itemName: `${track.name} (Tier ${tierNumber})`,
-                  itemId: track.id,
-                  tierSource: tierNumber
-                });
-                console.log(`Z-Wolf Epic | Added "${ability.name}" from ${track.name} tier ${tierNumber} to ${categoryKey} category`);
+              if (ability.name && ability.type) {
+                const categoryKey = ability.type;
+                
+                if (categories.hasOwnProperty(categoryKey)) {
+                  categories[categoryKey].push({
+                    name: ability.name,
+                    tags: ability.tags || '',
+                    description: ability.description || 'No description provided.',
+                    itemName: `${track.name} (Tier ${tierNumber})`,
+                    itemId: track.id,
+                    tierSource: tierNumber
+                  });
+                  console.log(`Z-Wolf Epic | Added "${ability.name}" from ${track.name} tier ${tierNumber} to ${categoryKey} category`);
+                } else {
+                  console.warn(`Z-Wolf Epic | Unknown category "${categoryKey}" for tier ability "${ability.name}"`);
+                }
               } else {
-                console.warn(`Z-Wolf Epic | Unknown category "${categoryKey}" for tier ability "${ability.name}"`);
+                console.warn(`Z-Wolf Epic | Tier ability missing required properties:`, ability);
               }
-            } else {
-              console.warn(`Z-Wolf Epic | Tier ability missing required properties:`, ability);
-            }
-          });
+            });
+          }
         }
       });
     });
@@ -861,7 +878,7 @@ export class ActorDataCalculator {
 
   _calculateFundamentValues(level, fundament = null) {
     const defaultValues = {
-      maxVitality: 10,
+      maxVitality: 12,
       coastNumber: 4
     };
 
@@ -871,61 +888,54 @@ export class ActorDataCalculator {
     }
 
     const vitalityBoostCount = this.actor.system.vitalityBoostCount || 0;
-
-    const functionData = {
-      level: level,
-      vitalityBoostCount: vitalityBoostCount,
-      attributes: this.actor.system.attributes || {},
-      skills: this.actor.system.skills || {}
-    };
-
     const calculatedValues = { ...defaultValues };
 
-    // Calculate vitality if function exists
+    // Calculate vitality using the function key
     if (fundament.system.vitalityFunction && fundament.system.vitalityFunction.trim()) {
       try {
-        const vitalityResult = this._evaluateFunction(fundament.system.vitalityFunction, functionData);
+        const vitalityResult = calculateVitality(
+          fundament.system.vitalityFunction, 
+          level, 
+          null, // attributes not needed
+          null, // skills not needed
+          vitalityBoostCount
+        );
+        
         if (typeof vitalityResult === 'number' && !isNaN(vitalityResult) && vitalityResult > 0) {
           calculatedValues.maxVitality = Math.floor(vitalityResult);
-          console.log(`Z-Wolf Epic | Calculated max vitality: ${calculatedValues.maxVitality}`);
+          console.log(`Z-Wolf Epic | Calculated max vitality using "${fundament.system.vitalityFunction}": ${calculatedValues.maxVitality}`);
         } else {
           console.warn(`Z-Wolf Epic | Invalid vitality function result: ${vitalityResult}, using default`);
         }
       } catch (error) {
-        console.error(`Z-Wolf Epic | Error calculating vitality from fundament function:`, error);
-        ui.notifications.warn(`Error in vitality function: ${error.message}`);
+        console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
+        ui.notifications.warn(`Error in vitality calculation: ${error.message}`);
       }
     }
 
-    // Calculate coast number if function exists
+    // Calculate coast number using the function key
     if (fundament.system.coastFunction && fundament.system.coastFunction.trim()) {
       try {
-        const coastResult = this._evaluateFunction(fundament.system.coastFunction, functionData);
+        const coastResult = calculateCoast(
+          fundament.system.coastFunction,
+          level,
+          null, // attributes not needed
+          null  // skills not needed
+        );
+        
         if (typeof coastResult === 'number' && !isNaN(coastResult) && coastResult > 0) {
           calculatedValues.coastNumber = Math.floor(coastResult);
-          console.log(`Z-Wolf Epic | Calculated coast number: ${calculatedValues.coastNumber}`);
+          console.log(`Z-Wolf Epic | Calculated coast number using "${fundament.system.coastFunction}": ${calculatedValues.coastNumber}`);
         } else {
           console.warn(`Z-Wolf Epic | Invalid coast function result: ${coastResult}, using default`);
         }
       } catch (error) {
-        console.error(`Z-Wolf Epic | Error calculating coast number from fundament function:`, error);
-        ui.notifications.warn(`Error in coast function: ${error.message}`);
+        console.error(`Z-Wolf Epic | Error calculating coast number:`, error);
+        ui.notifications.warn(`Error in coast calculation: ${error.message}`);
       }
     }
 
     return calculatedValues;
-  }
-
-  _evaluateFunction(functionString, data) {
-    const { level, attributes, skills, vitalityBoostCount } = data;
-    
-    const functionWrapper = `
-      (function() {
-        ${functionString}
-      })();
-    `;
-    
-    return eval(functionWrapper);
   }
 
   // =================================

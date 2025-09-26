@@ -2,14 +2,14 @@
   <div class="progressions-container">
     {{#if isMook}}
       <!-- Mook: Only Poor and Good progressions -->
-      {{#each progressions as |progression key|}}
-        {{#if (or (eq key "poor") (eq key "good"))}}
-          <div class="progression-group {{key}} collapsed" data-progression="{{key}}">
-            <div class="progression-header" data-action="toggleProgression" data-progression="{{key}}">
+      {{#each progressions as |progression progressionKey|}}
+        {{#if (or (eq progressionKey "poor") (eq progressionKey "good"))}}
+          <div class="progression-group {{progressionKey}} collapsed" data-progression="{{progressionKey}}">
+            <div class="progression-header" data-action="toggleProgression" data-progression="{{progressionKey}}">
               <span class="progression-name">
                 <i class="fas fa-dice-d12 progression-die" 
                   data-action="rollProgression"
-                  data-progression="{{key}}" 
+                  data-progression="{{progressionKey}}" 
                   data-bonus="{{progression.bonus}}"
                   title="Roll {{progression.name}} ({{#if (gte progression.bonus 0)}}+{{/if}}{{progression.bonus}})"></i>
                 <i class="fas fa-chevron-down"></i>
@@ -22,7 +22,7 @@
                 {{#if progression.stats.length}}
                   {{#each progression.stats as |stat|}}
                   <div class="stat-item">
-                    <div class="stat-rollable" data-action="rollStat" data-stat="{{stat.key}}" data-type="{{stat.type}}" data-progression="{{../key}}">
+                    <div class="stat-rollable" data-action="rollStat" data-stat="{{stat.key}}" data-type="{{stat.type}}" data-progression="{{progressionKey}}">
                       <span class="stat-icon {{stat.type}}"></span>
                       <span class="stat-name">{{stat.name}}</span>
                     </div>
@@ -39,13 +39,13 @@
       {{/each}}
     {{else}}
       <!-- Character/Spawn: All progression types -->
-      {{#each progressions as |progression key|}}
-      <div class="progression-group {{key}} collapsed" data-progression="{{key}}">
-        <div class="progression-header" data-action="toggleProgression" data-progression="{{key}}">
+      {{#each progressions as |progression progressionKey|}}
+      <div class="progression-group {{progressionKey}} collapsed" data-progression="{{progressionKey}}">
+        <div class="progression-header" data-action="toggleProgression" data-progression="{{progressionKey}}">
           <span class="progression-name">
             <i class="fas fa-dice-d12 progression-die" 
               data-action="rollProgression"
-              data-progression="{{key}}" 
+              data-progression="{{progressionKey}}" 
               data-bonus="{{progression.bonus}}"
               title="Roll {{progression.name}} ({{#if (gte progression.bonus 0)}}+{{/if}}{{progression.bonus}})"></i>
             <i class="fas fa-chevron-down"></i>
@@ -58,7 +58,7 @@
             {{#if progression.stats.length}}
               {{#each progression.stats as |stat|}}
               <div class="stat-item">
-                <div class="stat-rollable" data-action="rollStat" data-stat="{{stat.key}}" data-type="{{stat.type}}" data-progression="{{../key}}">
+                <div class="stat-rollable" data-action="rollStat" data-stat="{{stat.key}}" data-type="{{stat.type}}" data-progression="{{progressionKey}}">
                   <span class="stat-icon {{stat.type}}"></span>
                   <span class="stat-name">{{stat.name}}</span>
                 </div>

@@ -17,6 +17,8 @@
       },
       "character": {
         "level": 3,
+        "ancestryId": null,
+        "fundamentId": null,
         "staminaPoints": {
           "value": 4,
           "min": 0,
@@ -89,7 +91,7 @@
       "wealth": 0
     },
     "eidolon": {
-      "templates": ["base", "summoned", "attributesAndSkills"]
+      "templates": ["base", "character", "summoned", "attributesAndSkills"]
     },
     "mook": {
       "templates": ["base", "summoned"]
@@ -119,8 +121,8 @@
     "ancestry": {
       "templates": ["base", "sideEffectsCapable"],
       "buildPoints": 0,
-      "tags": [],
-      "characterTags": [],
+      "tags": "",
+      "characterTags": "",
       "sizeOptions": ["medium"],
       "required": "",
       "knacksProvided": 0,
@@ -136,8 +138,8 @@
     },
     "equipment": {
       "templates": ["base", "sideEffectsCapable"],
-      "tags": [],
-      "quantity": 1,
+      "tags": "",
+      "quantity": "1",
       "placement": "stowed",
       "requiredPlacement": "",
       "price": 0,
@@ -146,18 +148,18 @@
     },
     "knack": {
       "templates": ["base", "sideEffectsCapable"],
-      "tags": [],
-      "characterTags": []
+      "tags": "",
+      "characterTags": ""
     },
     "track": {
       "templates": ["base", "sideEffectsCapable"],
-      "tags": [],
+      "tags": "",
       "required": "",
       "tiers": {
         "tier1": {
           "talentMenu": "",
           "grantedAbilities": {},
-          "characterTags": [],
+          "characterTags": "",
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
@@ -170,7 +172,7 @@
         "tier2": {
           "talentMenu": "",
           "grantedAbilities": {},
-          "characterTags": [],
+          "characterTags": "",
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
@@ -183,7 +185,7 @@
         "tier3": {
           "talentMenu": "",
           "grantedAbilities": {},
-          "characterTags": [],
+          "characterTags": "",
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
@@ -196,7 +198,7 @@
         "tier4": {
           "talentMenu": "",
           "grantedAbilities": {},
-          "characterTags": [],
+          "characterTags": "",
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
@@ -209,7 +211,7 @@
         "tier5": {
           "talentMenu": "",
           "grantedAbilities": {},
-          "characterTags": [],
+          "characterTags": "",
           "sideEffects": {
             "speedProgression": "",
             "toughnessTNProgression": "",
@@ -223,8 +225,8 @@
     },
     "talent": {
       "templates": ["base", "sideEffectsCapable"], 
-      "tags": [],
-      "characterTags": [],
+      "tags": "",
+      "characterTags": "",
       "required": "",
       "knacksProvided": 0
     }

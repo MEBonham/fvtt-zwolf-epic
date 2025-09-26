@@ -6,6 +6,8 @@
 // Import document classes.
 import { ZWolfActor } from "./documents/Actor.mjs";
 import { ZWolfItem } from "./documents/Item.mjs";
+import * as actorDataModels from "./data/actor-base.mjs";
+import * as itemDataModels from "./data/item-base.mjs";
 // Import sheet classes.
 import ZWolfActorSheet from "./sheets/actor-sheet.mjs";
 import ZWolfItemSheet from "./sheets/item-sheet.mjs";
@@ -94,6 +96,25 @@ Hooks.once('init', async function() {
   // Define custom Document classes
   CONFIG.Actor.documentClass = ZWolfActor;
   CONFIG.Item.documentClass = ZWolfItem;
+  
+  // Register Actor DataModels
+  CONFIG.Actor.dataModels = {
+    pc: actorDataModels.PCData,
+    npc: actorDataModels.NPCData,
+    eidolon: actorDataModels.EidolonData,
+    mook: actorDataModels.MookData,
+    spawn: actorDataModels.SpawnData
+  };
+  
+  // Register Item DataModels
+  CONFIG.Item.dataModels = {
+    ancestry: itemDataModels.AncestryData,
+    fundament: itemDataModels.FundamentData,
+    equipment: itemDataModels.EquipmentData,
+    knack: itemDataModels.KnackData,
+    track: itemDataModels.TrackData,
+    talent: itemDataModels.TalentData
+  };
 
   // Register actor types with proper labels
   CONFIG.Actor.typeLabels = {

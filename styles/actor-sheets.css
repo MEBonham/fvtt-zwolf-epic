@@ -11,7 +11,7 @@
   flex-direction: column;
 }
 
-.application .window-content {
+.application.actor .window-content {
   height: 100%;
   display: grid !important;
   grid-template-columns: 200px 1fr;
@@ -48,6 +48,7 @@
   transition: transform 0.2s ease;
   flex-shrink: 0;
   object-fit: cover;
+  overflow: hidden;
 }
 
 .sheet-header .profile-img:hover {
@@ -72,6 +73,7 @@
   width: 100%;
   padding: 0.5rem;
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .sheet-header .charname input::placeholder {
@@ -111,6 +113,7 @@
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-size: 0.9em;
+  overflow: hidden;
 }
 
 .header-field input[type="number"] {
@@ -119,6 +122,10 @@
 
 .header-field select {
   min-width: 100px;
+}
+
+.header-field.tags-field {
+  flex-grow: 1;
 }
 
 .size-source {
@@ -134,6 +141,7 @@
   min-width: 150px;
   flex: 1;
   font-size: 0.9em;
+  overflow: hidden;
 }
 
 /* Base Creature Selector */
@@ -192,6 +200,7 @@
   padding: 0.25rem;
   text-align: center;
   border-radius: 3px;
+  overflow: hidden;
 }
 
 .resource-values .sep {
@@ -241,6 +250,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85em;
+  overflow: hidden;
 }
 
 .rest-button:hover {
@@ -313,7 +323,7 @@
 
 .progressions-sidebar {
   width: 200px;
-  background: var(--z-wolf-background-dark);
+  background: var(--z-wolf-secondary);
   border-right: 2px solid var(--z-wolf-border);
   grid-column: 1;
   grid-row: 2 / -1;
@@ -330,6 +340,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .progression-group.collapsed .progression-content {
@@ -342,7 +353,6 @@
   align-items: center;
   padding: 0.5rem;
   background: var(--z-wolf-primary);
-  color: white;
   font-weight: 600;
   font-size: 0.9em;
   cursor: pointer;
@@ -397,6 +407,7 @@
   padding: 0.25rem;
   border-radius: 3px;
   transition: background-color 0.2s ease;
+  overflow: hidden;
 }
 
 .stat-item:hover {
@@ -416,6 +427,7 @@
   height: 12px;
   border-radius: 2px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .stat-icon.attribute {
@@ -446,31 +458,26 @@
 }
 
 /* Progression type specific colors */
-.progression-group.mediocre .progression-header {
-  background: #6c757d;
+.progression-group.mediocre .progression-header,
+.progression-group.poor .progression-header {
+  background: var(--z-wolf-danger);
+  color: var(--z-wolf-text);
 }
 
 .progression-group.moderate .progression-header {
-  background: var(--z-wolf-primary);
+  background: var(--z-wolf-warning);
+  color: var(--z-wolf-text);
 }
 
-.progression-group.specialty .progression-header {
-  background: var(--z-wolf-accent);
+.progression-group.specialty .progression-header,
+.progression-group.good .progression-header {
+  background: var(--z-wolf-success);
   color: var(--z-wolf-text);
 }
 
 .progression-group.awesome .progression-header {
-  background: linear-gradient(135deg, var(--z-wolf-accent), #d4af37);
+  background: var(--z-wolf-info);
   color: var(--z-wolf-text);
-}
-
-/* Mook specific progressions */
-.progression-group.poor .progression-header {
-  background: #8b4513;
-}
-
-.progression-group.good .progression-header {
-  background: var(--z-wolf-success);
 }
 
 /* ===================
@@ -483,7 +490,7 @@
   gap: 0.5rem;
   display: flex; /* This is for its children, not conflicting with grid */
   padding: 0.5rem 1rem 0;
-  background: var(--z-wolf-background);
+  background: var(--z-wolf-secondary);
   border-bottom: 2px solid var(--z-wolf-border);
 }
 
@@ -493,13 +500,14 @@
   border: 1px solid var(--z-wolf-border);
   border-bottom: none;
   border-radius: 6px 6px 0 0;
-  padding: 0.2rem 1rem;
+  padding: 0 1.4rem;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
   text-decoration: none;
   position: relative;
   bottom: -2px;
+  overflow: hidden;
 }
 
 .sheet-tabs .item:hover:not(.active) {
@@ -557,6 +565,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
 .ability-category[open] {
@@ -627,6 +636,7 @@
   border-radius: 4px;
   margin-bottom: 0.5rem;
   background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
 }
 
 .ability-item[open] {
@@ -697,6 +707,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .languages-section h3,
@@ -715,11 +726,17 @@
   color: var(--z-wolf-text-muted);
 }
 
+.languages-title {
+  font-weight: 600;
+  color: var(--z-wolf-accent);
+}
+
 .journey-abilities,
 .miscellaneous-abilities {
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
+  overflow: hidden;
 }
 
 .no-content-message {
@@ -750,6 +767,7 @@
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
+  overflow: hidden;
 }
 
 .bulk-section,
@@ -776,6 +794,7 @@
   color: var(--z-wolf-accent);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .inventory-categories {
@@ -789,6 +808,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .category-header {
@@ -816,6 +836,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 4px;
   transition: border-color 0.2s ease;
+  overflow: hidden;
 }
 
 .equipment-item:hover {
@@ -833,6 +854,7 @@
   border-radius: 4px;
   object-fit: cover;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .equipment-item .item-info {
@@ -877,6 +899,7 @@
   border: 2px dashed var(--z-wolf-border);
   border-radius: 6px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .equipment-drop-section h4 {
@@ -894,6 +917,7 @@
   padding: 2rem;
   text-align: center;
   transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .equipment-drop-zone:hover {
@@ -947,6 +971,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .build-category h4 {
@@ -986,6 +1011,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .foundation-drop-zone:hover {
@@ -1007,6 +1033,7 @@
   border-radius: 4px;
   object-fit: cover;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .slotted-item .item-info {
@@ -1056,6 +1083,7 @@
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--z-wolf-border);
   border-radius: 6px;
+  overflow: hidden;
 }
 
 .build-points-display {
@@ -1111,6 +1139,7 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 600;
+  overflow: hidden;
 }
 
 .build-points-lock-btn:hover {
@@ -1159,6 +1188,7 @@
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--z-wolf-border);
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .config-row-alt {
@@ -1195,6 +1225,40 @@
 .progression-slider:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+/* Locked slider styling - prevents all interaction */
+.progression-slider:disabled,
+.progression-slider.locked {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+  pointer-events: none; /* This completely prevents any interaction */
+}
+
+/* Make the entire slider container look disabled when locked */
+.progression-slider-container:has(.progression-slider:disabled),
+.progression-slider-container:has(.progression-slider.locked) {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Optional: Add a visual indicator overlay */
+.config-row:has(.progression-slider:disabled),
+.config-item:has(.progression-slider:disabled) {
+  position: relative;
+}
+
+.config-row:has(.progression-slider:disabled)::after,
+.config-item:has(.progression-slider:disabled)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+  border-radius: 4px;
 }
 
 .slider-labels {
@@ -1258,6 +1322,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  overflow: hidden;
 }
 
 .compact-drop-zone {

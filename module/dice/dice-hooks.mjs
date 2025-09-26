@@ -16,7 +16,14 @@ export function registerDiceHooks() {
   Hooks.once('init', onInit);
   
   // Add UI controls when chat tab is rendered
-  Hooks.on('renderSidebarTab', onRenderSidebarTab);
+  Hooks.on('renderChatLog', (app, html, data) => {
+    try {
+      console.log("Z-Wolf Epic | ChatLog rendered, adding boost controls");
+      ZWolfUI.addToChat(html);
+    } catch (error) {
+      console.error("Z-Wolf Epic | Error adding controls to chat:", error);
+    }
+  });
   
   // Initialize event listeners when system is ready
   Hooks.once('ready', onReady);
@@ -69,9 +76,37 @@ function onReady() {
  * Sidebar tab render hook - adds controls to chat tab
  */
 function onRenderSidebarTab(app, html, data) {
-  // Only act on chat tab renders
-  if (app.id !== "chat") return;
+  console.log("Z-Wolf Epic | renderSidebarTab fired:", {
+    appId: app.id,
+    appType: app.constructor.name,
+    appElement: app.element?.[0]?.id,
+    htmlElement: html[0]?.tagName,
+    htmlId: html.attr?.('id') || html[0]?.id,
+    hasParentSidebar: html.closest('#sidebar').length > 0
+  });
   
+  // Only act on chat tab renders
+  if (app.id !== "chat") {
+    console.log("Z-Wolf Epic | Not chat tab, skipping");
+    return;
+  }
+  
+  // Additional check: ensure we're in the sidebar, not a sheet
+  const $html = html instanceof jQuery ? html : $(html);
+  const inSidebar = $html.closest('#sidebar').length > 0;
+  const isDirectChat = $html.attr('id') === 'chat' || $html[0]?.id === 'chat';
+  
+  console.log("Z-Wolf Epic | Chat detection:", {
+    inSidebar,
+    isDirectChat,
+    shouldAddControls: inSidebar || isDirectChat
+  });
+  
+  if (!inSidebar && !isDirectChat) {
+    console.log("Z-Wolf Epic | Skipping non-sidebar chat element");
+    return;
+  }
+ 
   try {
     console.log("Z-Wolf Epic | Chat sidebar rendered, adding boost controls");
     ZWolfUI.addToChat(html);

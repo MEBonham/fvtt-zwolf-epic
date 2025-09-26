@@ -50,58 +50,107 @@ export class ZWolfDiceCore {
     }
   }
 
-  /**
-   * Quick skill roll
-   * @param {Actor} actor - The actor making the roll
-   * @param {string} skillName - Name of the skill
-   * @param {string} attributeName - Name of the attribute
-   * @param {number} netBoosts - Net boosts/jinxes for this roll (optional)
-   * @returns {Promise<Object>} The completed roll
-   */
-  static async rollSkill(actor, skillName, attributeName, netBoosts = null) {
-    if (!actor) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.NO_ACTOR);
-      return null;
-    }
-    
-    const skill = actor.system.skills?.[skillName];
-    const attribute = actor.system.attributes?.[attributeName];
-    
-    if (!skill || !attribute) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.INVALID_SKILL_ATTRIBUTE);
-      return null;
-    }
-    
-    const modifier = skill.value + attribute.value;
-    const flavor = this._formatSkillFlavor(skillName, attributeName);
-    
-    return this.roll({ netBoosts, modifier, flavor, actor });
+/**
+ * Quick skill roll
+ * @param {Actor} actor - The actor making the roll
+ * @param {string} skillName - Name of the skill
+ * @param {string} attributeName - Name of the attribute (not used in Z-Wolf, kept for compatibility)
+ * @param {number} netBoosts - Net boosts/jinxes for this roll (optional)
+ * @returns {Promise<Object>} The completed roll
+ */
+static async rollSkill(actor, skillName, attributeName = null, netBoosts = null) {
+  if (!actor) {
+    ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.NO_ACTOR);
+    return null;
   }
   
-  /**
-   * Quick attribute roll
-   * @param {Actor} actor - The actor making the roll
-   * @param {string} attributeName - Name of the attribute
-   * @param {number} netBoosts - Net boosts/jinxes for this roll (optional)
-   * @returns {Promise<Object>} The completed roll
-   */
-  static async rollAttribute(actor, attributeName, netBoosts = null) {
-    if (!actor) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.NO_ACTOR);
-      return null;
-    }
-    
-    const attribute = actor.system.attributes?.[attributeName];
-    if (!attribute) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.INVALID_ATTRIBUTE);
-      return null;
-    }
-    
-    const modifier = attribute.value;
-    const flavor = this._formatAttributeFlavor(attributeName);
-    
-    return this.roll({ netBoosts, modifier, flavor, actor });
+  const skill = actor.system.skills?.[skillName];
+  
+  if (!skill || !skill.progression) {
+    ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.INVALID_SKILL_ATTRIBUTE);
+    return null;
   }
+  
+  // Calculate the progression bonus
+  const level = actor.system.level ?? 0;
+  const progressionOnlyLevel = this._getProgressionOnlyLevel(actor);
+  const progressionBonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+  const modifier = progressionBonuses[skill.progression] || 0;
+  
+  // Format skill name for display
+  const skillDisplayName = skillName.charAt(0).toUpperCase() + skillName.slice(1);
+  const progressionDisplayName = skill.progression.charAt(0).toUpperCase() + skill.progression.slice(1);
+  const flavor = `${skillDisplayName} (${progressionDisplayName})`;
+  
+  return this.roll({ netBoosts, modifier, flavor, actor });
+}
+
+/**
+ * Quick attribute roll
+ * @param {Actor} actor - The actor making the roll
+ * @param {string} attributeName - Name of the attribute
+ * @param {number} netBoosts - Net boosts/jinxes for this roll (optional)
+ * @returns {Promise<Object>} The completed roll
+ */
+static async rollAttribute(actor, attributeName, netBoosts = null) {
+  if (!actor) {
+    ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.NO_ACTOR);
+    return null;
+  }
+  
+  const attribute = actor.system.attributes?.[attributeName];
+  
+  if (!attribute || !attribute.progression) {
+    ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.INVALID_ATTRIBUTE);
+    return null;
+  }
+  
+  // Calculate the progression bonus
+  const level = actor.system.level ?? 0;
+  const progressionOnlyLevel = this._getProgressionOnlyLevel(actor);
+  const progressionBonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+  const modifier = progressionBonuses[attribute.progression] || 0;
+  
+  // Format attribute name for display
+  const attributeDisplayName = attributeName.charAt(0).toUpperCase() + attributeName.slice(1);
+  const progressionDisplayName = attribute.progression.charAt(0).toUpperCase() + attribute.progression.slice(1);
+  const flavor = `${attributeDisplayName} (${progressionDisplayName})`;
+  
+  return this.roll({ netBoosts, modifier, flavor, actor });
+}
+
+/**
+ * Get progression-only level from Progression Enhancement item
+ * @private
+ */
+static _getProgressionOnlyLevel(actor) {
+  if (actor.items) {
+    const hasProgressionItem = actor.items.some(item => 
+      item.name === "Progression Enhancement"
+    );
+    
+    if (hasProgressionItem) {
+      return 1;
+    }
+  }
+  
+  return 0;
+}
+
+/**
+ * Calculate progression bonuses based on level
+ * @private
+ */
+static _calculateProgressionBonuses(level, progressionOnlyLevel) {
+  const totalLevel = level + progressionOnlyLevel;
+  
+  return {
+    mediocre: Math.floor(0.6 * totalLevel - 0.3),
+    moderate: Math.floor(0.8 * totalLevel),
+    specialty: Math.floor(1 * totalLevel),
+    awesome: Math.floor(1.2 * totalLevel + 0.8001)
+  };
+}
 
   /**
    * Process dice results to determine key die and crit chances

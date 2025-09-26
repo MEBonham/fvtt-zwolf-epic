@@ -245,6 +245,13 @@ export class ZWolfUI {
       return;
     }
     
+    // ONLY add to the actual sidebar chat, not chat elements in sheets
+    // Check if we're in the sidebar by looking for the sidebar parent
+    const isSidebarChat = $html.closest('#sidebar').length > 0 || $html.attr('id') === 'chat';
+    if (!isSidebarChat) {
+      return; // Don't add controls to non-sidebar chat elements
+    }
+    
     const controlHtml = this.createBoostControl();
     const $control = $(controlHtml);
     

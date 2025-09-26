@@ -47,6 +47,7 @@
   flex-shrink: 0; /* Prevent image from shrinking */
   width: 64px; /* Explicit width */
   height: 64px; /* Explicit height */
+  overflow: hidden;
 }
 
 .item-sheet .profile-img:hover {
@@ -74,6 +75,7 @@
   padding: 0.5rem;
   border-radius: 4px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .item-sheet .charname input::placeholder {
@@ -120,6 +122,7 @@
   bottom: -1px !important;
   font-weight: 500 !important;
   box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
 }
 
 .zwolf-epic.sheet.item .sheet-tabs .item:hover:not(.active) {
@@ -203,6 +206,7 @@
   color: var(--z-wolf-text);
   transition: border-color 0.2s ease;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .item-sheet .form-group input:focus,
@@ -285,6 +289,7 @@
   background: rgba(44, 90, 160, 0.05);
   border: 1px solid rgba(44, 90, 160, 0.2);
   border-radius: 6px;
+  overflow: hidden;
 }
 
 .function-test-controls > div {
@@ -315,6 +320,7 @@
   transition: background-color 0.2s ease;
   font-weight: 500;
   white-space: nowrap;
+  overflow: hidden;
 }
 
 .function-test-controls button:hover {
@@ -328,6 +334,7 @@
   padding: 1rem;
   margin-top: 1rem;
   min-height: 3rem;
+  overflow: hidden;
 }
 
 .test-result {
@@ -371,6 +378,7 @@
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 2rem; /* Space after the section for tab scrolling */
+  overflow: hidden;
 }
 
 .no-abilities {
@@ -391,6 +399,7 @@
   background: var(--z-wolf-bg-dark);
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .ability-header {
@@ -438,6 +447,7 @@
   border: 1px solid var(--z-wolf-border);
   min-height: 80px;
   border-radius: 4px;
+  overflow: hidden;
 }
 
 .ability-description .editor-content em {
@@ -482,6 +492,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 8px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .side-effects-header h3 {
@@ -501,6 +512,7 @@
   border-radius: 6px;
   padding: 1rem;
   margin-bottom: 1rem;
+  overflow: hidden;
 }
 
 .progression-upgrades h4,
@@ -520,6 +532,7 @@
   background: rgba(120, 46, 34, 0.05);
   border-radius: 5px;
   border: 1px dashed var(--z-wolf-secondary);
+  overflow: hidden;
 }
 
 .future-side-effects h4 {
@@ -539,6 +552,7 @@
   border: 1px solid var(--z-wolf-border);
   border-radius: 8px;
   padding: 1rem;
+  overflow: hidden;
 }
 
 .abilities-header {
@@ -568,6 +582,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .ability-control:hover {

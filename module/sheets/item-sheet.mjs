@@ -13,22 +13,21 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
 ) {
     _activeTab = "basics";
   
-static DEFAULT_OPTIONS = {
-  classes: ["zwolf-epic", "sheet", "item"],
-  position: { 
-    width: 700, 
-    height: 600
-  },
-  window: {
-    resizable: true,
-    minimizable: true
-  },
-  form: {
-    submitOnChange: true,
-    closeOnSubmit: false,
-    handler: undefined  // Let it use default
-  }
-};
+  static DEFAULT_OPTIONS = {
+    classes: ["zwolf-epic", "sheet", "item"],
+    position: { 
+      width: 700, 
+      height: 600
+    },
+    window: {
+      resizable: true,
+      minimizable: true
+    },
+    form: {
+      submitOnChange: true,
+      closeOnSubmit: false
+    }
+  };
 
   static PARTS = {
     header: {
@@ -501,73 +500,102 @@ _attachPartListeners(partId, htmlElement, options) {
   /*  Form Submission                             */
   /* -------------------------------------------- */
 
-/** @override */
-async _onSubmitForm(formConfig, event, formData) {
-  console.log("=== V2 FORM SUBMISSION DEBUG ===");
-  console.log("formConfig:", formConfig);
-  console.log("event:", event);
-  console.log("formData:", formData);
-  
-  // In V2, the form data might be in a different location
-  let submitData = formData?.object || formData || {};
-  console.log("submitData:", submitData);
-  console.log("Item type:", this.document.type);
-  
-  // If formData is still undefined, we might need to extract it from the form directly
-  if (!formData && event?.target) {
-    const form = event.target.form || event.target.closest('form');
+  /** @override */
+  async _onSubmitForm(formConfig, event, formData) {
+    console.log("=== V2 FORM SUBMISSION DEBUG ===");
+    
+    let submitData = formData?.object || formData || {};
+    
+    if (!submitData || Object.keys(submitData).length === 0) {
+      if (event?.target) {
+        const form = event.target.form || event.target.closest('form');
+        if (form) {
+          const fd = new FormData(form);
+          const extracted = Object.fromEntries(fd.entries());
+          console.log("Extracted form data:", extracted);
+          
+          // IMPORTANT: Don't use expandObject yet, keep it flat for processing
+          submitData = extracted;
+        }
+      }
+    }
+    
+    if (!submitData || Object.keys(submitData).length === 0) {
+      console.warn("No form data to process");
+      return;
+    }
+    
+    const form = event?.target?.form || event?.target?.closest('form');
+    
+    // Store scroll position before any changes
+    const scrollContainer = this.element.querySelector('.window-content');
+    const scrollTop = scrollContainer?.scrollTop || 0;
+    
+    // Convert number fields explicitly while data is still flat
     if (form) {
-      const fd = new FormData(form);
-      const extracted = Object.fromEntries(fd.entries());
-      console.log("Extracted form data:", extracted);
-      submitData = foundry.utils.expandObject(extracted);
+      const numberInputs = form.querySelectorAll('input[data-dtype="Number"], input[type="number"]');
+      
+      numberInputs.forEach(input => {
+        const fieldPath = input.name;
+        if (submitData[fieldPath] !== null && submitData[fieldPath] !== undefined && submitData[fieldPath] !== '') {
+          const parsedValue = Number(submitData[fieldPath]);
+          const finalValue = input.step && input.step !== '1' ? parsedValue : Math.floor(parsedValue);
+          submitData[fieldPath] = isNaN(finalValue) ? 0 : finalValue;
+          console.log(`Converted ${fieldPath} to number:`, submitData[fieldPath]);
+        }
+      });
     }
-  }
-  
-  if (!submitData || Object.keys(submitData).length === 0) {
-    console.warn("No form data to process");
-    return;
-  }
-  
-  // Process form data based on item type
-  if (this.document.type === 'track') {
-    // Only process granted abilities if we actually have granted ability form data
-    const hasGrantedAbilityData = Object.keys(submitData).some(key => 
-      key.includes('grantedAbilities') && !key.includes('tiers.tier')
-    );
     
+    // Handle multi-select fields BEFORE expanding
+    if (form) {
+      ItemDataProcessor.processMultiSelectFields(form, submitData);
+    }
+    
+    // NOW expand the object
+    submitData = foundry.utils.expandObject(submitData);
+    console.log("Expanded submitData:", submitData);
+    
+    // Check if this form submission includes any granted abilities data  
+    const flatKeys = Object.keys(foundry.utils.flattenObject(submitData));
+    const hasGrantedAbilityData = flatKeys.some(key => key.includes('grantedAbilities'));
+    
+    // Only process granted abilities if they're actually being edited
     if (hasGrantedAbilityData) {
-      submitData = ItemDataProcessor.preserveGrantedAbilities(submitData, this.document.system.grantedAbilities);
+      if (this.document.type === 'track') {
+        const hasBaseAbilityData = flatKeys.some(key => 
+          key.includes('grantedAbilities') && !key.includes('tiers.tier')
+        );
+        
+        if (hasBaseAbilityData) {
+          submitData = ItemDataProcessor.preserveGrantedAbilities(submitData, this.document.system.grantedAbilities);
+        }
+        
+        submitData = ItemDataProcessor.preserveTrackTierAbilities(submitData, this.document.system);
+      } else {
+        submitData = ItemDataProcessor.preserveGrantedAbilities(submitData, this.document.system.grantedAbilities);
+      }
     }
-    
-    // Handle track tier abilities
-    submitData = ItemDataProcessor.preserveTrackTierAbilities(submitData, this.document.system);
-  } else {
-    // For non-track items, use the full preservation logic
-    submitData = ItemDataProcessor.preserveGrantedAbilities(submitData, this.document.system.grantedAbilities);
-  }
-  
-  // Handle multi-select fields (only sizeOptions now)
-  const form = event?.target?.form || event?.target?.closest('form');
-  if (form) {
-    ItemDataProcessor.processMultiSelectFields(form, submitData);
-  }
 
-  console.log("Final form data before parent update:", submitData);
+    console.log("Final form data before update:", submitData);
 
-  // Update the document
-  try {
-    await this.document.update(submitData);
-    console.log("Document updated successfully");
-    
-    // Update knacksProvided after form submission for ancestry items
-    if (this.document.type === 'ancestry') {
-      await this.document.updateKnacksProvided();
+    try {
+      await this.document.update(submitData, { 
+        render: false,
+        diff: true
+      });
+      console.log("Document updated successfully");
+      
+      // Restore scroll position after the update
+      if (scrollContainer) {
+        requestAnimationFrame(() => {
+          scrollContainer.scrollTop = scrollTop;
+        });
+      }
+    } catch (error) {
+      console.error("Failed to update document:", error);
+      ui.notifications.error("Failed to save changes: " + error.message);
     }
-  } catch (error) {
-    console.error("Failed to update document:", error);
   }
-}
 
   /* -------------------------------------------- */
   /*  Event Handler Methods                       */

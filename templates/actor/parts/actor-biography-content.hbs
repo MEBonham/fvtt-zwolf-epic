@@ -1,9 +1,18 @@
 <div class="tab biography {{#if (eq currentTab 'biography')}}active{{/if}}" data-group="primary" data-tab="biography" data-part-id="tab-biography">
   {{#if isCharacter}}
     <div class="biography-content">
+      <div class="liabilities-section">
+        <h3>Liabilities</h3>
+        <div class="form-group">
+          <div class="form-fields">
+            {{editor system.liabilities target="system.liabilities" button=true owner=owner editable=editable height=120}}
+          </div>
+        </div>
+      </div>
+
       <details class="languages-section">
         <summary class="languages-header">
-          <h3>Languages</h3>
+          <span class="languages-title">Languages</span>
           <span class="language-count">(Max: {{languageLimit}})</span>
         </summary>
         <div class="languages-content">
@@ -14,15 +23,6 @@
           </div>
         </div>
       </details>
-
-      <div class="liabilities-section">
-        <h3>Liabilities</h3>
-        <div class="form-group">
-          <div class="form-fields">
-            {{editor system.liabilities target="system.liabilities" button=true owner=owner editable=editable height=120}}
-          </div>
-        </div>
-      </div>
 
       <details class="ability-category journey-abilities">
         <summary class="ability-category-header">

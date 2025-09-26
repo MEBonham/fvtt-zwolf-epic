@@ -19,7 +19,68 @@ export class ZWolfActor extends Actor {
   /** @override */
   prepareDerivedData() {
     super.prepareDerivedData();
+    
+    // Calculate derived values like knacks, build points, etc.
+    this._prepareDerivedValues();
+    
+    // Sync vision to prototype token
     this._syncVisionToPrototypeToken();
+  }
+
+  /**
+   * Prepare derived values that depend on items
+   * @private
+   */
+  _prepareDerivedValues() {
+    // Only calculate for character types
+    if (!['pc', 'npc', 'eidolon'].includes(this.type)) return;
+    
+    // Calculate total knacks provided
+    this.system.totalKnacksProvided = this._calculateTotalKnacksProvided();
+    
+    // You can add other derived calculations here as needed
+  }
+
+  /**
+   * Calculate total knacks provided by ancestry, fundament, and talents
+   * @returns {number}
+   * @private
+   */
+  _calculateTotalKnacksProvided() {
+    let totalKnacks = 0;
+    
+    // Get knacks from ancestry
+    if (this.system.ancestryId) {
+      const ancestryItem = this.items.get(this.system.ancestryId);
+      if (ancestryItem?.system?.knacksProvided) {
+        const knacks = parseInt(ancestryItem.system.knacksProvided) || 0;
+        console.log(`Z-Wolf Epic | Ancestry "${ancestryItem.name}" provides ${knacks} knacks`);
+        totalKnacks += knacks;
+      }
+    }
+    
+    // Get knacks from fundament
+    if (this.system.fundamentId) {
+      const fundamentItem = this.items.get(this.system.fundamentId);
+      if (fundamentItem?.system?.knacksProvided) {
+        const knacks = parseInt(fundamentItem.system.knacksProvided) || 0;
+        console.log(`Z-Wolf Epic | Fundament "${fundamentItem.name}" provides ${knacks} knacks`);
+        totalKnacks += knacks;
+      }
+    }
+    
+    // Get knacks from all talent items
+    const talentItems = this.items.filter(item => item.type === 'talent');
+    talentItems.forEach((talent) => {
+      if (talent.system?.knacksProvided) {
+        const knacks = parseInt(talent.system.knacksProvided) || 0;
+        console.log(`Z-Wolf Epic | Talent "${talent.name}" provides ${knacks} knacks`);
+        totalKnacks += knacks;
+      }
+    });
+    
+    console.log(`Z-Wolf Epic | Total knacks provided: ${totalKnacks}`);
+    return totalKnacks;
   }
 
   /** @override */
