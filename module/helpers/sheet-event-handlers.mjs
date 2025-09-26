@@ -14,82 +14,119 @@ export class SheetEventHandlers {
    * Bind all event listeners to the sheet HTML
    */
   bindEventListeners(html) {
+    // TAB NAVIGATION HANDLERS
+    html.querySelectorAll('[data-group="primary"] .item[data-tab]').forEach(tab => {
+      tab.addEventListener('click', (event) => {
+        event.preventDefault();
+        const tabId = event.currentTarget.dataset.tab;
+        
+        // Update the tab group
+        this.sheet.tabGroups.primary = tabId;
+        
+        // Re-render the sheet to show the new tab
+        this.sheet.render(false);
+      });
+    });
+
     // Dice roll handlers
-    html.find('.progression-die').click(ev => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      this._onProgressionDiceRoll(ev);
+    html.querySelectorAll('.progression-die').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._onProgressionDiceRoll(ev);
+      });
     });
 
     // Accordion handlers
-    html.find('.progression-header').click(ev => {
-      ev.preventDefault();
-      const header = ev.currentTarget;
-      const group = $(header).closest('.progression-group');
-      const wasExpanded = group.hasClass('expanded');
-      
-      html.find('.progression-group').removeClass('expanded');
-      
-      if (!wasExpanded) {
-        group.addClass('expanded');
-      }
+    html.querySelectorAll('.progression-header').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const header = ev.currentTarget;
+        const group = header.closest('.progression-group');
+        const wasExpanded = group.classList.contains('expanded');
+        
+        html.querySelectorAll('.progression-group').forEach(g => g.classList.remove('expanded'));
+        
+        if (!wasExpanded) {
+          group.classList.add('expanded');
+        }
+      });
     });
 
     // Stat roll handlers
-    html.find('.stat-rollable').click(ev => {
-      ev.preventDefault();
-      this._onStatRoll(ev);
+    html.querySelectorAll('.stat-rollable').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        this._onStatRoll(ev);
+      });
     });
 
     // Speed roll handler
-    html.find('.speed-roll-die').click(ev => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      this._onSpeedRoll(ev);
+    html.querySelectorAll('.speed-roll-die').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._onSpeedRoll(ev);
+      });
     });
 
     // Progression slider handlers
-    html.find('.progression-slider').on('input change', ev => {
-      this._onProgressionSliderChange(ev);
+    html.querySelectorAll('.progression-slider').forEach(el => {
+      el.addEventListener('input', (ev) => this._onProgressionSliderChange(ev));
+      el.addEventListener('change', (ev) => this._onProgressionSliderChange(ev));
     });
 
     // Level change handler
-    const levelInput = html.find('input[name="system.level"], input[name="data.level"], .level-input, input.level');
-    console.log("Z-Wolf Epic | Level input found:", levelInput.length, "elements");
+    const levelInputs = html.querySelectorAll('input[name="system.level"], input[name="data.level"], .level-input, input.level');
+    console.log("Z-Wolf Epic | Level input found:", levelInputs.length, "elements");
     
-    if (levelInput.length > 0) {
-      levelInput.on('change', ev => {
-        console.log("Z-Wolf Epic | Level changed to:", ev.currentTarget.value);
-        this._onLevelChange(ev);
+    if (levelInputs.length > 0) {
+      levelInputs.forEach(el => {
+        el.addEventListener('change', (ev) => {
+          console.log("Z-Wolf Epic | Level changed to:", ev.currentTarget.value);
+          this._onLevelChange(ev);
+        });
       });
     } else {
       console.warn("Z-Wolf Epic | No level input field found. Check your HTML template.");
     }
 
     // Item control handlers
-    html.find('.item-control.item-delete, .item-control.item-remove').click(this._onUnifiedItemDelete.bind(this));
-    html.find('.item-control.item-edit').click(this._onItemEdit.bind(this));
+    html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
+      el.addEventListener('click', this._onUnifiedItemDelete.bind(this));
+    });
+    html.querySelectorAll('.item-control.item-edit').forEach(el => {
+      el.addEventListener('click', this._onItemEdit.bind(this));
+    });
 
     // Build Points Lock Button Handler
-    html.find('.build-points-lock-btn').click(ev => {
-      ev.preventDefault();
-      this._onBuildPointsLockToggle(ev);
+    html.querySelectorAll('.build-points-lock-btn').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        this._onBuildPointsLockToggle(ev);
+      });
     });
 
     // Rest Button Handlers
-    html.find('.short-rest-btn').click(ev => {
-      ev.preventDefault();
-      this._onShortRest(ev);
+    html.querySelectorAll('.short-rest-btn').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        this._onShortRest(ev);
+      });
     });
 
-    html.find('.extended-rest-btn').click(ev => {
-      ev.preventDefault();
-      this._onExtendedRest(ev);
+    html.querySelectorAll('.extended-rest-btn').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        this._onExtendedRest(ev);
+      });
     });
 
     // Equipment placement change handler
-    html.find('.equipment-placement-select').change(ev => {
-      this._onEquipmentPlacementChange(ev);
+    html.querySelectorAll('.equipment-placement-select').forEach(el => {
+      el.addEventListener('change', (ev) => {
+        this._onEquipmentPlacementChange(ev);
+      });
     });
 
     // Disable controls for locked items (except equipment)
@@ -133,7 +170,8 @@ export class SheetEventHandlers {
     const modifier = bonuses[progression];
     
     // Create flavor text
-    const statName = $(element).find('.stat-name').text();
+    const statNameEl = element.querySelector('.stat-name');
+    const statName = statNameEl ? statNameEl.textContent : statKey;
     const flavor = `${statName} (${progression.charAt(0).toUpperCase() + progression.slice(1)})`;
     
     const netBoosts = ZWolfDice.getNetBoosts();
@@ -408,35 +446,46 @@ export class SheetEventHandlers {
     const html = this.sheet.element;
     
     // Update all progression sliders
-    const sliders = html.find('.progression-slider');
-    sliders.prop('disabled', locked);
-    
-    if (locked) {
-      sliders.addClass('locked');
-    } else {
-      sliders.removeClass('locked');
-    }
+    const sliders = html.querySelectorAll('.progression-slider');
+    sliders.forEach(slider => {
+      slider.disabled = locked;
+      if (locked) {
+        slider.classList.add('locked');
+      } else {
+        slider.classList.remove('locked');
+      }
+    });
     
     // Update lock button appearance
-    const lockBtn = html.find('.build-points-lock-btn');
-    const lockIcon = lockBtn.find('i');
-    const lockLabel = lockBtn.find('.lock-label');
+    const lockBtn = html.querySelector('.build-points-lock-btn');
+    if (!lockBtn) return;
+    
+    const lockIcon = lockBtn.querySelector('i');
+    const lockLabel = lockBtn.querySelector('.lock-label');
     
     if (locked) {
-      lockBtn.removeClass('unlocked').addClass('locked');
-      lockIcon.removeClass('fa-unlock').addClass('fa-lock');
-      lockLabel.text('Locked');
-      lockBtn.attr('title', 'Unlock progression sliders');
+      lockBtn.classList.remove('unlocked');
+      lockBtn.classList.add('locked');
+      if (lockIcon) {
+        lockIcon.classList.remove('fa-unlock');
+        lockIcon.classList.add('fa-lock');
+      }
+      if (lockLabel) lockLabel.textContent = 'Locked';
+      lockBtn.setAttribute('title', 'Unlock progression sliders');
     } else {
-      lockBtn.removeClass('locked').addClass('unlocked');
-      lockIcon.removeClass('fa-lock').addClass('fa-unlock');
-      lockLabel.text('Unlocked');
-      lockBtn.attr('title', 'Lock progression sliders');
+      lockBtn.classList.remove('locked');
+      lockBtn.classList.add('unlocked');
+      if (lockIcon) {
+        lockIcon.classList.remove('fa-lock');
+        lockIcon.classList.add('fa-unlock');
+      }
+      if (lockLabel) lockLabel.textContent = 'Unlocked';
+      lockBtn.setAttribute('title', 'Lock progression sliders');
     }
   }
 
   _applyItemLockStates(html) {
-    html.find('.item').each((i, element) => {
+    html.querySelectorAll('.item').forEach(element => {
       const itemId = element.dataset.itemId;
       const item = this.actor.items.get(itemId);
       
@@ -444,10 +493,12 @@ export class SheetEventHandlers {
       const isEquipment = item?.type === 'equipment';
       
       if (isLocked && !isEquipment) {
-        $(element).find('input, select, textarea, button')
-          .not('.item-delete, .item-remove')
-          .prop('disabled', true)
-          .addClass('locked');
+        element.querySelectorAll('input, select, textarea, button').forEach(control => {
+          if (!control.classList.contains('item-delete') && !control.classList.contains('item-remove')) {
+            control.disabled = true;
+            control.classList.add('locked');
+          }
+        });
       }
     });
   }
@@ -534,7 +585,7 @@ export class SheetEventHandlers {
       mediocre: Math.floor(0.6 * totalLevel - 0.3),
       moderate: Math.floor(0.8 * totalLevel),
       specialty: Math.floor(1 * totalLevel),
-      awesome: Math.floor(1.2 * totalLevel + 0.80001)
+      awesome: Math.floor(1.2 * totalLevel + 0.8001)
     };
   }
 

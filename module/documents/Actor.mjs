@@ -3,12 +3,12 @@ export class ZWolfActor extends Actor {
   // ========================================
   // FOUNDRY LIFECYCLE OVERRIDES
   // ========================================
-  
+
   /** @override */
   prepareData() {
     super.prepareData();
   }
-  
+
   /** @override */
   prepareBaseData() {
     super.prepareBaseData();
@@ -21,34 +21,14 @@ export class ZWolfActor extends Actor {
     super.prepareDerivedData();
     this._syncVisionToPrototypeToken();
   }
-  
+
   /** @override */
   _onCreate(data, options, userId) {
     super._onCreate(data, options, userId);
+    
+    // Initialize prototype token settings on creation
+    this._initializePrototypeToken();
     this._setDefaultTokenDisposition();
-  }
-  
-  /** @override */
-  getRollData() {
-    const data = super.getRollData();
-    
-    // Add system data based on template structure
-    data.attributes = this.system.attributes || {};
-    data.skills = this.system.skills || {};
-    data.level = this.system.level || 1;
-    data.vitalityPoints = this.system.vitalityPoints || {};
-    
-    // Add type-specific data
-    if (["pc", "npc"].includes(this.type)) {
-      data.wealth = this.system.wealth || 0;
-      data.staminaPoints = this.system.staminaPoints || {};
-    }
-    if (this.type === "pc") {
-      data.karmaPoints = this.system.karmaPoints || {};
-      data.staminaPoints = this.system.staminaPoints || {};
-    }
-    
-    return data;
   }
 
   // ========================================
@@ -126,34 +106,52 @@ export class ZWolfActor extends Actor {
   // ========================================
   // TOKEN CONFIGURATION
   // ========================================
-  
+
   /**
-   * Set default prototype token settings if not already set
+   * Initialize prototype token settings for new actors
    * @private
    */
-  _setDefaultTokenSettings() {
-    if (!this.prototypeToken.name) {
+  _initializePrototypeToken() {
+    const needsInitialization = !this.prototypeToken.flags?.['zwolf-epic']?.initialized;
+    
+    if (needsInitialization) {
       const tokenConfig = {
         name: this.name,
+        texture: {
+          src: this.img  // Use actor image for token
+        },
         displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
         sight: {
           enabled: true,
           range: 0
-        }
+        },
+        "flags.zwolf-epic.initialized": true
       };
 
       // Only show bars for pc and npc types
       if (["pc", "npc"].includes(this.type)) {
         tokenConfig.displayBars = CONST.TOKEN_DISPLAY_MODES.ALWAYS;
         tokenConfig.bar1 = { attribute: "vitalityPoints" };
-        tokenConfig.bar2 = { attribute: null }; // Explicitly no second bar
+        tokenConfig.bar2 = { attribute: null };
       } else {
         tokenConfig.displayBars = CONST.TOKEN_DISPLAY_MODES.NONE;
         tokenConfig.bar1 = { attribute: null };
         tokenConfig.bar2 = { attribute: null };
       }
 
-      this.prototypeToken.updateSource(tokenConfig);
+      this.update({ prototypeToken: tokenConfig });
+    }
+  }
+
+  /**
+   * Set default prototype token settings if not already set
+   * Called during prepareBaseData to keep token in sync
+   * @private
+   */
+  _setDefaultTokenSettings() {
+    // Just ensure the token name stays synced with actor name
+    if (this.prototypeToken.name !== this.name) {
+      this.prototypeToken.updateSource({ name: this.name });
     }
   }
   

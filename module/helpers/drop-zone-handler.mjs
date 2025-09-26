@@ -14,19 +14,25 @@ export class DropZoneHandler {
    */
   bindDropZones(html) {
     // Foundation Drop Zone Handlers
-    html.find('.foundation-drop-zone').on('dragover', this._onDragOver.bind(this));
-    html.find('.foundation-drop-zone').on('drop', this._onFoundationDrop.bind(this));
-    html.find('.foundation-drop-zone').on('dragleave', this._onDragLeave.bind(this));
+    html.querySelectorAll('.foundation-drop-zone').forEach(el => {
+      el.addEventListener('dragover', this._onDragOver.bind(this));
+      el.addEventListener('drop', this._onFoundationDrop.bind(this));
+      el.addEventListener('dragleave', this._onDragLeave.bind(this));
+    });
 
     // Slot Drop Zone Handlers
-    html.find('.knack-drop-zone, .track-drop-zone, .talent-drop-zone').on('dragover', this._onSlotDragOver.bind(this));
-    html.find('.knack-drop-zone, .track-drop-zone, .talent-drop-zone').on('drop', this._onSlotDrop.bind(this));
-    html.find('.knack-drop-zone, .track-drop-zone, .talent-drop-zone').on('dragleave', this._onDragLeave.bind(this));
+    html.querySelectorAll('.knack-drop-zone, .track-drop-zone, .talent-drop-zone').forEach(el => {
+      el.addEventListener('dragover', this._onSlotDragOver.bind(this));
+      el.addEventListener('drop', this._onSlotDrop.bind(this));
+      el.addEventListener('dragleave', this._onDragLeave.bind(this));
+    });
     
     // Equipment Drop Zone Handlers
-    html.find('.equipment-drop-zone').on('dragover', this._onEquipmentDragOver.bind(this));
-    html.find('.equipment-drop-zone').on('drop', this._onEquipmentDrop.bind(this));
-    html.find('.equipment-drop-zone').on('dragleave', this._onDragLeave.bind(this));
+    html.querySelectorAll('.equipment-drop-zone').forEach(el => {
+      el.addEventListener('dragover', this._onEquipmentDragOver.bind(this));
+      el.addEventListener('drop', this._onEquipmentDrop.bind(this));
+      el.addEventListener('dragleave', this._onDragLeave.bind(this));
+    });
   }
 
   // =================================

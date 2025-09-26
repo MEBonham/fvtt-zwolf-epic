@@ -18,6 +18,7 @@
     "styles/variables.css",
     "styles/zwolf-epic.css",
     "styles/dice.css",
+    "styles/actor-sheets.css",
     "styles/item-sheets.css",
     "styles/editor-styles.css"
   ],

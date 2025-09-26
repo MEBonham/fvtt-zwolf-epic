@@ -335,6 +335,35 @@ Handlebars.registerHelper('extractNumber', function(str) {
   return str.replace(/\D/g, '');
 });
 
+Handlebars.registerHelper('mod', function(a, b) {
+  return a % b;
+});
+
+Handlebars.registerHelper('capitalize', function(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+});
+
+Handlebars.registerHelper('gt', function(a, b) {
+  return a > b;
+});
+
+Handlebars.registerHelper('gte', function(a, b) {
+  return a >= b;
+});
+
+Handlebars.registerHelper('lt', function(a, b) {
+  return a < b;
+});
+
+Handlebars.registerHelper('lte', function(a, b) {
+  return a <= b;
+});
+
+Handlebars.registerHelper('or', function() {
+  return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+});
+
 /* -------------------------------------------- */
 /*  Ready Hook                                  */
 /* -------------------------------------------- */

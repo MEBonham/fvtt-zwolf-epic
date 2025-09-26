@@ -26,6 +26,9 @@ export class ActorDataCalculator {
     
     // Get foundation items
     this._addFoundationItems(context);
+
+    // Check vitality boost count (queues update if needed)
+    this._checkVitalityBoostCount();
     
     // Apply side effects and calculate target numbers
     const sideEffects = this._applySideEffects(context.ancestry, context.fundament, this.actor.items);
@@ -74,13 +77,11 @@ export class ActorDataCalculator {
     if (!context.system.buildPointsLocked) {
       context.system.buildPointsLocked = false;
     }
-    
-    // Update vitality boost count
-    this._updateVitalityBoostCount().then(wasUpdated => {
-      if (wasUpdated && !this.actor.sheet._state.closed) {
-        this.actor.sheet.render(false);
-      }
-    });
+
+    // Add base creature data for mooks/spawns
+    if (['mook', 'spawn'].includes(this.actor.type)) {
+      this._prepareBaseCreatureData(context);
+    }
     
     console.log("Z-Wolf Epic | Final context data:", {
       progressionBonuses: context.progressionBonuses,
@@ -90,6 +91,18 @@ export class ActorDataCalculator {
     });
     
     return context;
+  }
+
+  // Add base creature data for mooks/spawns
+  _prepareBaseCreatureData(context) {
+    if (context.system.baseCreatureId) {
+      context.baseCreature = game.actors.get(context.system.baseCreatureId);
+    }
+    
+    // Get available base creatures
+    context.availableBaseCreatures = game.actors.filter(a => 
+      ['pc', 'npc'].includes(a.type)
+    );
   }
 
   // =================================
@@ -125,7 +138,7 @@ export class ActorDataCalculator {
       mediocre: Math.floor(0.6 * totalLevel - 0.3),
       moderate: Math.floor(0.8 * totalLevel),
       specialty: Math.floor(1 * totalLevel),
-      awesome: Math.floor(1.2 * totalLevel + 0.80001)
+      awesome: Math.floor(1.2 * totalLevel + 0.8001)
     };
   }
 
@@ -1126,16 +1139,16 @@ export class ActorDataCalculator {
     return count;
   }
 
-  async _updateVitalityBoostCount() {
+  _checkVitalityBoostCount() {
     const actualCount = this._countVitalityBoostItems();
     const currentCount = this.actor.system.vitalityBoostCount || 0;
     
     if (actualCount !== currentCount) {
-      console.log(`Z-Wolf Epic | Updating vitality boost count from ${currentCount} to ${actualCount}`);
-      await this.actor.update({ 'system.vitalityBoostCount': actualCount });
-      return true;
+      console.log(`Z-Wolf Epic | Vitality boost count mismatch: ${currentCount} vs ${actualCount}`);
+      // Queue update for next render cycle
+      setTimeout(() => {
+        this.actor.update({ 'system.vitalityBoostCount': actualCount });
+      }, 0);
     }
-    
-    return false;
   }
 }

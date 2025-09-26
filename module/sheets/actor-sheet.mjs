@@ -1,19 +1,26 @@
-export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSheetV2 {
+import { ActorDataCalculator } from "../helpers/actor-data-calculator.mjs";
+import { SheetEventHandlers } from "../helpers/sheet-event-handlers.mjs";
+import { DropZoneHandler } from "../helpers/drop-zone-handler.mjs";
+
+export default class ZWolfActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
+  foundry.applications.sheets.ActorSheetV2
+) {
   
   _processingCustomDrop = false;
-  _activeTab = "main";
   
   static PROGRESSION_ITEM_NAME = "Progression Enhancement";
   static VITALITY_BOOST_ITEM_NAME = "Extra VP";
 
   static DEFAULT_OPTIONS = {
     classes: ["z-wolf-epic", "sheet", "actor"],
-    position: { width: 850, height: 950 },
+    position: { width: 900, height: 650 },
     actions: {
       editImage: ZWolfActorSheet._onEditImage,
       rollProgression: ZWolfActorSheet._onRollProgression,
       rollStat: ZWolfActorSheet._onRollStat,
+      rollSpeed: ZWolfActorSheet._onRollSpeed,
       toggleLock: ZWolfActorSheet._onToggleLock,
+      toggleProgression: ZWolfActorSheet._onToggleProgression,
       shortRest: ZWolfActorSheet._onShortRest,
       extendedRest: ZWolfActorSheet._onExtendedRest,
       editItem: ZWolfActorSheet._onEditItem,
@@ -32,10 +39,29 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
 
   static PARTS = {
     header: {
-      template: "systems/z-wolf-epic/templates/actor/parts/actor-header.hbs"
+      template: "systems/zwolf-epic/templates/actor/parts/actor-header.hbs"
     },
-    body: {
-      template: "systems/z-wolf-epic/templates/actor/parts/actor-body.hbs"
+    sidebar: {
+      template: "systems/zwolf-epic/templates/actor/parts/actor-sidebar.hbs"
+    },
+    tabs: {
+      template: "systems/zwolf-epic/templates/actor/parts/actor-tabs.hbs"
+    },
+    "tab-main": {
+      template: "systems/zwolf-epic/templates/actor/parts/actor-abilities-accordion.hbs",
+      scrollable: [".abilities-accordion"]
+    },
+    "tab-biography": {
+      template: "systems/zwolf-epic/templates/actor/parts/actor-biography-content.hbs",
+      scrollable: [".biography-content"]
+    },
+    "tab-inventory": {
+      template: "systems/zwolf-epic/templates/actor/parts/actor-inventory-content.hbs",
+      scrollable: [".inventory-content"]
+    },
+    "tab-configure": {
+      template: "systems/zwolf-epic/templates/actor/parts/actor-configure-content.hbs",
+      scrollable: [".configure-content"]
     }
   };
 
@@ -45,53 +71,56 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
 
   /** @override */
   async _prepareContext(options) {
+    console.log("🟢 _prepareContext called");
+    console.log("🟢 Document type:", this.document?.type);
+    console.log("🟢 Options:", options);
+    
     const context = await super._prepareContext(options);
+    console.log("🟢 Super context:", context);
+    
     const calculator = new ActorDataCalculator(this.document);
     
     // Get all sheet data from calculator
     const sheetData = calculator.prepareSheetData(context);
+    console.log("🟢 Sheet data from calculator:", sheetData);
     
-    // Add actor type flags
-    sheetData.isCharacter = this.document.type === "character";
-    sheetData.isMook = this.document.type === "mook";
-    sheetData.isSpawn = this.document.type === "spawn";
+    // Add actor type flags - map all character types
+    sheetData.isCharacter = ['pc', 'npc', 'eidolon'].includes(this.document.type);
+    sheetData.isMook = this.document.type === 'mook';
+    sheetData.isSpawn = this.document.type === 'spawn';
     
-    // Add tabs based on actor type
+    // Add tabs configuration based on actor type
     sheetData.tabs = this._getTabs();
     
-    // Add parts configuration for conditional rendering in template
+    // Store current tab
+    sheetData.currentTab = this.tabGroups.primary;
+    
+    // Determine which parts should be shown
     sheetData.showTabs = !sheetData.isSpawn;
     sheetData.showBiography = sheetData.isCharacter;
     sheetData.showInventory = sheetData.isCharacter;
     sheetData.showConfigure = !sheetData.isSpawn;
     
+    console.log("🟢 Context properties:", Object.keys(sheetData));
     return sheetData;
   }
 
   /** @override */
   _onRender(context, options) {
+    console.log("🟡 _onRender called");
+    console.log("🟡 Context:", context);
+    console.log("🟡 Element:", this.element);
+    
     super._onRender(context, options);
     
-    // Restore active tab
-    const tabToActivate = this._activeTab || "main";
-    this._activateTab(tabToActivate);
-    
-    // Add tab click listeners
-    this.element.querySelectorAll('.sheet-tabs .item[data-tab]').forEach(tab => {
-      tab.addEventListener('click', (event) => {
-        event.preventDefault();
-        this._activateTab(event.currentTarget.dataset.tab);
-      });
-    });
-
-    // Initialize event handlers from your helpers
+    // Initialize event handlers
     const eventHandlers = new SheetEventHandlers(this);
     eventHandlers.bindEventListeners(this.element);
 
     // Initialize drop zone handlers (not needed for spawns)
     if (this.document.type !== "spawn") {
       const dropHandler = new DropZoneHandler(this);
-      dropHandler.bindDropZones(html);
+      dropHandler.bindDropZones(this.element);
     }
     
     // Apply lock state (only for characters)
@@ -110,7 +139,7 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
     
     // Handle rich text editor saves
     for (const [key, value] of Object.entries(submitData)) {
-      if (typeof value === 'string' && value.includes('<') && this._isRichTextField(key)) {
+      if (typeof value === 'staring' && value.includes('<') && this._isRichTextField(key)) {
         const { EditorSaveHandler } = await import("../helpers/editor-save-handler.mjs");
         
         const handled = await EditorSaveHandler.handleEditorSave(this.document, key, null, value);
@@ -166,7 +195,8 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
     const actorType = this.document.type;
     let tabs = {};
     
-    if (actorType === "character") {
+    // Check if it's any character type (pc, npc, eidolon)
+    if (['pc', 'npc', 'eidolon'].includes(actorType)) {
       tabs = {
         main: { id: "main", group: "primary", label: "Main" },
         biography: { id: "biography", group: "primary", label: "Biography" },
@@ -232,12 +262,22 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
     const progression = target.dataset.progression;
     const bonus = parseInt(target.dataset.bonus) || 0;
     // TODO: Implement roll logic
+    console.log(`Rolling ${progression} progression with bonus ${bonus}`);
   }
 
   static async _onRollStat(event, target) {
     const stat = target.dataset.stat;
     const type = target.dataset.type;
+    const progression = target.dataset.progression;
     // TODO: Implement roll logic
+    console.log(`Rolling ${stat} (${type}) with ${progression} progression`);
+  }
+
+  static async _onRollSpeed(event, target) {
+    const modifier = parseInt(target.dataset.modifier) || 0;
+    const flavor = target.dataset.flavor || "Speed Check";
+    // TODO: Implement roll logic
+    console.log(`Rolling speed check with modifier ${modifier}: ${flavor}`);
   }
 
   static async _onToggleLock(event, target) {
@@ -245,14 +285,28 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
     await this.document.update({ "system.buildPointsLocked": !currentLock });
   }
 
+  static async _onToggleProgression(event, target) {
+    // Don't toggle if clicking on the dice icon
+    if (event.target.classList.contains('progression-die')) {
+      return;
+    }
+    
+    const progressionGroup = target.closest('.progression-group');
+    if (progressionGroup) {
+      progressionGroup.classList.toggle('collapsed');
+    }
+  }
+
   static async _onShortRest(event, target) {
-    const { RestHandler } = await import("../helpers/rest-handler.mjs");
-    await RestHandler.shortRest(this.document);
+    const sheet = this; // 'this' is bound to the sheet instance by V2
+    const restHandler = new RestHandler(sheet.document);
+    await restHandler.performShortRest();
   }
 
   static async _onExtendedRest(event, target) {
-    const { RestHandler } = await import("../helpers/rest-handler.mjs");
-    await RestHandler.extendedRest(this.document);
+    const sheet = this;
+    const restHandler = new RestHandler(sheet.document);
+    await restHandler.performExtendedRest();
   }
 
   static async _onEditItem(event, target) {
@@ -277,23 +331,5 @@ export default class ZWolfActorSheet extends foundry.applications.sheets.ActorSh
     const actorId = target.dataset.actorId;
     const actor = game.actors.get(actorId);
     if (actor) actor.sheet.render(true);
-  }
-
-  _attachPartListeners(partId, htmlElement, options) {
-    super._attachPartListeners(partId, htmlElement, options);
-    
-    if (!this.isEditable) return;
-
-    switch (partId) {
-      case "header":
-        this._attachImagePicker(htmlElement);
-        break;
-      case "sidebar":
-        this._attachProgressionListeners(htmlElement);
-        break;
-      case "configure":
-        this._attachConfigureListeners(htmlElement);
-        break;
-    }
   }
 }
