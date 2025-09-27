@@ -1,6 +1,8 @@
 import { ActorDataCalculator } from "../helpers/actor-data-calculator.mjs";
+import { RestHandler } from "../helpers/rest-handler.mjs";
 import { SheetEventHandlers } from "../helpers/sheet-event-handlers.mjs";
 import { DropZoneHandler } from "../helpers/drop-zone-handler.mjs";
+import { EditorSaveHandler } from "../helpers/editor-save-handler.mjs";
 
 export default class ZWolfActorSheet extends foundry.applications.api.HandlebarsApplicationMixin(
   foundry.applications.sheets.ActorSheetV2
@@ -105,14 +107,11 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     return sheetData;
   }
 
-  /** @override */
   _onRender(context, options) {
-    console.log("🟡 _onRender called");
-    console.log("🟡 Actor type:", this.document.type);
-    console.log("🟡 Context:", context);
-    console.log("🟡 Element:", this.element);
-    
     super._onRender(context, options);
+    
+    // ADD THIS LINE - Activate editors for rich text fields
+    EditorSaveHandler.activateEditors(this);
     
     // Initialize event handlers
     const eventHandlers = new SheetEventHandlers(this);
@@ -133,10 +132,25 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     
     // Set up cleanup hooks
     this._setupCleanupHooks();
+    
+    // Restore scroll position if flagged
+    if (this._scrollToRestore !== undefined) {
+      const scrollTop = this._scrollToRestore;
+      delete this._scrollToRestore;
+      
+      requestAnimationFrame(() => {
+        const scrollableTab = this.element.querySelector('div.tab.configure');
+        if (scrollableTab) {
+          scrollableTab.scrollTop = scrollTop;
+        }
+      });
+    }
   }
 
   /** @override */
   async _onSubmit(event, form, formData) {
+    console.log('🔵 _onSubmit called, formData:', formData.object);
+    console.trace();
     const submitData = foundry.utils.expandObject(formData.object);
     
     // Handle rich text editor saves
@@ -283,6 +297,13 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   }
 
   static async _onToggleLock(event, target) {
+    // Save scroll position before update
+    const scrollableTab = this.element.querySelector('div.tab.configure');
+    const scrollTop = scrollableTab?.scrollTop || 0;
+    
+    // Store it for restoration after render
+    this._scrollToRestore = scrollTop;
+    
     const currentLock = this.document.system.buildPointsLocked || false;
     await this.document.update({ "system.buildPointsLocked": !currentLock });
   }

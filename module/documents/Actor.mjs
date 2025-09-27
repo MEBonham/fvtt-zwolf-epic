@@ -1,3 +1,5 @@
+import { calculateVitality, calculateCoast } from "../helpers/calculations.js";
+
 export class ZWolfActor extends Actor {
   
   // ========================================
@@ -20,11 +22,132 @@ export class ZWolfActor extends Actor {
   prepareDerivedData() {
     super.prepareDerivedData();
     
-    // Calculate derived values like knacks, build points, etc.
+    // Calculate max vitality and stamina FIRST (before other derived values)
+    if (['pc', 'npc', 'eidolon'].includes(this.type)) {
+      this._prepareCharacterDerivedData();
+    }
+    
+    // Calculate other derived values like knacks, build points, etc.
     this._prepareDerivedValues();
     
     // Sync vision to prototype token
     this._syncVisionToPrototypeToken();
+  }
+
+  /**
+   * Prepare derived data for character-type actors
+   * Calculates max vitality and stamina from fundaments
+   * @private
+   */
+  _prepareCharacterDerivedData() {
+    const level = this.system.level || 0;
+    const vitalityBoostCount = this.system.vitalityBoostCount || 0;
+    
+    // Calculate max vitality from fundament
+    const maxVitality = this._calculateMaxVitality(level, vitalityBoostCount);
+    this.system.vitalityPoints.max = maxVitality;
+    
+    // Calculate max stamina from fundament
+    const maxStamina = this._calculateMaxStamina(level);
+    this.system.staminaPoints.max = maxStamina;
+    
+    // Update coast number to match max stamina
+    this.system.coastNumber = maxStamina;
+    
+    // Ensure current values don't exceed max
+    if (this.system.vitalityPoints.value > maxVitality) {
+      this.system.vitalityPoints.value = maxVitality;
+    }
+    
+    if (this.system.staminaPoints.value > maxStamina) {
+      this.system.staminaPoints.value = maxStamina;
+    }
+    
+    console.log(`Z-Wolf Epic | Derived Data - Level: ${level}, Max VP: ${maxVitality}, Max SP: ${maxStamina}`);
+  }
+
+  /**
+   * Calculate maximum vitality points from fundament
+   * @param {number} level - Character level
+   * @param {number} vitalityBoostCount - Number of vitality boost items
+   * @returns {number} Maximum vitality points
+   * @private
+   */
+  _calculateMaxVitality(level, vitalityBoostCount) {
+    const defaultVitality = 10;
+    
+    // Get fundament item if assigned
+    const fundamentId = this.system.fundamentId;
+    if (!fundamentId) {
+      return defaultVitality;
+    }
+    
+    const fundament = this.items.get(fundamentId);
+    if (!fundament || !fundament.system) {
+      return defaultVitality;
+    }
+
+    // Get the vitality function key
+    const vitalityFunctionKey = fundament.system.vitalityFunction;
+    if (!vitalityFunctionKey || !vitalityFunctionKey.trim()) {
+      return defaultVitality;
+    }
+
+    // Use the imported calculation function
+    try {
+      const result = calculateVitality(
+        vitalityFunctionKey,
+        level,
+        vitalityBoostCount
+      );
+      
+      if (typeof result === 'number' && !isNaN(result) && result > 0) {
+        return Math.floor(result);
+      }
+    } catch (error) {
+      console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
+    }
+
+    return defaultVitality;
+  }
+
+  /**
+   * Calculate maximum stamina/coast from fundament
+   * @param {number} level - Character level
+   * @returns {number} Maximum stamina points
+   * @private
+   */
+  _calculateMaxStamina(level) {
+    const defaultCoast = 4;
+    
+    // Get fundament item if assigned
+    const fundamentId = this.system.fundamentId;
+    if (!fundamentId) {
+      return defaultCoast;
+    }
+    
+    const fundament = this.items.get(fundamentId);
+    if (!fundament || !fundament.system) {
+      return defaultCoast;
+    }
+
+    // Get the coast function key
+    const coastFunctionKey = fundament.system.coastFunction;
+    if (!coastFunctionKey || !coastFunctionKey.trim()) {
+      return defaultCoast;
+    }
+
+    try {
+      const result = calculateCoast(coastFunctionKey, level);
+      
+      if (typeof result === 'number' && !isNaN(result) && result > 0) {
+        return Math.floor(result);
+      }
+    } catch (error) {
+      console.error(`Z-Wolf Epic | Error calculating coast:`, error);
+    }
+
+    return defaultCoast;
   }
 
   /**
@@ -285,5 +408,12 @@ export class ZWolfActor extends Actor {
    */
   get effectiveLevel() {
     return this.system.level || 1;
+  }
+
+  /** @override */
+  async _preUpdate(changed, options, user) {
+    console.log('🔵 Actor _preUpdate called with:', changed);
+    console.trace();
+    return super._preUpdate(changed, options, user);
   }
 }

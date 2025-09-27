@@ -1,5 +1,77 @@
 {
-    "ZWOLF": {
-        
+  "TYPES": {
+    "Actor": {
+      "pc": "Player Character",
+      "npc": "Non-Player Character",
+      "eidolon": "Eidolon",
+      "mook": "Mook",
+      "spawn": "Spawn"
+    },
+    "Item": {
+      "ancestry": "Ancestry",
+      "fundament": "Fundament",
+      "equipment": "Equipment",
+      "knack": "Knack",
+      "track": "Track",
+      "talent": "Talent"
     }
+  },
+  "ZWOLF": {
+    "Summary": "Summary",
+    "BasicInformation": "Basic Information",
+    "EquipmentDetails": "Equipment Details",
+    "Many": "Many",
+    "AncestryDetails": "Ancestry Details",
+    "TalentDetails": "Talent Details",
+    "Functions": "Functions",
+    "TrackDetails": "Track Details",
+    "TrackTiers": "Track Tiers",
+    "Tier": "Tier",
+    "TalentMenu": "Talent Menu",
+    "Description": "Description",
+    "GrantedAbilitiesCount": "Granted Abilities",
+    "SideEffects": "Side Effects",
+    "ActiveEffects": "Active Effects",
+    "ItemLocked": "This item is locked",
+    "Meters": "meters",
+    "Bulk": "Bulk",
+    "NoUpgrade": "No Upgrade",
+    "DefaultRadius": "Default",
+    
+    "ItemTypeFundament": "Fundament",
+    "ItemTypeKnack": "Knack",
+    "ItemTypeTalent": "Talent",
+    "ItemTypeAncestry": "Ancestry",
+    "ItemTypeTrack": "Track",
+    "ItemTypeEquipment": "Equipment",
+    
+    "Stowed": "Stowed",
+    "Wielded": "Wielded",
+    "Worn": "Worn",
+    "ReadilyAvailable": "Readily Available",
+    "NotCarried": "Not Carried",
+    
+    "Diminutive": "Diminutive",
+    "Tiny": "Tiny",
+    "Small": "Small",
+    "Medium": "Medium",
+    "Large": "Large",
+    "Huge": "Huge",
+    "Gargantuan": "Gargantuan",
+    "Colossal": "Colossal",
+    
+    "VitalityStandard": "Standard",
+    "VitalityHardy": "Hardy",
+    "CoastStandard": "Standard",
+    "CoastCunning": "Cunning",
+    
+    "Mediocre": "Mediocre",
+    "Moderate": "Moderate",
+    "Specialty": "Specialty",
+    "Awesome": "Awesome",
+    
+    "Active": "Active",
+    "Passive": "Passive",
+    "Reaction": "Reaction"
+  }
 }

@@ -92,36 +92,77 @@ export class SheetEventHandlers {
       console.warn("Z-Wolf Epic | No level input field found. Check your HTML template.");
     }
 
-    // Item control handlers
-    html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
-      el.addEventListener('click', this._onUnifiedItemDelete.bind(this));
-    });
-    html.querySelectorAll('.item-control.item-edit').forEach(el => {
-      el.addEventListener('click', this._onItemEdit.bind(this));
-    });
+  // DIAGNOSTIC: Check what elements match our selectors
+  const deleteElements = html.querySelectorAll('.item-control.item-delete, .item-control.item-remove');
+  const shortRestElements = html.querySelectorAll('.short-rest-btn');
+  const extendedRestElements = html.querySelectorAll('.extended-rest-btn');
+  
+  console.log('🔍 Z-Wolf Epic | Delete selector matched:', deleteElements.length, 'elements');
+  deleteElements.forEach(el => {
+    console.log('  - Delete element classes:', el.className);
+  });
+  
+  console.log('🔍 Z-Wolf Epic | Short rest selector matched:', shortRestElements.length, 'elements');
+  shortRestElements.forEach(el => {
+    console.log('  - Short rest element classes:', el.className);
+  });
+  
+  console.log('🔍 Z-Wolf Epic | Extended rest selector matched:', extendedRestElements.length, 'elements');
+  extendedRestElements.forEach(el => {
+    console.log('  - Extended rest element classes:', el.className);
+  });
 
-    // Build Points Lock Button Handler
-    html.querySelectorAll('.build-points-lock-btn').forEach(el => {
-      el.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        this._onBuildPointsLockToggle(ev);
-      });
+  // Item control handlers
+  html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      console.log('🔴 DELETE HANDLER TRIGGERED');
+      this._onUnifiedItemDelete(ev);
     });
+  });
 
-    // Rest Button Handlers
-    html.querySelectorAll('.short-rest-btn').forEach(el => {
-      el.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        this._onShortRest(ev);
-      });
+  // Rest Button Handlers
+  html.querySelectorAll('.short-rest-btn').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      console.log('🟢 SHORT REST HANDLER TRIGGERED');
+      this._onShortRest(ev);
     });
+  });
 
-    html.querySelectorAll('.extended-rest-btn').forEach(el => {
-      el.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        this._onExtendedRest(ev);
-      });
+  html.querySelectorAll('.extended-rest-btn').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      console.log('🟢 EXTENDED REST HANDLER TRIGGERED');
+      this._onExtendedRest(ev);
     });
+  });
+
+    // // Item control handlers
+    // html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
+    //   el.addEventListener('click', this._onUnifiedItemDelete.bind(this));
+    // });
+    // html.querySelectorAll('.item-control.item-edit').forEach(el => {
+    //   el.addEventListener('click', this._onItemEdit.bind(this));
+    // });
+
+    // // Rest Button Handlers
+    // html.querySelectorAll('.short-rest-btn').forEach(el => {
+    //   el.addEventListener('click', (ev) => {
+    //     ev.preventDefault();
+    //     this._onShortRest(ev);
+    //   });
+    // });
+
+    // html.querySelectorAll('.extended-rest-btn').forEach(el => {
+    //   el.addEventListener('click', (ev) => {
+    //     ev.preventDefault();
+    //     this._onExtendedRest(ev);
+    //   });
+    // });
 
     // Equipment placement change handler
     html.querySelectorAll('.equipment-placement-select').forEach(el => {
@@ -261,12 +302,27 @@ async _onStatRoll(event) {
     }
     
     if (updatePath && newProgression) {
-      // Update without triggering render
-      await this.actor.update({ [updatePath]: newProgression }, { render: false });
+      // Save scroll position of the configure tab
+      const scrollableTab = this.sheet.element.querySelector('div.tab.configure');
+      const scrollTop = scrollableTab?.scrollTop || 0;
+      
+      console.log('Z-Wolf Epic | Saved scroll position:', scrollTop);
+      
+      // Update the actor
+      await this.actor.update({ [updatePath]: newProgression });
       console.log(`Z-Wolf Epic | Updated ${statKey} (${statType}) to ${newProgression}`);
       
-      // Manually update the display
-      this._updateBuildPointsDisplay();
+      // Re-render
+      await this.sheet.render(false);
+      
+      // Restore scroll position
+      requestAnimationFrame(() => {
+        const newScrollableTab = this.sheet.element.querySelector('div.tab.configure');
+        if (newScrollableTab) {
+          newScrollableTab.scrollTop = scrollTop;
+          console.log('Z-Wolf Epic | Restored scroll position:', scrollTop);
+        }
+      });
     }
   }
 
@@ -479,12 +535,23 @@ async _onStatRoll(event) {
 
   async _onBuildPointsLockToggle(event) {
     event.preventDefault();
+    
+    const scrollableTab = this.sheet.element.querySelector('div.tab.configure');
+    const scrollTop = scrollableTab?.scrollTop || 0;
+    
+    console.log('Lock toggle - saved scroll:', scrollTop);
+    
+    this._scrollToRestore = scrollTop;
+    
     const currentLockState = this.actor.system.buildPointsLocked || false;
     const newLockState = !currentLockState;
     
+    console.log('Lock toggle - about to update, calling stack:');
+    console.trace();
+    
     await this.actor.update({ 'system.buildPointsLocked': newLockState });
     
-    this.updateSliderStates(newLockState);
+    console.log('Lock toggle - update complete');
     
     const message = newLockState ? "Build Points locked" : "Build Points unlocked";
     ui.notifications.info(message);

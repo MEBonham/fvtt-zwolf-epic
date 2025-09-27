@@ -11,7 +11,7 @@ import { calculateVitality, calculateCoast } from "../helpers/calculations.js";
 export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsApplicationMixin(
   foundry.applications.sheets.ItemSheetV2
 ) {
-    _activeTab = "basics";
+    _activeTab = "summary";
   
   static DEFAULT_OPTIONS = {
     classes: ["zwolf-epic", "sheet", "item"],
@@ -35,6 +35,9 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     },
     tabs: {
       template: "systems/zwolf-epic/templates/item/parts/item-tabs.hbs"
+    },
+    summary: {
+      template: "systems/zwolf-epic/templates/item/parts/item-summary.hbs"  // NEW
     },
     basics: {
       template: "systems/zwolf-epic/templates/item/parts/item-basics.hbs"
@@ -81,10 +84,9 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
       isLocked: this.document.actor && this.document.getFlag('zwolf-epic', 'locked'),
       isEquipment: this.document.type === 'equipment'
     });
-
-    // Process granted abilities - FIXED: Don't auto-fill missing abilities after deletion
-    console.log("Before validateGrantedAbilities:", itemData.system.grantedAbilities);
-    console.log("Skip ability validation flag:", this._skipAbilityValidation);
+  
+    // Prepare data for Summary tab
+    await this._prepareSummaryData(preparedContext, itemData);
     
     // Only validate/auto-fill if we're not in the middle of a deletion operation
     if (!this._skipAbilityValidation) {
@@ -376,6 +378,9 @@ _attachPartListeners(partId, htmlElement, options) {
         break;
       case "tiers":
         this._activateTrackListeners(htmlElement);
+        break;
+      case "summary":
+        this._attachSummaryListeners(htmlElement);
         break;
     }
 
@@ -879,6 +884,22 @@ _attachPartListeners(partId, htmlElement, options) {
         this._activateTab(event.currentTarget.dataset.tab);
       });
     });
+  
+    // // Set up cleanup hooks
+    // this._setupCleanupHooks();
+  
+    // Restore scroll if flagged
+    if (this._scrollToRestore !== undefined) {
+      const scrollTop = this._scrollToRestore;
+      delete this._scrollToRestore;
+      
+      requestAnimationFrame(() => {
+        const scrollableTab = this.element.querySelector('div.tab.configure');
+        if (scrollableTab) {
+          scrollableTab.scrollTop = scrollTop;
+        }
+      });
+    }
   }
 
   /**
@@ -956,42 +977,159 @@ _attachPartListeners(partId, htmlElement, options) {
   //  * @param {HTMLElement} html - The HTML element to attach listeners to
   //  * @private
   //  */
-  _attachUniversalFormListeners(html) {
-  //   console.log("_attachUniversalFormListeners called with element:", html);
+  _attachUniversalFormListeners(html) {}
+
+  // 4. Add new method for preparing summary-specific data
+  /**
+   * Prepare data specifically for the Summary tab
+   * @param {Object} context - Sheet context
+   * @param {Object} itemData - Item data
+   * @private
+   */
+  async _prepareSummaryData(context, itemData) {
+    // Helper function to safely get nested values
+    const getSafeValue = (obj, path, defaultValue = null) => {
+      return path.split('.').reduce((acc, part) => acc?.[part], obj) ?? defaultValue;
+    };
     
-  //   const inputs = html.querySelectorAll('input[name^="system."], select[name^="system."], textarea[name^="system."], input[name="name"]');
-  //   console.log(`Found ${inputs.length} inputs:`, inputs);
+    // Helper function to format tags (handles both arrays and strings)
+    const formatTags = (tags) => {
+      if (!tags) return '';
+      if (Array.isArray(tags)) return tags.join(', ');
+      return tags.toString();
+    };
     
-  //   inputs.forEach((input, index) => {
-  //     const eventType = (input.type === 'text' || input.tagName === 'TEXTAREA') ? 'blur' : 'change';
-      
-  //     console.log(`Attaching ${eventType} listener to input ${index}:`, input.name, input.tagName, input.type);
-      
-  //     const handler = async (event) => {
-  //       console.log("EVENT FIRED!", event.type, event.target.name, event.target.value);
+    // Format tags for display
+    if (itemData.system.tags) {
+      itemData.system.tags = formatTags(itemData.system.tags);
+    }
+    
+    if (itemData.system.characterTags) {
+      itemData.system.characterTags = formatTags(itemData.system.characterTags);
+    }
+    
+    // Prepare type-specific summary data
+    switch (this.document.type) {
+      case 'track':
+        // Process track tiers for summary display
+        if (itemData.system.tiers) {
+          context.tiersProcessed = {};
+          for (const [tierKey, tierData] of Object.entries(itemData.system.tiers)) {
+            const tierNum = tierKey.replace('tier', '');
+            
+            // Format tier character tags
+            if (tierData.characterTags) {
+              tierData.characterTags = formatTags(tierData.characterTags);
+            }
+            
+            context.tiersProcessed[tierNum] = {
+              talentMenu: tierData.talentMenu || '',
+              enrichedTalentMenu: await HtmlEnricher.enrichContent(
+                tierData.talentMenu || "",
+                this.document,
+                `${tierKey} talent menu summary`
+              ),
+              characterTags: tierData.characterTags || '',
+              sideEffects: tierData.sideEffects || {},
+              grantedAbilitiesCount: tierData.grantedAbilities ? 
+                Object.keys(tierData.grantedAbilities).length : 0
+            };
+          }
+        }
+        break;
         
-  //       const name = event.target.name;
-  //       let value = event.target.value;
+      case 'equipment':
+        // Format equipment placement for summary
+        if (itemData.system.placement) {
+          context.placementFormatted = CONFIG.ZWOLF?.placements?.[itemData.system.placement] || 
+                                      itemData.system.placement;
+        }
+        if (itemData.system.requiredPlacement) {
+          context.requiredPlacementFormatted = CONFIG.ZWOLF?.placements?.[itemData.system.requiredPlacement] || 
+                                              itemData.system.requiredPlacement;
+        }
+        break;
         
-  //       console.log(`Field changed: ${name} = ${value}`);
+      case 'ancestry':
+        // Format size options for summary
+        if (itemData.system.sizeOptions && Array.isArray(itemData.system.sizeOptions)) {
+          context.formattedSizeOptions = itemData.system.sizeOptions
+            .map(size => CONFIG.ZWOLF?.sizes?.[size] || size)
+            .join(', ');
+        }
+        break;
+    }
+    
+    // Count granted abilities for summary
+    if (itemData.system.grantedAbilities) {
+      const abilities = itemData.system.grantedAbilities;
+      if (typeof abilities === 'object') {
+        const validAbilities = Object.values(abilities).filter(a => a && a.name);
+        context.grantedAbilitiesCount = validAbilities.length;
         
-  //       if (event.target.type === 'number') {
-  //         value = parseInt(value) || 0;
-  //       } else if (event.target.type === 'checkbox') {
-  //         value = event.target.checked;
-  //       }
-        
-  //       try {
-  //         await this.document.update({ [name]: value });
-  //         console.log(`Successfully saved: ${name} = ${value}`);
-  //       } catch (error) {
-  //         console.error(`Failed to save ${name}:`, error);
-  //         ui.notifications.error(`Failed to save ${name}`);
-  //       }
-  //     };
-      
-  //     input.addEventListener(eventType, handler);
-  //     console.log(`Listener attached successfully for ${input.name}`);
-  //   });
+        // Group abilities by type for summary
+        context.abilitiesByType = {
+          active: validAbilities.filter(a => a.type === 'active').length,
+          passive: validAbilities.filter(a => a.type === 'passive').length,
+          reaction: validAbilities.filter(a => a.type === 'reaction').length
+        };
+      }
+    }
+    
+    // Process side effects for summary display
+    if (itemData.system.sideEffects) {
+      context.hasSideEffects = Object.values(itemData.system.sideEffects)
+        .some(v => v !== null && v !== undefined && v !== '' && v !== 0);
+    }
+    
+    // Format tags for summary (ensure they're always arrays or strings)
+    if (itemData.system.tags) {
+      context.formattedTags = Array.isArray(itemData.system.tags) ? 
+        itemData.system.tags.join(', ') : itemData.system.tags;
+    }
+    
+    if (itemData.system.characterTags) {
+      context.formattedCharacterTags = Array.isArray(itemData.system.characterTags) ? 
+        itemData.system.characterTags.join(', ') : itemData.system.characterTags;
+    }
+    
+    // Add computed values for summary
+    context.summaryData = {
+      hasAbilities: context.grantedAbilitiesCount > 0,
+      hasEffects: (this.document.effects?.size || 0) > 0,
+      hasTiers: this.document.type === 'track' && itemData.system.tiers,
+      hasDescription: !!itemData.system.description,
+      hasRequirements: !!itemData.system.required,
+      hasSideEffects: context.hasSideEffects
+    };
+  }
+
+  // 6. Add summary listeners method (minimal since it's read-only)
+  /**
+   * Attach summary-related listeners
+   * @param {HTMLElement} html - The sheet HTML
+   * @private
+   */
+  _attachSummaryListeners(html) {
+    // Summary is read-only, but we might want collapsible sections
+    html.querySelectorAll('.summary-section h3').forEach(header => {
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', (event) => {
+        const section = event.currentTarget.closest('.summary-section');
+        section.classList.toggle('collapsed');
+      });
+    });
+    
+    // Add click-to-copy for item ID
+    const idElement = html.querySelector('.item-id .summary-value');
+    if (idElement) {
+      idElement.style.cursor = 'pointer';
+      idElement.title = 'Click to copy ID';
+      idElement.addEventListener('click', async (event) => {
+        const id = event.currentTarget.textContent;
+        await navigator.clipboard.writeText(id);
+        ui.notifications.info(`Copied item ID: ${id}`);
+      });
+    }
   }
 }

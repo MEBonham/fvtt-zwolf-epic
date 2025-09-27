@@ -58,28 +58,28 @@ function createAttributesAndSkillsFields() {
         progression: new fields.StringField({ 
           required: false, 
           initial: "moderate",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       fortitude: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "moderate",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       perception: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "moderate",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       willpower: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "moderate",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       })
     }),
@@ -88,56 +88,56 @@ function createAttributesAndSkillsFields() {
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       athletics: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       brawn: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       dexterity: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       glibness: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       influence: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       insight: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       }),
       stealth: new fields.SchemaField({
         progression: new fields.StringField({ 
           required: false, 
           initial: "mediocre",
-          choices: ["mediocre", "moderate", "strong", "epic"]
+          choices: ["mediocre", "moderate", "specialty", "awesome"]
         })
       })
     })
