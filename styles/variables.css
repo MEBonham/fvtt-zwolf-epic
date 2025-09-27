@@ -15,8 +15,8 @@
   --z-wolf-background-dark: #3a3a3a;
   --z-wolf-surface: #ffffff;
   --z-wolf-border: #cccccc;
-  --z-wolf-text: #cccccc;
-  --z-wolf-text-muted: #aaaaaa;
+  --z-wolf-text: #333333;
+  --z-wolf-text-muted: #666666;
   
   /* Status Colors */
   --z-wolf-success: #28a745;

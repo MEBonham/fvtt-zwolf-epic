@@ -892,13 +892,13 @@
 
 .summary-label {
   font-weight: 600;
-  color: var(--z-wolf-text, #333333);
+  color: var(--z-wolf-text-on-dark, #aaaaaa);
   min-width: 140px;
   flex-shrink: 0;
 }
 
 .summary-value {
-  color: var(--z-wolf-text-muted, #666666);
+  color: var(--z-wolf-text-on-dark, #aaaaaa);
   flex: 1;
 }
 
@@ -1090,4 +1090,109 @@
     align-items: flex-start;
     gap: 5px;
   }
+}
+
+/* Proficiency Grants Section Styling */
+.side-effects-form .proficiency-grants {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.08) 0%,  /* --z-wolf-accent with opacity */
+    rgba(44, 90, 160, 0.05) 100%); /* --z-wolf-primary with opacity */
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add a subtle accent stripe */
+.side-effects-form .proficiency-grants::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, 
+    var(--z-wolf-accent) 0%, 
+    var(--z-wolf-primary) 100%);
+  border-radius: 4px 0 0 4px;
+}
+
+/* Header styling */
+.side-effects-form .proficiency-grants h4 {
+  color: var(--z-wolf-primary);
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  font-weight: 600;
+}
+
+.side-effects-form .proficiency-grants h4 i {
+  color: var(--z-wolf-accent);
+  margin-right: 0.5rem;
+}
+
+/* Notes styling */
+.side-effects-form .proficiency-grants .notes {
+  color: var(--z-wolf-text-muted);
+  font-size: 0.875rem;
+  font-style: italic;
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+/* Form group styling */
+.side-effects-form .proficiency-grants .form-group {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+.side-effects-form .proficiency-grants label {
+  color: var(--z-wolf-text);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+/* Dropdown styling */
+.side-effects-form .proficiency-grants select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--z-wolf-border);
+  border-radius: 4px;
+  background-color: var(--z-wolf-surface);
+  color: var(--z-wolf-text);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.side-effects-form .proficiency-grants select:hover {
+  border-color: var(--z-wolf-primary-light);
+  box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.1);
+}
+
+.side-effects-form .proficiency-grants select:focus {
+  outline: none;
+  border-color: var(--z-wolf-primary);
+  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
+}
+
+/* Optgroup styling */
+.side-effects-form .proficiency-grants optgroup {
+  font-weight: 600;
+  color: var(--z-wolf-primary-dark);
+}
+
+.side-effects-form .proficiency-grants option {
+  padding: 0.25rem;
+  color: var(--z-wolf-text);
+}
+
+/* Hover effect for the entire section */
+.side-effects-form .proficiency-grants:hover {
+  box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
+  transform: translateY(-1px);
+  transition: all 0.3s ease;
 }

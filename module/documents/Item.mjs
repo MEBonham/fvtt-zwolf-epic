@@ -56,9 +56,9 @@ export class ZWolfItem extends Item {
     const indices = Object.keys(abilities).map(k => parseInt(k)).filter(n => !isNaN(n));
     const nextIndex = indices.length > 0 ? Math.max(...indices) + 1 : 0;
     
-    // Create new ability object
+    // Create new ability object with item name as default
     const newAbility = {
-      name: "",
+      name: this.name,  // Changed from "" to this.name
       tags: "",
       type: "passive",
       description: ""
@@ -171,8 +171,8 @@ export class ZWolfItem extends Item {
     }
 
     const newAbility = {
-      name: abilityData.name || "",
-      tags: abilityData.tags || "", // Always a string
+      name: abilityData.name || this.name,  // Changed to use item name as default
+      tags: abilityData.tags || "",
       type: abilityData.type || "passive",
       description: abilityData.description || ""
     };

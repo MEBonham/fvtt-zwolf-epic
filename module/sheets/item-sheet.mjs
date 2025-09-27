@@ -1080,6 +1080,16 @@ _attachPartListeners(partId, htmlElement, options) {
     if (itemData.system.sideEffects) {
       context.hasSideEffects = Object.values(itemData.system.sideEffects)
         .some(v => v !== null && v !== undefined && v !== '' && v !== 0);
+      
+      // Add formatted granted proficiency for display
+      if (itemData.system.sideEffects.grantedProficiency) {
+        const profKey = itemData.system.sideEffects.grantedProficiency;
+        const proficiency = CONFIG.ZWOLF.proficiencies[profKey];
+        if (proficiency) {
+          context.grantedProficiencyLabel = game.i18n.localize(proficiency.label);
+          context.grantedProficiencyType = proficiency.type;
+        }
+      }
     }
     
     // Format tags for summary (ensure they're always arrays or strings)

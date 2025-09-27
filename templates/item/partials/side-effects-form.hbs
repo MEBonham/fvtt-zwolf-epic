@@ -1,6 +1,46 @@
 {{!-- templates/item/partials/side-effects-form.hbs --}}
 <div class="side-effects-form">
-  
+
+  <!-- Proficiency Grants Section -->
+  <div class="proficiency-grants">
+    <h4><i class="fas fa-certificate"></i> {{localize 'ZWOLF.ProficiencyGrants'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.ProficiencyGrantsHint'}}</p>
+    
+    <!-- Granted Proficiency -->
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.GrantedProficiency'}}</label>
+      <select name="{{pathPrefix}}.grantedProficiency" data-dtype="String">
+        <option value="" {{selected '' sideEffects.grantedProficiency}}>{{localize 'ZWOLF.None'}}</option>
+        
+        <optgroup label="{{localize 'ZWOLF.SeedProficiencies'}}">
+          {{#each config.proficiencies}}
+            {{#if (eq this.type 'seed')}}
+              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>{{localize this.label}}</option>
+            {{/if}}
+          {{/each}}
+        </optgroup>
+        
+        <optgroup label="{{localize 'ZWOLF.WeaponProficiencies'}}">
+          {{#each config.proficiencies}}
+            {{#if (eq this.type 'weapon')}}
+              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>{{localize this.label}}</option>
+            {{/if}}
+          {{/each}}
+        </optgroup>
+        
+        <optgroup label="{{localize 'ZWOLF.MiscellaneousProficiencies'}}">
+          {{#each config.proficiencies}}
+            {{#if (eq this.type 'miscellaneous')}}
+              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>{{localize this.label}}</option>
+            {{/if}}
+          {{/each}}
+        </optgroup>
+      </select>
+      <p class="notes">{{localize 'ZWOLF.GrantedProficiencyHint'}}</p>
+    </div>
+  </div>
+
+  {{#if (or (eq itemType "talent") (eq itemType "track"))}}
   <!-- Knacks Provided Section (Talents and Tiers only) -->
   <div class="knacks-provided">
     <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
@@ -12,6 +52,7 @@
       <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
     </div>
   </div>
+  {{/if}}
   
   <!-- Progression Upgrades Section -->
   <div class="progression-upgrades">
@@ -86,6 +127,7 @@
     </div>
   </div>
 
+  {{#if (eq itemType "equipment")}}
   <!-- Bulk Capacity Upgrades Section (Equipment only) -->
   <div class="bulk-upgrades">
     <h4><i class="fas fa-weight-hanging"></i> {{localize 'ZWOLF.BulkCapacityUpgrades'}}</h4>
@@ -104,6 +146,7 @@
       <p class="notes">{{localize 'ZWOLF.MaxBulkBoostHint'}}</p>
     </div>
   </div>
+  {{/if}}
   
   <!-- Placeholder for Future Side Effects -->
   <div class="future-side-effects">
