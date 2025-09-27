@@ -432,7 +432,7 @@
   width: 100%;
 }
 
-.ability-description {
+.zwolf-epic.sheet.item .ability-description {
   min-height: 120px;
 }
 
@@ -976,11 +976,12 @@
   margin-right: 3px;
 }
 
-.ability-description {
+/* Ability description in item sheets only */
+.zwolf-epic.sheet.item .ability-description {
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px dotted var(--z-wolf-border, #e0e0e0);
-  color: var(--z-wolf-text-muted, #666666);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Tier Summary */

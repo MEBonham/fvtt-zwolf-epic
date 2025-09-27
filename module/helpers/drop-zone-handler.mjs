@@ -36,6 +36,30 @@ export class DropZoneHandler {
   }
 
   // =================================
+  // SCROLL PRESERVATION UTILITIES
+  // =================================
+
+  /**
+   * Preserve scroll position before re-render
+   */
+  _preserveScrollPosition() {
+    const activeTab = this.sheet.element.querySelector('.tab.active');
+    if (activeTab) {
+      const scrollTop = activeTab.scrollTop || 0;
+      this.sheet._scrollToRestore = scrollTop;
+      console.log(`Z-Wolf Epic | Preserving scroll position: ${scrollTop}`);
+    }
+  }
+
+  /**
+   * Render sheet with scroll preservation
+   */
+  async _renderWithScrollPreservation() {
+    this._preserveScrollPosition();
+    await this.sheet.render(false);
+  }
+
+  // =================================
   // FOUNDATION DROP HANDLERS
   // =================================
 
@@ -123,7 +147,7 @@ export class DropZoneHandler {
           setTimeout(async () => {
             const sizeChanged = await this._validateActorSize();
             if (sizeChanged) {
-              this.sheet.render(false);
+              await this._renderWithScrollPreservation();
             }
           }, 100);
         }
@@ -137,7 +161,7 @@ export class DropZoneHandler {
         await actorItem.setFlag('zwolf-epic', 'locked', true);
         
         ui.notifications.info(`${item.name} has been set as your ${expectedType}.`);
-        this.sheet.render(false);
+        await this._renderWithScrollPreservation();
         
       } catch (err) {
         console.error("Z-Wolf Epic | Foundation drop error:", err);
@@ -258,7 +282,7 @@ export class DropZoneHandler {
           console.log(`Z-Wolf Epic | Set talent ${item.name} to slot index ${slotIndex}`);
         }
         
-        this.sheet.render(false);
+        await this._renderWithScrollPreservation();
       } catch (err) {
         console.error("Z-Wolf Epic | Slot drop error:", err);
         ui.notifications.error("Failed to assign the item to this slot.");
@@ -334,7 +358,7 @@ export class DropZoneHandler {
         // Equipment items don't get locked (unlike talents/knacks/tracks)
         
         ui.notifications.info(`${item.name} has been added to your inventory.`);
-        this.sheet.render(false);
+        await this._renderWithScrollPreservation();
         
       } catch (err) {
         console.error("Z-Wolf Epic | Equipment drop error:", err);

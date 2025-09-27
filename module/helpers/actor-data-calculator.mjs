@@ -700,7 +700,7 @@ export class ActorDataCalculator {
       dominantAction: [],
       swiftAction: [],
       reaction: [],
-      free: [],
+      freeAction: [],
       strike: [],
       journey: [],
       miscellaneous: []
@@ -860,10 +860,11 @@ export class ActorDataCalculator {
   _ensureAbilityCategories(context) {
     const defaultCategories = {
       passive: [],
+      exoticSenses: [],
       dominantAction: [],
       swiftAction: [],
       reaction: [],
-      free: [],
+      freeAction: [],
       strike: [],
       journey: [],
       miscellaneous: []

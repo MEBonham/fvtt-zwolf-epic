@@ -139,9 +139,11 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
       delete this._scrollToRestore;
       
       requestAnimationFrame(() => {
-        const scrollableTab = this.element.querySelector('div.tab.configure');
+        // FIXED: Find the currently active tab instead of hardcoding .configure
+        const scrollableTab = this.element.querySelector('.tab.active');
         if (scrollableTab) {
           scrollableTab.scrollTop = scrollTop;
+          console.log(`🟢 Restored scroll position to ${scrollTop} for active tab`);
         }
       });
     }
@@ -151,6 +153,10 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   async _onSubmit(event, form, formData) {
     console.log('🔵 _onSubmit called, formData:', formData.object);
     console.trace();
+    
+    // ADDED: Preserve scroll position before processing submission
+    this._preserveScrollPosition();
+    
     const submitData = foundry.utils.expandObject(formData.object);
     
     // Handle rich text editor saves
@@ -166,6 +172,19 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     }
 
     return super._onSubmit(event, form, foundry.utils.flattenObject(submitData));
+  }
+
+  /**
+   * Preserve scroll position of the currently active tab
+   * @private
+   */
+  _preserveScrollPosition() {
+    const activeTab = this.element.querySelector('.tab.active');
+    if (activeTab) {
+      const scrollTop = activeTab.scrollTop || 0;
+      this._scrollToRestore = scrollTop;
+      console.log(`🟡 Preserving scroll position: ${scrollTop} for active tab`);
+    }
   }
 
   _isRichTextField(key) {
@@ -297,12 +316,8 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   }
 
   static async _onToggleLock(event, target) {
-    // Save scroll position before update
-    const scrollableTab = this.element.querySelector('div.tab.configure');
-    const scrollTop = scrollableTab?.scrollTop || 0;
-    
-    // Store it for restoration after render
-    this._scrollToRestore = scrollTop;
+    // CHANGED: Use the new _preserveScrollPosition method
+    this._preserveScrollPosition();
     
     const currentLock = this.document.system.buildPointsLocked || false;
     await this.document.update({ "system.buildPointsLocked": !currentLock });

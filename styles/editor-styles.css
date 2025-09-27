@@ -71,20 +71,28 @@
   border-radius: 4px;
   padding: 8px;
   background: #2a2a2a; /* Dark background */
-  color: #d4af37; /* Your tan text color from variables.css */
+  color: rgba(255, 255, 255, 0.9); /* Light readable text */
 }
 
-/* ProseMirror editor content area - dark background with tan text */
+/* ProseMirror editor content area - dark background with light text */
 .ProseMirror {
   background: #2a2a2a !important; /* Dark background */
-  color: #d4af37 !important; /* Tan text from your accent color */
+  color: rgba(255, 255, 255, 0.85) !important; /* Light readable text */
   min-height: 100px;
   padding: 8px;
   border: 1px solid #dee2e6;
   border-radius: 4px;
 }
 
-/* Ensure all text in ProseMirror uses the tan color */
+/* Reduce min-height for read-only ProseMirror in ability descriptions */
+.ability-description .ProseMirror {
+  min-height: auto !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Ensure all text in ProseMirror uses light readable color */
 .ProseMirror p,
 .ProseMirror div,
 .ProseMirror span,
@@ -95,12 +103,12 @@
 .ProseMirror ul,
 .ProseMirror ol,
 .ProseMirror li {
-  color: #d4af37 !important; /* Your tan accent color */
+  color: rgba(255, 255, 255, 0.85) !important; /* Light readable text */
 }
 
 /* Style placeholder text */
 .ProseMirror .placeholder {
-  color: #8b7355 !important; /* Darker tan for placeholder */
+  color: rgba(255, 255, 255, 0.5) !important; /* Dimmer placeholder */
 }
 
 /* Override any display: none when editor is active */

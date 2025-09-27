@@ -612,7 +612,7 @@
 }
 
 .ability-list {
-  padding: 1rem;
+  padding: 0 1rem;
 }
 
 .ability-subsection {
@@ -673,9 +673,10 @@
 }
 
 .ability-description {
-  padding: 0.75rem;
-  color: var(--z-wolf-accent);
+  padding: 0.35rem 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
   border-top: 1px solid var(--z-wolf-border);
+  line-height: 1.3;
 }
 
 .no-abilities {

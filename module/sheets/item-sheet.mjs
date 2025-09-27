@@ -12,6 +12,7 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   foundry.applications.sheets.ItemSheetV2
 ) {
     _activeTab = "summary";
+    _scrollPositions = {};
   
   static DEFAULT_OPTIONS = {
     classes: ["zwolf-epic", "sheet", "item"],
@@ -509,6 +510,9 @@ _attachPartListeners(partId, htmlElement, options) {
   async _onSubmitForm(formConfig, event, formData) {
     console.log("=== V2 FORM SUBMISSION DEBUG ===");
     
+    // CAPTURE SCROLL POSITIONS before processing
+    this._captureScrollPositions();
+    
     let submitData = formData?.object || formData || {};
     
     if (!submitData || Object.keys(submitData).length === 0) {
@@ -582,7 +586,7 @@ _attachPartListeners(partId, htmlElement, options) {
     }
 
     console.log("Final form data before update:", submitData);
-
+ 
     try {
       await this.document.update(submitData, { 
         render: false,
@@ -590,12 +594,7 @@ _attachPartListeners(partId, htmlElement, options) {
       });
       console.log("Document updated successfully");
       
-      // Restore scroll position after the update
-      if (scrollContainer) {
-        requestAnimationFrame(() => {
-          scrollContainer.scrollTop = scrollTop;
-        });
-      }
+      // Note: scroll restoration happens in _onRender via _scrollPositions
     } catch (error) {
       console.error("Failed to update document:", error);
       ui.notifications.error("Failed to save changes: " + error.message);
@@ -727,6 +726,7 @@ _attachPartListeners(partId, htmlElement, options) {
    * @param {Event} event - The originating change event
    * @private
    */
+  // Update _onAbilityFieldChange to capture scroll positions:
   async _onAbilityFieldChange(event) {
     event.preventDefault();
     const input = event.currentTarget;
@@ -741,6 +741,9 @@ _attachPartListeners(partId, htmlElement, options) {
     
     // Skip description fields - they're handled by the V2 editor system automatically
     if (fieldName === 'description') return;
+    
+    // CAPTURE SCROLL POSITIONS before update
+    this._captureScrollPositions();
     
     await this.document.updateGrantedAbilityField(abilityIndex, fieldName, input.value);
   }
@@ -806,6 +809,7 @@ _attachPartListeners(partId, htmlElement, options) {
    * @param {Event} event - The originating change event
    * @private
    */
+  // Update _onTierAbilityFieldChange similarly:
   async _onTierAbilityFieldChange(event) {
     event.preventDefault();
     const input = event.currentTarget;
@@ -817,6 +821,9 @@ _attachPartListeners(partId, htmlElement, options) {
     const tier = parseInt(match[1]);
     const abilityIndex = parseInt(match[2]);
     const fieldName = match[3];
+    
+    // CAPTURE SCROLL POSITIONS before update
+    this._captureScrollPositions();
     
     await this.document.updateTierAbilityField(tier, abilityIndex, fieldName, input.value);
   }
@@ -862,7 +869,6 @@ _attachPartListeners(partId, htmlElement, options) {
   /*  Tab Navigation & Rendering                  */
   /* -------------------------------------------- */
 
-  /** @override */
   _onRender(context, options) {
     super._onRender(context, options);
     
@@ -874,7 +880,7 @@ _attachPartListeners(partId, htmlElement, options) {
     const tabToActivate = this._activeTab || firstTab?.dataset.tab;
     
     if (tabToActivate) {
-        this._activateTab(tabToActivate);
+      this._activateTab(tabToActivate);
     }
 
     // Add tab click listeners
@@ -884,26 +890,24 @@ _attachPartListeners(partId, htmlElement, options) {
         this._activateTab(event.currentTarget.dataset.tab);
       });
     });
-  
-    // // Set up cleanup hooks
-    // this._setupCleanupHooks();
-  
-    // Restore scroll if flagged
-    if (this._scrollToRestore !== undefined) {
-      const scrollTop = this._scrollToRestore;
-      delete this._scrollToRestore;
-      
+
+    // RESTORE SCROLL POSITIONS for all tracked containers
+    if (Object.keys(this._scrollPositions).length > 0) {
       requestAnimationFrame(() => {
-        const scrollableTab = this.element.querySelector('div.tab.configure');
-        if (scrollableTab) {
-          scrollableTab.scrollTop = scrollTop;
+        for (const [selector, scrollTop] of Object.entries(this._scrollPositions)) {
+          const container = this.element.querySelector(selector);
+          if (container) {
+            container.scrollTop = scrollTop;
+          }
         }
+        // Clear stored positions after restoration
+        this._scrollPositions = {};
       });
     }
   }
 
-  /**
-   * Activate a specific tab
+    /**
+     * Activate a specific tab
    * @param {string} tabName - The tab to activate
    * @private
    */
@@ -1141,5 +1145,27 @@ _attachPartListeners(partId, htmlElement, options) {
         ui.notifications.info(`Copied item ID: ${id}`);
       });
     }
+  }
+
+  /**
+   * Capture scroll positions of all scrollable containers
+   * @private
+   */
+  _captureScrollPositions() {
+    // Define all scrollable containers to track
+    const scrollableSelectors = [
+      '.window-content',           // Main window content
+      '.tab.abilities',            // Abilities tab
+      '.tab.tiers',                // Tiers tab
+      '.scrollable'                // Any generic scrollable area
+    ];
+    
+    scrollableSelectors.forEach(selector => {
+      const container = this.element.querySelector(selector);
+      if (container && container.scrollTop > 0) {
+        this._scrollPositions[selector] = container.scrollTop;
+        console.log(`Captured scroll position for ${selector}: ${container.scrollTop}`);
+      }
+    });
   }
 }
