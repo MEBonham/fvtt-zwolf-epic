@@ -316,110 +316,110 @@ ZWOLF.proficiencies = {
   // Seed Proficiencies (Magic)
   "aether": {
     type: "seed",
-    label: "ZWOLF.ProficiencyAether"
+    label: "Aether Seed"
   },
   "air": {
     type: "seed",
-    label: "ZWOLF.ProficiencyAir"
+    label: "Air Seed"
   },
   "animal": {
     type: "seed",
-    label: "ZWOLF.ProficiencyAnimal"
+    label: "Animal Seed"
   },
   "earth": {
     type: "seed",
-    label: "ZWOLF.ProficiencyEarth"
+    label: "Earth Seed"
   },
   "fire": {
     type: "seed",
-    label: "ZWOLF.ProficiencyFire"
+    label: "Fire Seed"
   },
   "frost": {
     type: "seed",
-    label: "ZWOLF.ProficiencyFrost"
+    label: "Frost Seed"
   },
   "glory": {
     type: "seed",
-    label: "ZWOLF.ProficiencyGlory"
+    label: "Glory Seed"
   },
   "lightning": {
     type: "seed",
-    label: "ZWOLF.ProficiencyLightning"
+    label: "Lightning Seed"
   },
   "mind": {
     type: "seed",
-    label: "ZWOLF.ProficiencyMind"
+    label: "Mind Seed"
   },
   "plant": {
     type: "seed",
-    label: "ZWOLF.ProficiencyPlant"
+    label: "Plant Seed"
   },
   "shadow": {
     type: "seed",
-    label: "ZWOLF.ProficiencyShadow"
+    label: "Shadow Seed"
   },
   "water": {
     type: "seed",
-    label: "ZWOLF.ProficiencyWater"
+    label: "Water Seed"
   },
   
   // Weapon Proficiencies
   "sword": {
     type: "weapon",
-    label: "ZWOLF.ProficiencySwords"
+    label: "swords"
   },
   "axe": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyAxes"
+    label: "axes"
   },
   "club": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyClubs"
+    label: "clubs"
   },
   "knife": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyKnives"
+    label: "knives"
   },
   "polearm": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyPolearms"
+    label: "polearms"
   },
   "spear": {
     type: "weapon",
-    label: "ZWOLF.ProficiencySpears"
-  },
-  "crossbow": {
-    type: "weapon",
-    label: "ZWOLF.ProficiencyCrossbows"
+    label: "spears"
   },
   "bow": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyBows"
+    label: "bows"
   },
   "sling": {
     type: "weapon",
-    label: "ZWOLF.ProficiencySlings"
+    label: "slings"
   },
   "flail": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyFlails"
+    label: "flails"
   },
   "bomb": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyBombs"
+    label: "bombs"
   },
   "rifle": {
     type: "weapon",
-    label: "ZWOLF.ProficiencyRifles"
+    label: "rifles"
+  },
+  "dart": {
+    type: "weapon",
+    label: "darts"
   },
   
   // Miscellaneous Proficiencies
   "unarmed": {
     type: "miscellaneous",
-    label: "ZWOLF.ProficiencyUnarmed"
+    label: "<Unarmed> weapons"
   },
   "improvised": {
     type: "miscellaneous",
-    label: "ZWOLF.ProficiencyImprovised"
+    label: "improvised weapons"
   }
 };

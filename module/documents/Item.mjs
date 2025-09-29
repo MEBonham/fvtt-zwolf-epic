@@ -166,24 +166,57 @@ export class ZWolfItem extends Item {
    * @returns {Promise<void>}
    */
   async addTierAbility(tier, abilityData = {}) {
+    console.log("=== ADD TIER ABILITY START ===");
+    console.log("Item type:", this.type);
+    console.log("Tier:", tier);
+    console.log("Tier check passed:", this.type === 'track' && tier >= 1 && tier <= 5);
+    
     if (this.type !== 'track' || tier < 1 || tier > 5) {
+      console.log("Early return: invalid type or tier");
       return;
     }
 
     const newAbility = {
-      name: abilityData.name || this.name,  // Changed to use item name as default
+      name: abilityData.name || this.name,
       tags: abilityData.tags || "",
       type: abilityData.type || "passive",
       description: abilityData.description || ""
     };
+    
+    console.log("New ability:", newAbility);
+
+    // Get current abilities as object, not array
+    const currentAbilities = foundry.utils.getProperty(this.system, `tiers.tier${tier}.grantedAbilities`) || {};
+    console.log("Current abilities:", currentAbilities);
+    
+    // Find the next available index
+    const indices = Object.keys(currentAbilities).map(k => parseInt(k)).filter(n => !isNaN(n));
+    const nextIndex = indices.length > 0 ? Math.max(...indices) + 1 : 0;
+    
+    console.log("Existing indices:", indices);
+    console.log("Next index:", nextIndex);
+    
+    // Add to abilities object
+    const updatedAbilities = foundry.utils.duplicate(currentAbilities);
+    updatedAbilities[nextIndex] = newAbility;
+    
+    console.log("Updated abilities:", updatedAbilities);
 
     const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
-    const currentAbilities = foundry.utils.getProperty(this.system, `tiers.tier${tier}.grantedAbilities`) || [];
+    console.log("Update path:", tierPath);
+    console.log("Update data:", { [tierPath]: updatedAbilities });
     
-    const updatedAbilities = foundry.utils.duplicate(currentAbilities);
-    updatedAbilities.push(newAbility);
-
-    await this.update({ [tierPath]: updatedAbilities });
+    try {
+      const result = await this.update({ [tierPath]: updatedAbilities });
+      console.log("Update result:", result);
+      console.log("=== ADD TIER ABILITY SUCCESS ===");
+      return result;
+    } catch (error) {
+      console.error("=== ADD TIER ABILITY ERROR ===");
+      console.error("Error:", error);
+      console.error("Stack:", error.stack);
+      throw error;
+    }
   }
 
   /**
@@ -196,15 +229,22 @@ export class ZWolfItem extends Item {
     if (this.type !== 'track' || tier < 1 || tier > 5) {
       return;
     }
-
-    const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
-    const currentAbilities = foundry.utils.getProperty(this.system, `tiers.tier${tier}.grantedAbilities`) || [];
     
-    if (abilityIndex >= 0 && abilityIndex < currentAbilities.length) {
-      const updatedAbilities = foundry.utils.duplicate(currentAbilities);
-      updatedAbilities.splice(abilityIndex, 1);
-      await this.update({ [tierPath]: updatedAbilities });
-    }
+    console.log("=== REMOVE TIER ABILITY ===");
+    console.log("Tier:", tier, "Index:", abilityIndex);
+    
+    const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
+    const deletePath = `${tierPath}.-=${abilityIndex}`;
+    
+    console.log("Delete path:", deletePath);
+    
+    // Use Foundry's deletion syntax
+    const result = await this.update({ [deletePath]: null });
+    
+    console.log("Update result:", result);
+    console.log("=== REMOVE COMPLETE ===");
+    
+    return result;
   }
 
   /**
@@ -220,24 +260,25 @@ export class ZWolfItem extends Item {
       return;
     }
 
-    const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
+    // Get current abilities as object
     const abilities = foundry.utils.duplicate(
-      foundry.utils.getProperty(this.system, `tiers.tier${tier}.grantedAbilities`) || []
+      foundry.utils.getProperty(this.system, `tiers.tier${tier}.grantedAbilities`) || {}
     );
 
     // Ensure ability exists at index
-    while (abilities.length <= abilityIndex) {
-      abilities.push({
+    if (!abilities[abilityIndex]) {
+      abilities[abilityIndex] = {
         name: "",
-        tags: "", // Always a string
+        tags: "",
         type: "passive",
         description: ""
-      });
+      };
     }
 
-    // All fields are stored as strings now
+    // Update the field
     abilities[abilityIndex][field] = typeof value === 'string' ? value : "";
 
+    const tierPath = `system.tiers.tier${tier}.grantedAbilities`;
     await this.update({ [tierPath]: abilities });
   }
 
@@ -299,5 +340,12 @@ export class ZWolfItem extends Item {
         <div class="item-description">${description}</div>
       </div>`;
     }
+  }
+
+  async _preUpdate(changed, options, user) {
+    console.log("Item _preUpdate - changed data:", changed);
+    console.log("Has sideEffects?", changed.system?.sideEffects);
+    console.log("Has grantedProficiency?", changed.system?.sideEffects?.grantedProficiency);
+    return super._preUpdate(changed, options, user);
   }
 }

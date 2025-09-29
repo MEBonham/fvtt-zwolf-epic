@@ -24,9 +24,10 @@ class SideEffectsCapableTemplate extends foundry.abstract.DataModel {
         speedProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
         toughnessTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
         destinyTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
-        nightsight: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
-        darkvision: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
-        maxBulkBoost: new fields.NumberField({ required: false, initial: 0, integer: true })
+        nightsightRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
+        darkvisionRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
+        maxBulkBoost: new fields.NumberField({ required: false, initial: 0, integer: true }),
+        grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" })
       })
     };
   }
@@ -107,7 +108,8 @@ class KnackData extends foundry.abstract.TypeDataModel {
       ...BaseItemTemplate.defineSchema(),
       ...SideEffectsCapableTemplate.defineSchema(),
       tags: new fields.StringField({ required: false, blank: true, initial: "" }),
-      characterTags: new fields.StringField({ required: false, blank: true, initial: "" })
+      characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" })
     };
   }
 }
@@ -128,7 +130,8 @@ function createTierSchema() {
       destinyTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
       nightsight: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
       darkvision: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
-      knacksProvided: new fields.NumberField({ required: false, initial: 0, integer: true, min: 0 })
+      knacksProvided: new fields.NumberField({ required: false, initial: 0, integer: true, min: 0 }),
+      grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" })
     })
   });
 }

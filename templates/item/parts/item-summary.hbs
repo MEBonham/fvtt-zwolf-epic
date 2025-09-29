@@ -187,12 +187,12 @@
           <span class="summary-value">{{tier.sideEffects.knacksProvided}}</span>
         </div>
         {{/if}}
-        {{#if tier.grantedAbilities}}
-        <div class="summary-row">
-          <span class="summary-label">Granted Abilities:</span>
-          <span class="summary-value">{{Object.keys tier.grantedAbilities}} abilities</span>
-        </div>
-        {{/if}}
+{{#if tier.grantedAbilitiesCount}}
+<div class="summary-row">
+  <span class="summary-label">Granted Abilities:</span>
+  <span class="summary-value">{{tier.grantedAbilitiesCount}} {{#if (eq tier.grantedAbilitiesCount 1)}}ability{{else}}abilities{{/if}}</span>
+</div>
+{{/if}}
       </div>
       {{/if}}
       {{/each}}
@@ -240,61 +240,63 @@
     {{/if}}
 
     <!-- Side Effects Section -->
-    {{#if system.sideEffects}}
-    <section class="summary-section side-effects">
-      <h3><i class="fas fa-cogs"></i> Side Effects</h3>
-      <div class="summary-content">
-        {{#if system.sideEffects.knacksProvided}}
-        <div class="summary-row">
-          <span class="summary-label">Knacks Provided:</span>
-          <span class="summary-value">{{system.sideEffects.knacksProvided}}</span>
+    {{#unless (eq itemType "track")}}
+      {{#if system.sideEffects}}
+      <section class="summary-section side-effects">
+        <h3><i class="fas fa-cogs"></i> Side Effects</h3>
+        <div class="summary-content">
+          {{#if system.sideEffects.knacksProvided}}
+          <div class="summary-row">
+            <span class="summary-label">Knacks Provided:</span>
+            <span class="summary-value">{{system.sideEffects.knacksProvided}}</span>
+          </div>
+          {{/if}}
+          
+          {{#if system.sideEffects.speedProgression}}
+          <div class="summary-row">
+            <span class="summary-label">Speed Progression:</span>
+            <span class="summary-value">{{localize (concat 'ZWOLF.' (capitalize system.sideEffects.speedProgression))}}</span>
+          </div>
+          {{/if}}
+          
+          {{#if system.sideEffects.toughnessTNProgression}}
+          <div class="summary-row">
+            <span class="summary-label">Toughness TN Progression:</span>
+            <span class="summary-value">{{localize (concat 'ZWOLF.' (capitalize system.sideEffects.toughnessTNProgression))}}</span>
+          </div>
+          {{/if}}
+          
+          {{#if system.sideEffects.destinyTNProgression}}
+          <div class="summary-row">
+            <span class="summary-label">Destiny TN Progression:</span>
+            <span class="summary-value">{{localize (concat 'ZWOLF.' (capitalize system.sideEffects.destinyTNProgression))}}</span>
+          </div>
+          {{/if}}
+          
+          {{#if system.sideEffects.nightsightRadius}}
+          <div class="summary-row">
+            <span class="summary-label">Nightsight Radius:</span>
+            <span class="summary-value">{{system.sideEffects.nightsightRadius}} {{localize 'ZWOLF.Meters'}}</span>
+          </div>
+          {{/if}}
+          
+          {{#if system.sideEffects.darkvisionRadius}}
+          <div class="summary-row">
+            <span class="summary-label">Darkvision Radius:</span>
+            <span class="summary-value">{{system.sideEffects.darkvisionRadius}} {{localize 'ZWOLF.Meters'}}</span>
+          </div>
+          {{/if}}
+          
+          {{#if system.sideEffects.maxBulkBoost}}
+          <div class="summary-row">
+            <span class="summary-label">Max Bulk Boost:</span>
+            <span class="summary-value">+{{system.sideEffects.maxBulkBoost}} {{localize 'ZWOLF.Bulk'}}</span>
+          </div>
+          {{/if}}
         </div>
-        {{/if}}
-        
-        {{#if system.sideEffects.speedProgression}}
-        <div class="summary-row">
-          <span class="summary-label">Speed Progression:</span>
-          <span class="summary-value">{{localize (concat 'ZWOLF.' (capitalize system.sideEffects.speedProgression))}}</span>
-        </div>
-        {{/if}}
-        
-        {{#if system.sideEffects.toughnessTNProgression}}
-        <div class="summary-row">
-          <span class="summary-label">Toughness TN Progression:</span>
-          <span class="summary-value">{{localize (concat 'ZWOLF.' (capitalize system.sideEffects.toughnessTNProgression))}}</span>
-        </div>
-        {{/if}}
-        
-        {{#if system.sideEffects.destinyTNProgression}}
-        <div class="summary-row">
-          <span class="summary-label">Destiny TN Progression:</span>
-          <span class="summary-value">{{localize (concat 'ZWOLF.' (capitalize system.sideEffects.destinyTNProgression))}}</span>
-        </div>
-        {{/if}}
-        
-        {{#if system.sideEffects.nightsightRadius}}
-        <div class="summary-row">
-          <span class="summary-label">Nightsight Radius:</span>
-          <span class="summary-value">{{system.sideEffects.nightsightRadius}} {{localize 'ZWOLF.Meters'}}</span>
-        </div>
-        {{/if}}
-        
-        {{#if system.sideEffects.darkvisionRadius}}
-        <div class="summary-row">
-          <span class="summary-label">Darkvision Radius:</span>
-          <span class="summary-value">{{system.sideEffects.darkvisionRadius}} {{localize 'ZWOLF.Meters'}}</span>
-        </div>
-        {{/if}}
-        
-        {{#if system.sideEffects.maxBulkBoost}}
-        <div class="summary-row">
-          <span class="summary-label">Max Bulk Boost:</span>
-          <span class="summary-value">+{{system.sideEffects.maxBulkBoost}} {{localize 'ZWOLF.Bulk'}}</span>
-        </div>
-        {{/if}}
-      </div>
-    </section>
-    {{/if}}
+      </section>
+      {{/if}}
+    {{/unless}}
 
     <!-- Active Effects Section -->
     {{#if item.effects}}

@@ -77,6 +77,9 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     console.log("🟢 Document type:", this.document?.type);
     console.log("🟢 Options:", options);
     
+    // CAPTURE scroll position BEFORE context preparation
+    this._captureScrollPositions();
+    
     const context = await super._prepareContext(options);
     console.log("🟢 Super context:", context);
     
@@ -110,7 +113,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   _onRender(context, options) {
     super._onRender(context, options);
     
-    // ADD THIS LINE - Activate editors for rich text fields
+    // Activate editors for rich text fields
     EditorSaveHandler.activateEditors(this);
     
     // Initialize event handlers
@@ -133,29 +136,61 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     // Set up cleanup hooks
     this._setupCleanupHooks();
     
-    // Restore scroll position if flagged
-    if (this._scrollToRestore !== undefined) {
-      const scrollTop = this._scrollToRestore;
-      delete this._scrollToRestore;
-      
-      requestAnimationFrame(() => {
-        // FIXED: Find the currently active tab instead of hardcoding .configure
-        const scrollableTab = this.element.querySelector('.tab.active');
-        if (scrollableTab) {
-          scrollableTab.scrollTop = scrollTop;
-          console.log(`🟢 Restored scroll position to ${scrollTop} for active tab`);
-        }
-      });
+    // RESTORE scroll position - do this LAST and synchronously
+    this._restoreScrollPosition();
+  }
+
+  /**
+   * Capture scroll positions of all scrollable containers
+   * @private
+   */
+  _captureScrollPositions() {
+    if (!this.element) return;
+    
+    // Find ALL potential scroll containers and store their positions
+    const scrollData = {};
+    
+    // Capture active tab
+    const activeTab = this.element.querySelector('.tab.active');
+    if (activeTab && activeTab.scrollTop > 0) {
+      scrollData.activeTab = activeTab.scrollTop;
+      scrollData.tabId = activeTab.dataset.tab;
     }
+    
+    // Store the data
+    this._scrollData = scrollData;
+    console.log(`🟡 Captured scroll data:`, scrollData);
+  }
+
+  /**
+   * Restore scroll position - called synchronously in _onRender
+   * @private
+   */
+  _restoreScrollPosition() {
+    if (!this._scrollData || !this.element) return;
+    
+    const { activeTab, tabId } = this._scrollData;
+    
+    if (activeTab !== undefined && tabId) {
+      // Find the matching tab by ID
+      const tab = this.element.querySelector(`.tab[data-tab="${tabId}"]`);
+      
+      if (tab) {
+        tab.scrollTop = activeTab;
+        console.log(`🟢 Restored scroll to ${activeTab} on tab: ${tabId}`);
+      } else {
+        console.warn(`Could not find tab with id: ${tabId}`);
+      }
+    }
+    
+    // Clear the stored data
+    delete this._scrollData;
   }
 
   /** @override */
   async _onSubmit(event, form, formData) {
     console.log('🔵 _onSubmit called, formData:', formData.object);
     console.trace();
-    
-    // ADDED: Preserve scroll position before processing submission
-    this._preserveScrollPosition();
     
     const submitData = foundry.utils.expandObject(formData.object);
     
@@ -172,19 +207,6 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     }
 
     return super._onSubmit(event, form, foundry.utils.flattenObject(submitData));
-  }
-
-  /**
-   * Preserve scroll position of the currently active tab
-   * @private
-   */
-  _preserveScrollPosition() {
-    const activeTab = this.element.querySelector('.tab.active');
-    if (activeTab) {
-      const scrollTop = activeTab.scrollTop || 0;
-      this._scrollToRestore = scrollTop;
-      console.log(`🟡 Preserving scroll position: ${scrollTop} for active tab`);
-    }
   }
 
   _isRichTextField(key) {
@@ -261,16 +283,12 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     this._itemDeleteHook = Hooks.on('deleteItem', (item, options, userId) => {
       if (item.actor?.id === this.document.id && userId === game.user.id) {
         const hadSpecialProperties = item.system?.grantedAbilities?.length > 0 ||
-                                   item.name === ZWolfActorSheet.PROGRESSION_ITEM_NAME ||
-                                   item.system?.knacksProvided > 0 ||
-                                   ['ancestry', 'fundament'].includes(item.type);
+                                  item.name === ZWolfActorSheet.PROGRESSION_ITEM_NAME ||
+                                  item.system?.knacksProvided > 0 ||
+                                  ['ancestry', 'fundament'].includes(item.type);
         
-        if (hadSpecialProperties) {
-          setTimeout(() => {
-            if (this.rendered) {
-              this.render(false);
-            }
-          }, 100);
+        if (hadSpecialProperties && this.rendered) {
+          this.render(false);
         }
       }
     });
@@ -304,21 +322,43 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     const stat = target.dataset.stat;
     const type = target.dataset.type;
     const progression = target.dataset.progression;
-    // TODO: Implement roll logic
-    console.log(`Rolling ${stat} (${type}) with ${progression} progression`);
+    
+    // Import the dice system
+    const { ZWolfDice } = await import("../dice/dice.mjs");
+    
+    // Handle speed specially since it doesn't have a progression stored on the actor
+    if (type === 'speed' || stat === 'speed') {
+      const bonus = parseInt(target.closest('.stat-item')?.querySelector('.stat-value')?.textContent?.replace('+', '')) || 0;
+      await ZWolfDice.roll({
+        modifier: bonus,
+        flavor: "Speed Check",
+        actor: this.document
+      });
+      return;
+    }
+    
+    // Handle regular attributes and skills
+    if (type === 'attribute') {
+      await ZWolfDice.rollAttribute(this.document, stat);
+    } else if (type === 'skill') {
+      await ZWolfDice.rollSkill(this.document, stat);
+    }
   }
 
   static async _onRollSpeed(event, target) {
     const modifier = parseInt(target.dataset.modifier) || 0;
     const flavor = target.dataset.flavor || "Speed Check";
-    // TODO: Implement roll logic
-    console.log(`Rolling speed check with modifier ${modifier}: ${flavor}`);
+    
+    // Import and use the dice system
+    const { ZWolfDice } = await import("../dice/dice.mjs");
+    await ZWolfDice.roll({ 
+      modifier, 
+      flavor, 
+      actor: this.document 
+    });
   }
 
   static async _onToggleLock(event, target) {
-    // CHANGED: Use the new _preserveScrollPosition method
-    this._preserveScrollPosition();
-    
     const currentLock = this.document.system.buildPointsLocked || false;
     await this.document.update({ "system.buildPointsLocked": !currentLock });
   }

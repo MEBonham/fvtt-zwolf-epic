@@ -43,11 +43,9 @@ export class DropZoneHandler {
    * Preserve scroll position before re-render
    */
   _preserveScrollPosition() {
-    const activeTab = this.sheet.element.querySelector('.tab.active');
-    if (activeTab) {
-      const scrollTop = activeTab.scrollTop || 0;
-      this.sheet._scrollToRestore = scrollTop;
-      console.log(`Z-Wolf Epic | Preserving scroll position: ${scrollTop}`);
+    // This method is now just a wrapper
+    if (typeof this.sheet._captureScrollPositions === 'function') {
+      this.sheet._captureScrollPositions();
     }
   }
 
@@ -55,7 +53,12 @@ export class DropZoneHandler {
    * Render sheet with scroll preservation
    */
   async _renderWithScrollPreservation() {
-    this._preserveScrollPosition();
+    // Use the sheet's scroll capture mechanism
+    if (typeof this.sheet._captureScrollPositions === 'function') {
+      this.sheet._captureScrollPositions();
+    }
+    
+    // Just render - the sheet's _onRender will restore scroll
     await this.sheet.render(false);
   }
 

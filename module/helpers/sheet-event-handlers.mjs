@@ -92,6 +92,39 @@ export class SheetEventHandlers {
       console.warn("Z-Wolf Epic | No level input field found. Check your HTML template.");
     }
 
+    // Exotic senses tooltip enhancement
+    const exoticSensesIcon = html.querySelector('.exotic-senses-icon');
+    if (exoticSensesIcon) {
+      exoticSensesIcon.addEventListener('mouseenter', (e) => {
+        const abilities = this.sheet._preparedContext?.abilityCategories?.exoticSenses || [];
+        if (abilities.length === 0) return;
+        
+        const tooltip = document.createElement('div');
+        tooltip.className = 'exotic-senses-tooltip';
+        tooltip.innerHTML = `
+          <strong>Exotic Senses:</strong>
+          <ul>
+            ${abilities.map(a => `<li><strong>${a.name}</strong>${a.tags ? ` · &lt;${a.tags}&gt;` : ''}<br><small>${a.description}</small></li>`).join('')}
+          </ul>
+        `;
+        document.body.appendChild(tooltip);
+        
+        const rect = e.target.getBoundingClientRect();
+        tooltip.style.position = 'absolute';
+        tooltip.style.left = `${rect.left}px`;
+        tooltip.style.top = `${rect.bottom + 5}px`;
+        
+        e.target._tooltip = tooltip;
+      });
+      
+      exoticSensesIcon.addEventListener('mouseleave', (e) => {
+        if (e.target._tooltip) {
+          e.target._tooltip.remove();
+          delete e.target._tooltip;
+        }
+      });
+    }
+
   // DIAGNOSTIC: Check what elements match our selectors
   const deleteElements = html.querySelectorAll('.item-control.item-delete, .item-control.item-remove');
   const shortRestElements = html.querySelectorAll('.short-rest-btn');
@@ -198,55 +231,55 @@ export class SheetEventHandlers {
     });
   }
 
-async _onStatRoll(event) {
-  event.preventDefault();
-  const element = event.currentTarget;
-  
-  console.log("Z-Wolf | Element HTML:", element.outerHTML);
-  console.log("Z-Wolf | All datasets:", element.dataset);
-  
-  const statKey = element.dataset.stat;
-  const statType = element.dataset.type;
-  const progression = element.dataset.progression;
-  // ... rest of method
-  
-  console.log("Z-Wolf | _onStatRoll - statKey:", statKey);
-  console.log("Z-Wolf | _onStatRoll - statType:", statType);
-  console.log("Z-Wolf | _onStatRoll - progression:", progression);
-  
-  // Get progression bonuses
-  const level = this.actor.system.level ?? 0;
-  const progressionOnlyLevel = this._getProgressionOnlyLevel();
-  const bonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
-  const modifier = bonuses[progression];
-  
-  console.log("Z-Wolf | _onStatRoll - bonuses:", bonuses);
-  console.log("Z-Wolf | _onStatRoll - modifier for", progression, ":", modifier);
-  
-  // Create flavor text
-  const statNameEl = element.querySelector('.stat-name');
-  const statName = statNameEl ? statNameEl.textContent : statKey;
-  const flavor = `${statName} (${progression.charAt(0).toUpperCase() + progression.slice(1)})`;
-  
-  console.log("Z-Wolf | _onStatRoll - flavor:", flavor);
-  
-  const netBoosts = ZWolfDice.getNetBoosts();
-  
-  await ZWolfDice.roll({
-    netBoosts: netBoosts,
-    modifier: modifier,
-    flavor: flavor,
-    actor: this.actor
-  });
-}
+  async _onStatRoll(event) {
+    event.preventDefault();
+    const element = event.currentTarget;
+    
+    console.log("Z-Wolf | Element HTML:", element.outerHTML);
+    console.log("Z-Wolf | All datasets:", element.dataset);
+    
+    const statKey = element.dataset.stat;
+    const statType = element.dataset.type;
+    const progression = element.dataset.progression;
+    // ... rest of method
+    
+    console.log("Z-Wolf | _onStatRoll - statKey:", statKey);
+    console.log("Z-Wolf | _onStatRoll - statType:", statType);
+    console.log("Z-Wolf | _onStatRoll - progression:", progression);
+    
+    // Get progression bonuses
+    const level = this.actor.system.level ?? 0;
+    const progressionOnlyLevel = this._getProgressionOnlyLevel();
+    const bonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+    const modifier = bonuses[progression];
+    
+    console.log("Z-Wolf | _onStatRoll - bonuses:", bonuses);
+    console.log("Z-Wolf | _onStatRoll - modifier for", progression, ":", modifier);
+    
+    // Create flavor text
+    const statNameEl = element.querySelector('.stat-name');
+    const statName = statNameEl ? statNameEl.textContent : statKey;
+    const flavor = `${statName} (${progression.charAt(0).toUpperCase() + progression.slice(1)})`;
+    
+    console.log("Z-Wolf | _onStatRoll - flavor:", flavor);
+    
+    const netBoosts = ZWolfDice.getNetBoosts();
+    
+    await ZWolfDice.roll({
+      netBoosts: netBoosts,
+      modifier: modifier,
+      flavor: flavor,
+      actor: this.actor
+    });
+  }
 
   async _onSpeedRoll(event) {
     event.preventDefault();
     const element = event.currentTarget;
     
-    // Get the speed progression and bonus from the sheet data
-    const sheetData = this.sheet.getData();
-    const sideEffects = sheetData.sideEffects;
+    // Use V2 API - _preparedContext instead of getData()
+    const sheetData = this.sheet._preparedContext;
+    const sideEffects = sheetData?.sideEffects;
     
     if (sideEffects && sideEffects.speedProgression) {
       const speedProgression = sideEffects.speedProgression;
@@ -262,7 +295,17 @@ async _onStatRoll(event) {
         actor: this.actor
       });
     } else {
-      ui.notifications.warn("Character does not have enhanced speed progression.");
+      // Handle the +0 speed case (no enhanced progression)
+      const modifier = parseInt(element.dataset.modifier) || 0;
+      const flavor = element.dataset.flavor || "Speed Check";
+      const netBoosts = ZWolfDice.getNetBoosts();
+      
+      await ZWolfDice.roll({
+        netBoosts: netBoosts,
+        modifier: modifier,
+        flavor: flavor,
+        actor: this.actor
+      });
     }
   }
 

@@ -3,12 +3,9 @@
     <h3>Track Tiers</h3>
     <p class="notes">Configure each tier of this track</p>
     
-    <div class="tiers-accordion">
-      {{> tier-accordion tierNumber=1 tierData=system.tiers.tier1 editable=editable}}
-      {{> tier-accordion tierNumber=2 tierData=system.tiers.tier2 editable=editable}}
-      {{> tier-accordion tierNumber=3 tierData=system.tiers.tier3 editable=editable}}
-      {{> tier-accordion tierNumber=4 tierData=system.tiers.tier4 editable=editable}}
-      {{> tier-accordion tierNumber=5 tierData=system.tiers.tier5 editable=editable}}
-    </div>
+    {{> tier-accordion 
+        tiers=system.tiers 
+        owner=owner 
+        editable=editable}}
   </div>
 </div>

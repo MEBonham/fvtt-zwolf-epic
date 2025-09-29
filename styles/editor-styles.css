@@ -204,3 +204,57 @@
 .ability-control.delete-ability i {
   font-size: 11px;
 }
+
+/* Add these rules to your editor-styles.css */
+
+/* CRITICAL: Ensure editors have minimum height when empty */
+.ProseMirror {
+  background: #2a2a2a !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  min-height: 150px !important; /* Increased from 100px for better visibility */
+  padding: 8px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+/* Empty editors should show they're editable */
+.ProseMirror:empty:before {
+  content: attr(data-placeholder);
+  color: rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Editor in ability items needs sufficient space even when empty */
+.ability-item .ProseMirror {
+  min-height: 120px !important; /* Ensure abilities have visible edit area */
+}
+
+/* Read-only display can be smaller */
+.ability-description .editor-content:not(.ProseMirror) {
+  min-height: auto !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Editable container should not collapse */
+.editor .editor-container {
+  min-height: 125px;
+  position: relative;
+}
+
+/* Prevent content jumping during edit mode */
+.editor.prosemirror .editor-content {
+  min-height: 150px;
+  transition: none; /* Remove any transitions that cause flickering */
+}
+
+/* Make sure toolbar is always visible and doesn't overlap content */
+.editor menu.editor-menu {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #f8f9fa;
+  margin-bottom: 8px;
+}

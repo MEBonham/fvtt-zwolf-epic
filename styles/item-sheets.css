@@ -119,7 +119,7 @@
   cursor: pointer !important;
   text-decoration: none !important;
   position: relative !important;
-  bottom: -1px !important;
+  bottom: -2px !important;
   font-weight: 500 !important;
   box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1) !important;
   overflow: hidden !important;
@@ -904,7 +904,7 @@
 
 .summary-rich-text {
   padding: 8px;
-  background: var(--z-wolf-surface, #ffffff);
+  background: var(--z-wolf-bg-dark);
   border: 1px solid var(--z-wolf-border, #e0e0e0);
   border-radius: 3px;
   margin-top: 5px;
@@ -926,7 +926,7 @@
 }
 
 .ability-summary {
-  background: var(--z-wolf-surface, #ffffff);
+  background: var(--z-wolf-bg-dark, #3a3a3a);
   border: 1px solid var(--z-wolf-border, #e0e0e0);
   border-radius: 4px;
   padding: 10px;
@@ -986,7 +986,7 @@
 
 /* Tier Summary */
 .tier-summary {
-  background: var(--z-wolf-surface, #ffffff);
+  background: var(--z-wolf-bg-dark);
   border: 1px solid var(--z-wolf-border, #e0e0e0);
   border-radius: 4px;
   padding: 10px;
@@ -1196,4 +1196,8 @@
   box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
   transform: translateY(-1px);
   transition: all 0.3s ease;
+}
+
+.tier-granted-abilities .ability-item {
+  min-height: 350px;
 }

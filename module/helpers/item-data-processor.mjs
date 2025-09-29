@@ -127,6 +127,8 @@ export class ItemDataProcessor {
    */
   static preserveTrackTierAbilities(formData, currentTierData) {
     const processedData = foundry.utils.duplicate(formData);
+  console.log("preserveGrantedAbilities input:", formData);
+  console.log("preserveGrantedAbilities output:", processedData);
     
     // Handle each tier (1-5)
     for (let tierNum = 1; tierNum <= 5; tierNum++) {

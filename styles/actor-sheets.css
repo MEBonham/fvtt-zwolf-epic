@@ -306,6 +306,61 @@
   font-size: 1.2em;
 }
 
+.exotic-senses-icon {
+  margin-left: auto;
+  color: var(--z-wolf-accent);
+  cursor: help;
+  font-size: 1.2em;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.exotic-senses-icon:hover {
+  color: var(--z-wolf-primary-light);
+}
+
+.exotic-senses-icon i {
+  filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));
+}
+
+.exotic-senses-tooltip {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid var(--z-wolf-primary);
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: white;
+  max-width: 400px;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.exotic-senses-tooltip strong {
+  color: var(--z-wolf-accent);
+}
+
+.exotic-senses-tooltip ul {
+  margin: 0.5rem 0 0 0;
+  padding-left: 1.25rem;
+  list-style: none;
+}
+
+.exotic-senses-tooltip li {
+  margin: 0.5rem 0;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.exotic-senses-tooltip li:last-child {
+  border-bottom: none;
+}
+
+.exotic-senses-tooltip small {
+  color: rgba(255, 255, 255, 0.8);
+  display: block;
+  margin-top: 0.25rem;
+}
+
 /* ===================
    Main Content Layout
    =================== */

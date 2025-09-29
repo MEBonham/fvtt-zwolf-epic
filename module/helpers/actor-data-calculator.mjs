@@ -751,7 +751,8 @@ export class ActorDataCalculator {
                   tags: ability.tags || '',
                   description: ability.description || 'No description provided.',
                   itemName: item.name,
-                  itemId: item.id
+                  itemId: item.id,
+                  isVirtual: item.flags?.['zwolf-epic']?.isVirtual || false  // ADD THIS LINE
                 });
                 console.log(`Z-Wolf Epic | Added "${ability.name}" to ${categoryKey} category with tags: "${ability.tags || 'none'}"`);
               } else {
@@ -852,6 +853,15 @@ export class ActorDataCalculator {
       if (categories[category].length > 0) {
         console.log(`Z-Wolf Epic | ${category} abilities:`, categories[category].map(a => `${a.name} (from ${a.itemName}) [tags: ${a.tags || 'none'}]`));
       }
+    });
+
+    // Sort each category: non-virtual first, virtual last
+    Object.keys(categories).forEach(categoryKey => {
+      categories[categoryKey].sort((a, b) => {
+        if (a.isVirtual && !b.isVirtual) return 1;
+        if (!a.isVirtual && b.isVirtual) return -1;
+        return 0;
+      });
     });
 
     return categories;

@@ -32,6 +32,14 @@
         <input type="text" name="system.characterTags" value="{{characterTagsString}}" placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
         <p class="notes">{{localize 'ZWOLF.CharacterTagsHint'}}</p>
       </div>
+
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.Required'}}</label>
+        <div class="editor-container">
+          {{editor system.required target="system.required" button=true owner=owner editable=editable}}
+        </div>
+        <p class="notes">{{localize 'ZWOLF.KnackRequiredHint'}}</p>
+      </div>
     </div>
   {{else if (eq itemType "equipment")}}
     <div class="equipment-basics">
@@ -171,6 +179,7 @@
         <div class="editor-container">
           {{editor system.required target="system.required" button=true owner=owner editable=editable}}
         </div>
+        <p class="notes">{{localize 'ZWOLF.AncestryRequiredHint'}}</p>
       </div>
 
       <div class="form-group">

@@ -13,11 +13,12 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
 ) {
     _activeTab = "summary";
     _scrollPositions = {};
+    _accordionStates = {};
   
   static DEFAULT_OPTIONS = {
     classes: ["zwolf-epic", "sheet", "item"],
     position: { 
-      width: 700, 
+      width: 770, 
       height: 600
     },
     window: {
@@ -64,7 +65,10 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
 
   /** @override */
   async _prepareContext(options) {
-    console.log("_prepareContext called for item type:", this.document.type);
+console.log("=== _prepareContext START ===");
+console.log("Item type:", this.document?.type);
+console.log("PARTS:", this.constructor.PARTS);
+console.log("Options:", options);
     
     const context = await super._prepareContext(options);
     const itemData = this.document.toObject(false);
@@ -200,7 +204,13 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     }
 
     // Handle item-type specific data
-    await this._processItemSpecificData(preparedContext, itemData);
+await this._processItemSpecificData(preparedContext, itemData);
+
+// FIXED: Ensure the processed tier data is available to templates
+if (this.document.type === 'track' && itemData.system.tiers) {
+  preparedContext.system = preparedContext.system || {};
+  preparedContext.system.tiers = itemData.system.tiers;
+}
 
     // Enrich main description
     preparedContext.enrichedDescription = await HtmlEnricher.enrichContent(
@@ -222,57 +232,207 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     return preparedContext;
   }
 
-  /**
-   * Process item-type specific data
-   * @param {Object} context - Sheet context
-   * @param {Object} itemData - Item data
-   * @private
-   */
-  async _processItemSpecificData(context, itemData) {
-    switch (this.document.type) {
-      case 'track':
-        await this._processTrackData(context, itemData);
-        break;
-      case 'ancestry':
-        await this._processAncestryData(context, itemData);
-        break;
-    }
-  }
-
-  /**
-   * Process track-specific data
-   * @param {Object} context - Sheet context
-   * @param {Object} itemData - Item data
-   * @private
-   */
-  async _processTrackData(context, itemData) {
-    // Process tags
-    if (Array.isArray(itemData.system.tags)) {
-      context.tagsString = itemData.system.tags.join(', ');
-    } else {
-      context.tagsString = itemData.system.tags || '';
-    }
-    
-    if (itemData.system.tiers) {
-      for (const [tierKey, tierData] of Object.entries(itemData.system.tiers)) {
-        // Enrich talent menu as a string
-        tierData.enrichedTalentMenu = await HtmlEnricher.enrichContent(
-          tierData.talentMenu || "",
-          this.document,
-          `${tierKey} talent menu`
-        );
-        
-        // Process tier granted abilities
-        if (tierData.grantedAbilities) {
-          tierData.grantedAbilities = await HtmlEnricher.enrichGrantedAbilities(
-            tierData.grantedAbilities,
+/**
+ * Process item-type specific data
+ * @param {Object} context - Sheet context
+ * @param {Object} itemData - Item data
+ * @private
+ */
+async _processItemSpecificData(context, itemData) {
+  console.log("=== PROCESSING ITEM SPECIFIC DATA ===");
+  console.log("Item type:", this.document.type);
+  
+  switch (this.document.type) {
+    case 'track':
+      // Process track tiers for summary display
+      if (itemData.system.tiers) {
+        for (const [tierKey, tierData] of Object.entries(itemData.system.tiers)) {
+          // Format tier character tags
+          if (tierData.characterTags) {
+            tierData.characterTags = formatTags(tierData.characterTags);
+          }
+          
+          // Enrich talent menu
+          itemData.system.tiers[tierKey].enrichedTalentMenu = await HtmlEnricher.enrichContent(
+            tierData.talentMenu || "",
             this.document,
-            `${tierKey} abilities`
+            `${tierKey} talent menu summary`
           );
+          
+          // Count granted abilities and add to the tier data
+          let abilitiesCount = 0;
+          if (tierData.grantedAbilities && typeof tierData.grantedAbilities === 'object') {
+            abilitiesCount = Object.values(tierData.grantedAbilities)
+              .filter(a => a && a.name)
+              .length;
+          }
+          itemData.system.tiers[tierKey].grantedAbilitiesCount = abilitiesCount;
         }
       }
-    }
+      break;
+    case 'ancestry':
+      console.log("Calling _processAncestryData");
+      await this._processAncestryData(context, itemData);
+      break;
+    case 'knack':
+      console.log("Calling _processKnackData");
+      await this._processKnackData(context, itemData);
+      break;
+    case 'talent':
+      console.log("Calling _processTalentData");
+      await this._processTalentData(context, itemData);
+      break;
+    case 'equipment':
+      console.log("Calling _processEquipmentData");
+      await this._processEquipmentData(context, itemData);
+      break;
+    default:
+      console.log("No specific processing for item type:", this.document.type);
   }
+  
+  console.log("=== ITEM SPECIFIC DATA PROCESSING COMPLETE ===");
+}
+
+/** @override */
+_configureRenderOptions(options) {
+  super._configureRenderOptions(options);
+  
+  // Filter which parts should render based on item type
+  const itemType = this.document.type;
+  const partsToRender = ['header', 'tabs', 'summary', 'basics', 'effects'];
+  
+  // Add type-specific parts
+  if (itemType === 'fundament') {
+    partsToRender.push('formulae', 'abilities');
+  } else if (itemType === 'track') {
+    partsToRender.push('tiers');
+  } else {
+    // All other types have abilities but not tiers or formulae
+    partsToRender.push('abilities');
+  }
+  
+  // Only render the parts we actually need
+  options.parts = partsToRender;
+  
+  return options;
+}
+
+/**
+ * Process track-specific data
+ * @param {Object} context - Sheet context
+ * @param {Object} itemData - Item data
+ * @private
+ */
+async _processTrackData(context, itemData) {
+  console.log("=== PROCESSING TRACK DATA ===");
+  console.log("itemData.system.tiers:", itemData.system.tiers);
+  
+  // Process tags
+  if (Array.isArray(itemData.system.tags)) {
+    context.tagsString = itemData.system.tags.join(', ');
+  } else {
+    context.tagsString = itemData.system.tags || '';
+  }
+  
+  if (itemData.system.tiers) {
+    console.log("Processing tiers...");
+    for (const [tierKey, tierData] of Object.entries(itemData.system.tiers)) {
+      console.log(`Processing ${tierKey}:`, tierData);
+      console.log(`${tierKey} grantedAbilities:`, tierData.grantedAbilities);
+      
+      const tierNumber = tierKey.replace('tier', '');
+      
+      // Enrich talent menu as a string - modify original object
+      itemData.system.tiers[tierKey].enrichedTalentMenu = await HtmlEnricher.enrichContent(
+        itemData.system.tiers[tierKey].talentMenu || "",
+        this.document,
+        `${tierKey} talent menu`
+      );
+      
+      // Process tier granted abilities - modify original object
+      if (itemData.system.tiers[tierKey].grantedAbilities) {
+        itemData.system.tiers[tierKey].grantedAbilities = await HtmlEnricher.enrichGrantedAbilities(
+          itemData.system.tiers[tierKey].grantedAbilities,
+          this.document,
+          `${tierKey} abilities`
+        );
+        
+        // CRITICAL: Convert tier abilities to array format for template use
+        if (itemData.system.tiers[tierKey].grantedAbilities && typeof itemData.system.tiers[tierKey].grantedAbilities === 'object') {
+          const tierAbilitiesArray = [];
+          
+          console.log(`Converting ${tierKey} abilities to array format`);
+          
+          if (Array.isArray(itemData.system.tiers[tierKey].grantedAbilities)) {
+            itemData.system.tiers[tierKey].grantedAbilities.forEach((ability, index) => {
+              if (ability) {
+                tierAbilitiesArray.push({
+                  ...ability,
+                  index: index,
+                  originalIndex: index,
+                  enrichedDescription: ability.enrichedDescription || ability.description || "",
+                  nameTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.name`,
+                  typeTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.type`,
+                  tagsTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.tags`,
+                  descriptionTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.description`,
+                  deleteAction: "delete-tier-ability",
+                  tierNumber: tierNumber
+                });
+              }
+            });
+          } else {
+            // Handle object format - create a dense array
+            const sortedEntries = Object.entries(itemData.system.tiers[tierKey].grantedAbilities)
+              .map(([key, ability]) => ({ key: parseInt(key), ability }))
+              .filter(entry => !isNaN(entry.key) && entry.ability && typeof entry.ability === 'object')
+              .sort((a, b) => a.key - b.key);
+            
+            for (const { key: index, ability } of sortedEntries) {
+              console.log(`Processing ${tierKey} ability at index ${index}:`, ability);
+              
+              // Enrich the ability description for the editor
+              const enrichedDescription = await HtmlEnricher.enrichContent(
+                ability.description || "",
+                this.document,
+                `tier ${tierNumber} ability ${index} description`
+              );
+              
+              tierAbilitiesArray.push({
+                ...ability,
+                index: index,
+                originalIndex: index,
+                enrichedDescription: enrichedDescription,
+                nameTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.name`,
+                typeTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.type`,
+                tagsTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.tags`,
+                descriptionTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.description`,
+                deleteAction: "delete-tier-ability",
+                tierNumber: tierNumber
+              });
+            }
+          }
+          
+          console.log(`${tierKey} converted to array:`, tierAbilitiesArray);
+          console.log(`${tierKey} array length:`, tierAbilitiesArray.length);
+          
+          // Store the array version for template use - modify original object
+          itemData.system.tiers[tierKey].grantedAbilitiesArray = tierAbilitiesArray;
+        } else {
+          console.log(`${tierKey} has no abilities or wrong format`);
+          itemData.system.tiers[tierKey].grantedAbilitiesArray = [];
+        }
+      } else {
+        console.log(`${tierKey} has no grantedAbilities property`);
+        itemData.system.tiers[tierKey].grantedAbilitiesArray = [];
+      }
+    }
+  } else {
+    console.log("No tiers data found");
+  }
+  
+  console.log("=== TRACK DATA PROCESSING COMPLETE ===");
+  console.log("Final tierData for template:", JSON.stringify(itemData.system.tiers, null, 2));
+}
 
   async _processTalentData(context, itemData) {
     // Process tags arrays to comma-separated strings for display
@@ -324,6 +484,30 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
       this.document,
       "knack menu"
     );
+  }
+
+  async _processKnackData(context, itemData) {
+    // Process tags arrays to comma-separated strings for display
+    if (Array.isArray(itemData.system.tags)) {
+      context.tagsString = itemData.system.tags.join(', ');
+    } else {
+      context.tagsString = itemData.system.tags || '';
+    }
+    
+    if (Array.isArray(itemData.system.characterTags)) {
+      context.characterTagsString = itemData.system.characterTags.join(', ');
+    } else {
+      context.characterTagsString = itemData.system.characterTags || '';
+    }
+  }
+
+  async _processEquipmentData(context, itemData) {
+    // Process tags
+    if (Array.isArray(itemData.system.tags)) {
+      context.tagsString = itemData.system.tags.join(', ');
+    } else {
+      context.tagsString = itemData.system.tags || '';
+    }
   }
 
   /* -------------------------------------------- */
@@ -400,7 +584,7 @@ _attachPartListeners(partId, htmlElement, options) {
   _attachAbilityListeners(html) {
     console.log("=== ATTACHING ABILITY LISTENERS ===");
     
-    // Granted abilities management
+    // Granted abilities management (for non-track items)
     const addButtons = html.querySelectorAll('[data-action="add-ability"]');
     console.log("Found add-ability buttons:", addButtons.length);
     addButtons.forEach(btn => {
@@ -421,10 +605,7 @@ _attachPartListeners(partId, htmlElement, options) {
       input.addEventListener('change', this._onAbilityFieldChange.bind(this));
     });
 
-    // Track-specific listeners (if this part also handles track abilities)
-    if (this.document.type === 'track') {
-      this._activateTrackListeners(html);
-    }
+    // REMOVED: No longer calling track listeners here - they're handled in the tiers part
     
     console.log("=== ABILITY LISTENERS ATTACHED ===");
   }
@@ -467,22 +648,62 @@ _attachPartListeners(partId, htmlElement, options) {
   }
 
   /**
-   * Activate track-specific listeners
+   * Activate track-specific listeners using event delegation
    * @param {HTMLElement} html - The sheet HTML
    * @private
    */
   _activateTrackListeners(html) {
-    html.querySelectorAll('[data-action="add-tier-ability"]').forEach(btn => {
-      btn.addEventListener('click', this._onAddTierAbility.bind(this));
+    console.log("=== ACTIVATING TRACK LISTENERS WITH EVENT DELEGATION ===");
+    console.log("HTML element:", html);
+    
+    // Use event delegation to handle clicks on the entire tiers container
+    // This works even if buttons are in collapsed accordions
+    html.addEventListener('click', (event) => {
+      const target = event.target.closest('[data-action]');
+      if (!target) return;
+      
+      const action = target.dataset.action;
+      console.log("Track click detected:", action, target);
+      
+      switch (action) {
+        case 'add-tier-ability':
+          event.preventDefault();
+          event.stopPropagation();
+          console.log("Add tier ability clicked, tier:", target.dataset.tier);
+          this._onAddTierAbility(event);
+          break;
+          
+        case 'delete-tier-ability':
+          event.preventDefault();
+          event.stopPropagation();
+          console.log("Delete tier ability clicked, tier:", target.dataset.tier, "index:", target.dataset.abilityIndex);
+          this._onDeleteTierAbility(event);
+          break;
+      }
     });
     
-    html.querySelectorAll('[data-action="delete-tier-ability"]').forEach(btn => {
-      btn.addEventListener('click', this._onDeleteTierAbility.bind(this));
+    // Also use event delegation for input changes
+    html.addEventListener('change', (event) => {
+      const target = event.target;
+      if (target.name && target.name.includes('tiers.tier') && target.name.includes('grantedAbilities')) {
+        console.log("Tier ability field changed:", target.name, target.value);
+        this._onTierAbilityFieldChange(event);
+      }
+    });
+
+    // Add listeners for accordion summary clicks to preserve states
+    const accordionHeaders = html.querySelectorAll('.tier-accordion-header');
+    console.log("Found accordion headers:", accordionHeaders.length);
+    accordionHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        // Small delay to let the details element update its open state
+        setTimeout(() => {
+          this._captureAccordionStates();
+        }, 10);
+      });
     });
     
-    html.querySelectorAll('input[name*="tiers.tier"][name*="grantedAbilities"], select[name*="tiers.tier"][name*="grantedAbilities"]').forEach(input => {
-      input.addEventListener('change', this._onTierAbilityFieldChange.bind(this));
-    });
+    console.log("=== TRACK LISTENERS ATTACHED WITH EVENT DELEGATION ===");
   }
 
   /**
@@ -514,6 +735,10 @@ _attachPartListeners(partId, htmlElement, options) {
     this._captureScrollPositions();
     
     let submitData = formData?.object || formData || {};
+  
+// ADD THIS RIGHT AFTER YOU GET submitData:
+console.log("RAW submitData:", JSON.stringify(submitData, null, 2));
+console.log("Looking for grantedProficiency:", submitData['system.sideEffects.grantedProficiency']);
     
     if (!submitData || Object.keys(submitData).length === 0) {
       if (event?.target) {
@@ -563,6 +788,7 @@ _attachPartListeners(partId, htmlElement, options) {
     // NOW expand the object
     submitData = foundry.utils.expandObject(submitData);
     console.log("Expanded submitData:", submitData);
+console.log("sideEffects after expansion:", submitData.system?.sideEffects);
     
     // Check if this form submission includes any granted abilities data  
     const flatKeys = Object.keys(foundry.utils.flattenObject(submitData));
@@ -586,6 +812,7 @@ _attachPartListeners(partId, htmlElement, options) {
     }
 
     console.log("Final form data before update:", submitData);
+console.log("Does it have grantedProficiency?", submitData.system?.sideEffects?.grantedProficiency);
  
     try {
       await this.document.update(submitData, { 
@@ -599,6 +826,11 @@ _attachPartListeners(partId, htmlElement, options) {
       console.error("Failed to update document:", error);
       ui.notifications.error("Failed to save changes: " + error.message);
     }
+  }
+
+  async _preUpdate(changed, options, user) {
+    console.log("Item _preUpdate - changed data:", changed);
+    return super._preUpdate(changed, options, user);
   }
 
   /* -------------------------------------------- */
@@ -631,9 +863,9 @@ _attachPartListeners(partId, htmlElement, options) {
    */
   async _onDeleteAbility(event) {
     event.preventDefault();
-    console.log("=== DELETE ABILITY DEBUG ===");
-    console.log("Event target:", event.currentTarget);
-    console.log("Dataset:", event.currentTarget.dataset);
+  
+    // CAPTURE SCROLL POSITIONS before deletion
+    this._captureScrollPositions();
     
     const index = parseInt(event.currentTarget.dataset.abilityIndex);
     console.log("Parsed index:", index);
@@ -765,6 +997,9 @@ _attachPartListeners(partId, htmlElement, options) {
    */
   async _onDeleteKnackMenu(event) {
     event.preventDefault();
+  
+    // CAPTURE SCROLL POSITIONS before deletion
+    this._captureScrollPositions();
     const index = parseInt(event.currentTarget.dataset.menuIndex);
     await this.document.removeKnackMenu(index);
   }
@@ -786,11 +1021,41 @@ _attachPartListeners(partId, htmlElement, options) {
    * @param {Event} event - The originating click event
    * @private
    */
-  async _onAddTierAbility(event) {
-    event.preventDefault();
-    const tier = parseInt(event.currentTarget.dataset.tier);
-    await this.document.addTierAbility(tier);
+async _onAddTierAbility(event) {
+  event.preventDefault();
+  
+  const button = event.target.closest('[data-action="add-tier-ability"]');
+  if (!button) {
+    console.error("Could not find add-tier-ability button");
+    return;
   }
+  
+  const tier = parseInt(button.dataset.tier);
+  
+  console.log("Adding tier ability for tier:", tier);
+  
+  if (isNaN(tier)) {
+    console.error("Invalid tier number:", button.dataset.tier);
+    ui.notifications.error("Invalid tier number");
+    return;
+  }
+  
+  try {
+    // CAPTURE SCROLL POSITIONS BEFORE UPDATE
+    this._captureScrollPositions();
+    console.log("Captured scroll positions:", this._scrollPositions);
+    
+    await this.document.addTierAbility(tier);
+    console.log("Tier ability added successfully");
+    
+    // The V2 framework should auto-render, but let's verify the positions are still there
+    console.log("Scroll positions after add:", this._scrollPositions);
+    
+  } catch (error) {
+    console.error("Failed to add tier ability:", error);
+    ui.notifications.error("Failed to add ability: " + error.message);
+  }
+}
 
   /**
    * Handle deleting a tier ability
@@ -799,9 +1064,36 @@ _attachPartListeners(partId, htmlElement, options) {
    */
   async _onDeleteTierAbility(event) {
     event.preventDefault();
-    const tier = parseInt(event.currentTarget.dataset.tier);
-    const abilityIndex = parseInt(event.currentTarget.dataset.abilityIndex);
-    await this.document.removeTierAbility(tier, abilityIndex);
+
+    // CAPTURE SCROLL POSITIONS before deletion
+    this._captureScrollPositions();
+    
+    // Use event.target instead of event.currentTarget to get the actual button
+    const button = event.target.closest('[data-action="delete-tier-ability"]');
+    if (!button) {
+      console.error("Could not find delete-tier-ability button");
+      return;
+    }
+    
+    const tier = parseInt(button.dataset.tier);
+    const abilityIndex = parseInt(button.dataset.abilityIndex);
+    
+    console.log("Deleting tier ability - tier:", tier, "index:", abilityIndex);
+    console.log("Button element:", button);
+    
+    if (isNaN(tier) || isNaN(abilityIndex)) {
+      console.error("Invalid tier or ability index:", button.dataset.tier, button.dataset.abilityIndex);
+      ui.notifications.error("Invalid tier or ability index");
+      return;
+    }
+    
+    try {
+      await this.document.removeTierAbility(tier, abilityIndex);
+      console.log("Tier ability deleted successfully");
+    } catch (error) {
+      console.error("Failed to delete tier ability:", error);
+      ui.notifications.error("Failed to delete ability: " + error.message);
+    }
   }
 
   /**
@@ -891,17 +1183,23 @@ _attachPartListeners(partId, htmlElement, options) {
       });
     });
 
-    // RESTORE SCROLL POSITIONS for all tracked containers
-    if (Object.keys(this._scrollPositions).length > 0) {
+    // RESTORE ACCORDION STATES AND SCROLL POSITIONS (order matters!)
+    if (Object.keys(this._scrollPositions).length > 0 || Object.keys(this._accordionStates).length > 0) {
       requestAnimationFrame(() => {
+        // FIRST: Restore accordion states to establish correct page layout
+        this._restoreAccordionStates();
+        
+        // THEN: Restore scroll positions after layout is correct
         for (const [selector, scrollTop] of Object.entries(this._scrollPositions)) {
           const container = this.element.querySelector(selector);
           if (container) {
             container.scrollTop = scrollTop;
           }
         }
-        // Clear stored positions after restoration
+        
+        // Clear stored positions and states after restoration
         this._scrollPositions = {};
+        this._accordionStates = {};
       });
     }
   }
@@ -1147,25 +1445,78 @@ _attachPartListeners(partId, htmlElement, options) {
     }
   }
 
+_captureScrollPositions() {
+  const scrollableSelectors = [
+    '.window-content',
+    '.tab.abilities',
+    '.tab.tiers-container',
+    'div.track-tiers',
+    '.scrollable'
+  ];
+  
+  console.log("=== CAPTURING SCROLL POSITIONS ===");
+  scrollableSelectors.forEach(selector => {
+    const container = this.element.querySelector(selector);
+    console.log(`Selector: ${selector}, Found: ${!!container}, ScrollTop: ${container?.scrollTop}`);
+    if (container && container.scrollTop > 0) {
+      this._scrollPositions[selector] = container.scrollTop;
+      console.log(`✓ Captured scroll position for ${selector}: ${container.scrollTop}`);
+    }
+  });
+  console.log("Final _scrollPositions:", this._scrollPositions);
+  
+  this._captureAccordionStates();
+}
+
   /**
-   * Capture scroll positions of all scrollable containers
+   * Capture the open/closed state of all accordion sections
    * @private
    */
-  _captureScrollPositions() {
-    // Define all scrollable containers to track
-    const scrollableSelectors = [
-      '.window-content',           // Main window content
-      '.tab.abilities',            // Abilities tab
-      '.tab.tiers',                // Tiers tab
-      '.scrollable'                // Any generic scrollable area
-    ];
+  _captureAccordionStates() {
+    const accordions = this.element.querySelectorAll('.tier-accordion-section');
     
-    scrollableSelectors.forEach(selector => {
-      const container = this.element.querySelector(selector);
-      if (container && container.scrollTop > 0) {
-        this._scrollPositions[selector] = container.scrollTop;
-        console.log(`Captured scroll position for ${selector}: ${container.scrollTop}`);
+    accordions.forEach(accordion => {
+      const tier = accordion.dataset.tier;
+      if (tier) {
+        this._accordionStates[tier] = accordion.open;
+        console.log(`Captured accordion state for tier ${tier}: ${accordion.open}`);
       }
     });
+  }
+
+  /**
+   * Restore accordion states after render
+   * @private
+   */
+  _restoreAccordionStates() {
+    if (Object.keys(this._accordionStates).length === 0) return;
+    
+    Object.entries(this._accordionStates).forEach(([tier, isOpen]) => {
+      const accordion = this.element.querySelector(`.tier-accordion-section[data-tier="${tier}"]`);
+      if (accordion) {
+        accordion.open = isOpen;
+        console.log(`Restored accordion state for tier ${tier}: ${isOpen}`);
+      }
+    });
+  }
+
+  /**
+   * Override to debug document updates
+   * @param {object} changed - The changed data
+   * @param {object} options - Update options
+   * @param {string} userId - The user ID
+   */
+  async _onDocumentUpdate(changed, options, userId) {
+    console.log("=== DOCUMENT UPDATE DETECTED ===");
+    console.log("Changed data:", changed);
+    console.log("Options:", options);
+    console.log("User ID:", userId);
+    console.log("Should auto-render?", !options.render === false);
+    
+    // Call the parent method to handle the update
+    const result = await super._onDocumentUpdate?.(changed, options, userId);
+    
+    console.log("=== DOCUMENT UPDATE COMPLETE ===");
+    return result;
   }
 }

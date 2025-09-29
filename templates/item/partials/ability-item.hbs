@@ -39,9 +39,10 @@
 
     {{#if editable}}
     <a class="ability-control delete-ability" 
-       data-action="{{deleteAction}}" 
-       data-ability-index="{{index}}" 
-       title="Delete Ability">
+      data-action="{{deleteAction}}" 
+      data-ability-index="{{index}}"
+      {{#if tierNumber}}data-tier="{{tierNumber}}"{{/if}}
+      title="Delete Ability">
       <i class="fas fa-trash"></i>
       <span>Delete</span>
     </a>

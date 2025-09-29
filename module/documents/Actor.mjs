@@ -1,4 +1,5 @@
 import { calculateVitality, calculateCoast } from "../helpers/calculations.js";
+import { getDefaultItemsForActor, generateProficienciesDescription } from "../data/default-items.mjs";
 
 export class ZWolfActor extends Actor {
   
@@ -29,6 +30,9 @@ export class ZWolfActor extends Actor {
     
     // Calculate other derived values like knacks, build points, etc.
     this._prepareDerivedValues();
+  
+    // Add virtual default items - ADD THIS LINE
+    this._addVirtualItems();
     
     // Sync vision to prototype token
     this._syncVisionToPrototypeToken();
@@ -415,5 +419,36 @@ export class ZWolfActor extends Actor {
     console.log('🔵 Actor _preUpdate called with:', changed);
     console.trace();
     return super._preUpdate(changed, options, user);
+  }
+
+  /**
+   * Add virtual default items that all actors have
+   * These items are not stored in the database but appear in collections
+   * @private
+   */
+  _addVirtualItems() {
+    const virtualItems = getDefaultItemsForActor(this.type);
+    
+    virtualItems.forEach(itemData => {
+      // Check if already exists
+      if (this.items.has(itemData._id)) {
+        const existingItem = this.items.get(itemData._id);
+        
+        // Update dynamic content on existing item
+        if (itemData.flags?.['zwolf-epic']?.isDynamic && itemData._id === "ZWVirtualProfs00") {
+          existingItem.system.grantedAbilities[0].description = generateProficienciesDescription(this);
+        }
+        return;
+      }
+      
+      // Update dynamic content for new items
+      if (itemData.flags?.['zwolf-epic']?.isDynamic && itemData._id === "ZWVirtualProfs00") {
+        itemData.system.grantedAbilities[0].description = generateProficienciesDescription(this);
+      }
+      
+      // Create virtual item
+      const item = new CONFIG.Item.documentClass(itemData, { parent: this });
+      this.items.set(item.id, item);
+    });
   }
 }

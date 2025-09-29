@@ -126,7 +126,7 @@
     {{/if}}
   </div>
 
-  <!-- Target Numbers -->
+<!-- Target Numbers -->
   <div class="header-tns {{#if isMook}}mook-tns{{/if}}{{#if isSpawn}}spawn-tns{{/if}}">
     {{#if isCharacter}}
       <div class="tn-group tn-group-primary">
@@ -178,6 +178,12 @@
           <div class="tn-value">{{tns.destiny}}</div>
         </div>
       </div>
+    {{/if}}
+    
+    {{#if abilityCategories.exoticSenses.length}}
+    <div class="exotic-senses-icon" title="{{#each abilityCategories.exoticSenses}}{{name}}{{#if tags}} · <{{tags}}>{{/if}}{{#unless @last}}, {{/unless}}{{/each}}">
+      <i class="fas fa-eye"></i>
+    </div>
     {{/if}}
   </div>
 </section>
