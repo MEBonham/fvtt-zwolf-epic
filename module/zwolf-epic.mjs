@@ -6,6 +6,7 @@
 // Import document classes.
 import { ZWolfActor } from "./documents/Actor.mjs";
 import { ZWolfItem } from "./documents/Item.mjs";
+import ZWolfTokenDocument from "./documents/Token.mjs";
 import * as actorDataModels from "./data/actor-base.mjs";
 import * as itemDataModels from "./data/item-base.mjs";
 // Import sheet classes.
@@ -14,7 +15,7 @@ import ZWolfItemSheet from "./sheets/item-sheet.mjs";
 // Import helper/utility classes and constants.
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
-import { ZWolfDice } from "./dice/index.mjs";  // Updated import path
+import { ZWolfDice } from "./dice/index.mjs";
 import { ZWolfVision } from "./helpers/vision.mjs";
 
 /* -------------------------------------------- */
@@ -36,8 +37,114 @@ Hooks.once('init', async function() {
   // Add custom constants for configuration.
   CONFIG.ZWOLF = ZWOLF;
 
-  // Initialize the custom vision system
+  /**
+   * Configure custom status effects to replace Foundry's defaults
+   */
+  CONFIG.statusEffects = Object.entries(ZWOLF.conditions).map(([id, condition]) => ({
+    id: id,
+    name: condition.label,
+    icon: condition.icon,
+    description: condition.description,
+    statuses: [id] // This is important for V13 compatibility
+  }));
+
+  // Clear Foundry's default status effects
+  CONFIG.specialStatusEffects = {
+    DEFEATED: "dead",
+    INVISIBLE: "invisible",
+    BLIND: "",
+    BURROW: "",
+    HOVER: "",
+    FLY: ""
+  };
+
+  // Initialize the detection mode vision system
   ZWolfVision.initialize();
+
+  /**
+   * Remove unwanted buttons from Token HUD
+   */
+  Hooks.on('renderTokenHUD', (app, html, data) => {
+    // In Foundry V13, html is a native HTMLElement, not jQuery
+    const hudElement = html instanceof HTMLElement ? html : html[0];
+    
+    // Remove "Select Movement Action" button
+    const movementButton = hudElement.querySelector('[data-action="togglePalette"][data-palette="movementActions"]');
+    if (movementButton) {
+      movementButton.remove();
+      console.log('Z-Wolf Epic | Removed movement actions button');
+    }
+    
+    // Remove "Toggle Target State" button  
+    const targetButton = hudElement.querySelector('[data-action="target"]');
+    if (targetButton) {
+      targetButton.remove();
+      console.log('Z-Wolf Epic | Removed target toggle button');
+    }
+  });
+
+  /**
+   * Consolidated token creation hook
+   * Handles both lockRotation and detection mode cleanup
+   */
+  Hooks.on("createToken", async (document, options, userId) => {
+    console.log("Z-Wolf Epic | createToken hook fired");
+    
+    // Handle lockRotation
+    if (!document.lockRotation) {
+      console.log("Z-Wolf Epic | Setting lockRotation");
+      setTimeout(() => {
+        document.update({ lockRotation: true });
+      }, 0);
+    }
+    
+    // Handle detection modes - clean up after Foundry adds defaults
+    setTimeout(async () => {
+      console.log("Z-Wolf Epic | Checking detection modes:", document.detectionModes);
+      
+      const hasUnwanted = document.detectionModes.some(m => 
+        m.id === 'basicSight' || m.id === 'lightPerception'
+      );
+      
+      if (hasUnwanted) {
+        console.log("Z-Wolf Epic | Found unwanted detection modes, filtering...");
+        const filtered = document.detectionModes.filter(m => 
+          m.id !== 'basicSight' && m.id !== 'lightPerception'
+        );
+        
+        console.log("Z-Wolf Epic | Filtered modes:", filtered);
+        
+        await document.update({ 
+          detectionModes: filtered 
+        }, { _zwolfVisionUpdate: true });
+        
+        console.log("Z-Wolf Epic | Updated detection modes");
+      }
+    }, 250); // Longer delay to ensure Foundry finished adding its modes
+  });
+
+  /**
+   * Prevent unwanted detection modes during updates
+   */
+  Hooks.on("preUpdateToken", (document, changes, options, userId) => {
+    if (options._zwolfVisionUpdate) return; // Don't interfere with our own updates
+    
+    if (changes.detectionModes) {
+      console.log("Z-Wolf Epic | preUpdateToken - filtering detection modes");
+      changes.detectionModes = changes.detectionModes.filter(m => 
+        m.id !== 'basicSight' && m.id !== 'lightPerception'
+      );
+    }
+  });
+
+  /**
+   * Set default Token settings - Lock Artwork Rotation
+   */
+  Hooks.on("preCreateToken", (document, data, options, userId) => {
+    console.log("Z-Wolf Epic | preCreateToken hook fired");
+    data.lockRotation = true;
+    console.log("Z-Wolf Epic | Forced lockRotation to true");
+  });
 
   /**
    * Set a custom initiative system that uses Z-Wolf dice mechanics
@@ -60,7 +167,7 @@ Hooks.once('init', async function() {
       if (!combatant?.actor) continue;
       
       // Get the actor's agility modifier
-      const agilityMod = combatant.actor.system.attributes?.agility?.value || 0; // TODO: multiply by 1.01; use Progression system
+      const agilityMod = combatant.actor.system.attributes?.agility?.value || 0;
       
       // Use Z-Wolf dice system for initiative
       const rollResult = await ZWolfDice.roll({
@@ -93,9 +200,24 @@ Hooks.once('init', async function() {
   CONFIG.Canvas.gridPrecision = 2; // Allow decimals in distance measurement
   CONFIG.Canvas.rulerUnits = "m"; // Use meters for measurement
 
+  /* -------------------------------------------- */
+  /*  Default Document Settings                   */
+  /* -------------------------------------------- */
+
+  /**
+   * Set default Scene settings - Gridless mode
+   */
+  Hooks.on("preCreateScene", (document, data, options, userId) => {
+    if (!data.grid) data.grid = {};
+    if (data.grid.type === undefined) {
+      data.grid.type = CONST.GRID_TYPES.GRIDLESS;
+    }
+  });
+
   // Define custom Document classes
   CONFIG.Actor.documentClass = ZWolfActor;
   CONFIG.Item.documentClass = ZWolfItem;
+  CONFIG.Token.documentClass = ZWolfTokenDocument;
   
   // Register Actor DataModels
   CONFIG.Actor.dataModels = {
@@ -146,7 +268,6 @@ Hooks.once('init', async function() {
 /**
  * Combat Tracker enhancement hooks for Z-Wolf Epic
  */
-
 export function registerCombatTrackerHooks() {
   
   /**
@@ -162,35 +283,42 @@ export function registerCombatTrackerHooks() {
  * @param {HTMLElement} html - The combat tracker HTML element
  */
 function addInitiativeBoostButton(html) {
-  const $html = $(html);
-  const header = $html.find('.combat-tracker-header');
+  const hudElement = html instanceof HTMLElement ? html : html[0];
+  const header = hudElement.querySelector('.combat-tracker-header');
   
   // Only add button if header exists and button hasn't been added yet
-  if (header.length && !header.find('.zwolf-initiative-boost').length) {
+  if (header && !header.querySelector('.zwolf-initiative-boost')) {
     const boostButton = createInitiativeButton();
-    header.find('.combat-controls').prepend(boostButton);
-    attachInitiativeButtonHandler(boostButton);
+    const controlsElement = header.querySelector('.combat-controls');
+    if (controlsElement) {
+      controlsElement.prepend(boostButton);
+      attachInitiativeButtonHandler(boostButton);
+    }
   }
 }
 
 /**
  * Create the initiative boost button element
- * @returns {jQuery} The button element
+ * @returns {HTMLElement} The button element
  */
 function createInitiativeButton() {
-  return $(`
-    <a class="combat-control zwolf-initiative-boost" title="Roll Initiative with Current Boosts/Jinxes">
-      <i class="fas fa-dice-d12"></i>
-    </a>
-  `);
+  const button = document.createElement('a');
+  button.className = 'combat-control zwolf-initiative-boost';
+  button.title = 'Roll Initiative with Current Boosts/Jinxes';
+  
+  const icon = document.createElement('i');
+  icon.className = 'fas fa-dice-d12';
+  button.appendChild(icon);
+  
+  return button;
 }
 
 /**
  * Attach click handler to initiative button
- * @param {jQuery} button - The button element
+ * @param {HTMLElement} button - The button element
  */
 function attachInitiativeButtonHandler(button) {
-  button.on('click', async (event) => {
+  button.addEventListener('click', async (event) => {
     event.preventDefault();
     await handleInitiativeRoll();
   });
@@ -263,7 +391,6 @@ function generateInitiativeFlavor(netBoosts, name) {
 /*  Handlebars Helpers                          */
 /* -------------------------------------------- */
 
-// If you need to add Handlebars helpers, here are a few useful examples:
 Handlebars.registerHelper('concat', function() {
   var outStr = '';
   for (var arg in arguments) {
@@ -292,14 +419,11 @@ Handlebars.registerHelper('join', function(array, separator) {
   
   separator = separator || ', ';
   
-  // Clean up corrupted array elements
   const cleanArray = array
     .filter(item => item !== null && item !== undefined)
     .map(item => {
       const str = String(item);
-      // If we find [object Object] corruption, try to extract meaningful parts
       if (str.includes('[object Object]')) {
-        // Split on [object Object] and take valid parts
         const parts = str.split('[object Object]').filter(part => part.trim().length > 0);
         return parts.join(', ');
       }
@@ -385,6 +509,17 @@ Handlebars.registerHelper('or', function() {
   return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
 });
 
+Handlebars.registerHelper('getSourceItem', function(item) {
+  return item.getSourceItem?.();
+});
+
+Handlebars.registerHelper('contains', function(string, substring) {
+  if (typeof string !== 'string' || typeof substring !== 'string') {
+    return false;
+  }
+  return string.includes(substring);
+});
+
 /* -------------------------------------------- */
 /*  Ready Hook                                  */
 /* -------------------------------------------- */
@@ -392,6 +527,35 @@ Handlebars.registerHelper('or', function() {
 Hooks.once("ready", async function() {
   // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
   Hooks.on("hotbarDrop", (bar, data, slot) => createItemMacro(data, slot));
+});
+
+/**
+ * Track source Item ID when items are added to Actors
+ * This enables the "Push to Actors" functionality
+ */
+Hooks.on("createItem", async (item, options, userId) => {
+  
+  if (!item.parent || item.parent.documentName !== "Actor") return;
+  if (item.getFlag("zwolf-epic", "sourceId")) return;
+  if (game.user.id !== userId) return;
+  
+  const worldItem = game.items.find(i => 
+    i.name === item.name && 
+    i.type === item.type &&
+    !i.parent
+  );
+  
+  if (worldItem) {
+    console.log(`Z-Wolf Epic | Linking ${item.name} to source item ${worldItem.id}`);
+    setTimeout(async () => {
+      try {
+        await item.setFlag("zwolf-epic", "sourceId", worldItem.id);
+        console.log(`Z-Wolf Epic | Flag set successfully for ${item.name}`);
+      } catch (error) {
+        console.error(`Z-Wolf Epic | Failed to set sourceId flag:`, error);
+      }
+    }, 0);
+  }
 });
 
 /* -------------------------------------------- */
@@ -410,7 +574,6 @@ async function createItemMacro(data, slot) {
   if (!("data" in data)) return ui.notifications.warn("You can only create macro buttons for owned Items");
   const item = data.data;
 
-  // Create the macro command
   const command = `game.zwolf.rollItemMacro("${item.name}");`;
   let macro = game.macros.find(m => (m.name === item.name) && (m.command === command));
   if (!macro) {
@@ -440,7 +603,6 @@ function rollItemMacro(itemName) {
   const item = actor ? actor.items.find(i => i.name === itemName) : null;
   if (!item) return ui.notifications.warn(`Your controlled Actor does not have an item named ${itemName}`);
 
-  // Trigger the item roll
   return item.roll();
 }
 

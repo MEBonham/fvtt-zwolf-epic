@@ -1,6 +1,10 @@
 /**
- * Z-Wolf Epic Custom Vision System
- * Handles vision mode application only - side effects managed by Actor
+ * Z-Wolf Epic Vision System - Detection Mode Approach (Revised)
+ * 
+ * Uses Foundry's detection mode system properly:
+ * - Basic sight for bright light (unlimited effective range)
+ * - Custom "lightvision" detection mode for dim light (nightsight range)
+ * - Built-in "darkvision" detection mode for darkness (darkvision range, min 1m)
  */
 
 export class ZWolfVision {
@@ -9,49 +13,102 @@ export class ZWolfVision {
    * Initialize the vision system hooks
    */
   static initialize() {
-    // Hook into token updates to refresh vision when needed
-    Hooks.on("updateToken", (document, changes, options, userId) => {
-      ZWolfVision._onUpdateToken(document, changes, options, userId);
+    // Register custom detection mode for dim light vision
+    Hooks.once("setup", () => {
+      ZWolfVision._registerDetectionModes();
     });
     
-    // Hook into token refresh to apply vision rules
-    Hooks.on("refreshToken", (token) => {
-      ZWolfVision._onRefreshToken(token);
+    // Hook into actor updates to sync vision changes
+    Hooks.on("updateActor", (actor, changes, options, userId) => {
+      ZWolfVision._onUpdateActor(actor, changes, options, userId);
     });
     
-    // Register custom vision modes
-    this._registerVisionModes();
+    // Hook into token creation to immediately apply Z-Wolf vision
+    Hooks.on("createToken", (document, options, userId) => {
+      if (document.object) {
+        setTimeout(() => {
+          ZWolfVision._refreshTokenVision(document.object).catch(error => {
+            console.error("Z-Wolf Epic | Error applying vision to new token:", error);
+          });
+        }, 100);
+      }
+    });
     
-    console.log("Z-Wolf Epic: Vision system initialized");
+    console.log("Z-Wolf Epic: Vision system initialized (detection mode approach)");
   }
 
   /**
-   * Handle token update events
-   * @param {TokenDocument} document - The token document
+   * Register custom detection modes
+   * @private
+   */
+  static _registerDetectionModes() {
+    // Create custom DetectionMode class for bright light
+    class BrightVisionMode extends DetectionMode {
+      /** @override */
+      _canDetect(visionSource, target) {
+        const point = target?.center || target;
+        if (!point) return false;
+        
+        const lightLevel = canvas.effects.illumination?.getVisibility(point) ?? 0;
+        console.log("BrightVision _canDetect - light level:", lightLevel);
+        
+        // Only detect in bright light (>= 0.5)
+        return lightLevel >= 0.5;
+      }
+    }
+    
+    CONFIG.Canvas.detectionModes.brightVision = new BrightVisionMode({
+      id: "brightVision",
+      label: "Bright Light Vision",
+      type: DetectionMode.DETECTION_TYPES.SIGHT,
+      walls: true,
+      angle: true
+    });
+    
+    // Custom detection mode for seeing in dim light (nightsight)
+    class LightVisionMode extends DetectionMode {
+      /** @override */
+      _canDetect(visionSource, target) {
+        const point = target?.center || target;
+        if (!point) return false;
+        
+        const lightLevel = canvas.effects.illumination?.getVisibility(point) ?? 0;
+        console.log("LightVision _canDetect - light level:", lightLevel);
+        
+        // Only detect in dim light (> 0 but < 0.5)
+        return lightLevel > 0 && lightLevel < 0.5;
+      }
+    }
+    
+    CONFIG.Canvas.detectionModes.lightVision = new LightVisionMode({
+      id: "lightVision",
+      label: "Light Vision (Dim Light)",
+      type: DetectionMode.DETECTION_TYPES.SIGHT,
+      walls: true,
+      angle: true
+    });
+    
+    console.log("Z-Wolf Epic: Registered brightVision and lightVision detection modes");
+  }
+
+  /**
+   * Handle actor update events that affect vision
+   * @param {Actor} actor - The actor document
    * @param {Object} changes - The changes that were applied
    * @param {Object} options - Update options
    * @param {string} userId - The user who made the change
    * @private
    */
-  static _onUpdateToken(document, changes, options, userId) {
-    // Handle vision-related token updates
-    if (changes.sight || changes.detectionModes) {
-      console.log("Z-Wolf Epic: Vision-related token update", document.name);
-      // Refresh vision if needed
-      if (document.object) {
-        ZWolfVision._refreshTokenVision(document.object);
-      }
+  static _onUpdateActor(actor, changes, options, userId) {
+    // Check if nightsight or darkvision changed
+    if (changes.system?.nightsight !== undefined || changes.system?.darkvision !== undefined) {
+      // Update all tokens for this actor
+      actor.getActiveTokens().forEach(token => {
+        ZWolfVision._refreshTokenVision(token).catch(error => {
+          console.error("Z-Wolf Epic | Error updating actor token vision:", error);
+        });
+      });
     }
-  }
-
-  /**
-   * Handle token refresh events
-   * @param {Token} token - The token being refreshed
-   * @private
-   */
-  static _onRefreshToken(token) {
-    // Apply Z-Wolf vision rules when token refreshes
-    ZWolfVision._refreshTokenVision(token);
   }
 
   /**
@@ -59,78 +116,77 @@ export class ZWolfVision {
    * @param {Token} token - The token to refresh vision for
    * @private
    */
-  static _refreshTokenVision(token) {
+  static async _refreshTokenVision(token) {
     if (!token?.document?.actor) return;
-    
-    // Apply vision based on what the actor has
-    ZWolfVision._applyVisionToToken(token);
+    await ZWolfVision._applyVisionToToken(token);
   }
 
   /**
    * Apply vision configuration to a token based on actor's current values
-   * Darkvision takes precedence for sight.range, nightsight is handled via flag
    * @param {Token} token - The token to apply vision to
    * @private
    */
-  static _applyVisionToToken(token) {
+  static async _applyVisionToToken(token) {
     const actor = token.document.actor;
-    const darkvision = actor.prototypeToken?.sight?.range || 0;
     const nightsight = actor.system?.nightsight || 0;
+    const darkvision = Math.max(1, actor.system?.darkvision || 0); // Minimum 1
     
-    const updates = {};
+    // Set sight.range to the maximum capability
+    // This is the hard limit - detection modes work within this
+    const maxRange = Math.max(100, nightsight, darkvision);
     
-    // Always ensure bright sight is infinite
-    updates['sight.bright'] = Infinity;
-    
-    // Set darkvision range (Foundry's native dim vision)
-    updates['sight.range'] = darkvision;
-    
-    // Determine vision mode based on capabilities
-    if (darkvision > 0) {
-      // Has darkvision - use basic mode with native dim vision
-      updates['sight.visionMode'] = 'basic';
-      console.log(`Z-Wolf Epic | Applied darkvision (${darkvision}m) to ${token.name}`);
-    } else if (nightsight > 0) {
-      // Has nightsight only - use custom nightsight mode
-      updates['sight.visionMode'] = 'nightsight';
-      console.log(`Z-Wolf Epic | Applied nightsight-only to ${token.name}`);
-    } else {
-      // Normal vision only
-      updates['sight.visionMode'] = 'basic';
-    }
-    
-    // Always sync nightsight flag (used by token getter for size bonus calculation)
-    if (nightsight > 0) {
-      token.setFlag('zwolf-epic', 'nightsight', nightsight);
-    } else {
-      token.unsetFlag('zwolf-epic', 'nightsight');
-    }
-
-    // Apply updates if there are any
-    if (Object.keys(updates).length > 0) {
-      token.document.update(updates);
-    }
-  }
-
-  /**
-   * Register custom vision modes with Foundry
-   * @private
-   */
-  static _registerVisionModes() {
-    // Only register if V13's vision mode system is available
-    if (!CONFIG.Canvas?.visionModes) return;
-    
-    // Register custom nightsight mode (for nightsight-only characters)
-    CONFIG.Canvas.visionModes.nightsight = {
-      id: "nightsight",
-      label: "Z-Wolf: Nightsight",
-      tokenConfig: true,
-      // Remove the shader property entirely or use a v13 compatible one
-      vision: {
-        darkness: { adaptive: true },
-        defaults: { range: 0, saturation: -0.3 }
-      }
+    const updates = {
+      'sight.enabled': true,
+      'sight.range': maxRange,
+      'sight.visionMode': "basic"
     };
+    
+    // Build detection modes array
+    const detectionModes = [];
+    
+    // Add bright light vision (unlimited within sight.range)
+    detectionModes.push({
+      id: "brightVision",
+      enabled: true,
+      range: maxRange // Use the max range for bright light
+    });
+    
+    // Add lightvision for dim light if nightsight > 0
+    if (nightsight > 0) {
+      detectionModes.push({
+        id: "lightVision",
+        enabled: true,
+        range: nightsight
+      });
+    }
+    
+    // Add darkvision for darkness (everyone has at least 1m)
+    detectionModes.push({
+      id: "darkvision",
+      enabled: true,
+      range: darkvision
+    });
+    
+    // Store capabilities as flags for reference
+    await token.document.setFlag('zwolf-epic', 'nightsight', nightsight);
+    await token.document.setFlag('zwolf-epic', 'darkvision', darkvision);
+
+    // Apply updates - set detectionModes AFTER other updates to override defaults
+    try {
+      await token.document.update(updates);
+      
+      // Force override detection modes again after main update
+      // This attempts to prevent Foundry from adding default modes
+      await token.document.update({ 'detectionModes': detectionModes });
+      console.log(`Z-Wolf Epic | Applied vision to ${token.name}:`, {
+        nightsight,
+        darkvision,
+        maxRange,
+        detectionModes: detectionModes.map(m => `${m.id}:${m.range}`)
+      });
+    } catch (error) {
+      console.error(`Z-Wolf Epic | Failed to apply vision config to ${token.name}:`, error);
+    }
   }
 
   /**
@@ -140,29 +196,100 @@ export class ZWolfVision {
    */
   static getVisionDisplayInfo(actor) {
     const nightsight = actor.system?.nightsight || 0;
-    const darkvision = actor.prototypeToken?.sight?.range || 0;
+    const darkvision = Math.max(1, actor.system?.darkvision || 0);
     
-    // Determine what vision capabilities they have
-    let visionType = "normal";
     let capabilities = [];
     
+    capabilities.push("Bright light (unlimited)");
+    
     if (nightsight > 0) {
-      capabilities.push(`Nightsight ${nightsight}m`);
+      capabilities.push(`Dim light within ${nightsight}m`);
+    } else {
+      capabilities.push("No enhanced dim light vision");
     }
-    if (darkvision > 0) {
-      capabilities.push(`Darkvision ${darkvision}m`);
-      visionType = "darkvision";
-    } else if (nightsight > 0) {
-      visionType = "nightsight";
-    }
+    
+    capabilities.push(`Darkness within ${darkvision}m`);
     
     return {
       nightsightRadius: nightsight,
       darkvisionRadius: darkvision,
       nightsightDisplay: nightsight > 0 ? `${nightsight}m` : "None",
-      darkvisionDisplay: darkvision > 0 ? `${darkvision}m` : "Self only",
-      visionType: visionType,
-      capabilities: capabilities.join(", ") || "Normal vision only"
+      darkvisionDisplay: `${darkvision}m`,
+      capabilities: capabilities.join(", "),
+      summary: `Can see: ${capabilities.join(", ")}`
     };
+  }
+
+  /**
+   * Debug function to check what detection modes are active for a token
+   * @param {Token} token - Token to check
+   * @returns {Object} Debug information
+   */
+  static debugTokenVision(token) {
+    if (!token?.actor) return { error: "No token or actor" };
+    
+    const nightsight = token.actor.system?.nightsight || 0;
+    const darkvision = Math.max(1, token.actor.system?.darkvision || 0);
+    
+    return {
+      actorNightsight: nightsight,
+      actorDarkvision: darkvision,
+      sightConfig: {
+        enabled: token.document.sight.enabled,
+        range: token.document.sight.range,
+        visionMode: token.document.sight.visionMode
+      },
+      detectionModes: token.document.detectionModes,
+      explanation: `Should see bright light unlimited, dim light to ${nightsight}m, darkness to ${darkvision}m`
+    };
+  }
+
+  /**
+   * Apply Z-Wolf vision to all tokens in the scene
+   */
+  static async applyVisionToAllTokens() {
+    if (!canvas.scene) {
+      console.warn("Z-Wolf Epic | No active scene");
+      return;
+    }
+    
+    const tokens = canvas.tokens.placeables;
+    console.log(`Z-Wolf Epic | Applying vision to ${tokens.length} tokens...`);
+    
+    for (const token of tokens) {
+      if (token.actor) {
+        await ZWolfVision._applyVisionToToken(token);
+      }
+    }
+    
+    console.log("Z-Wolf Epic | Vision applied to all tokens");
+  }
+
+  /**
+   * Remove Z-Wolf vision from all tokens (restore to defaults)
+   */
+  static async removeVisionFromAllTokens() {
+    if (!canvas.scene) {
+      console.warn("Z-Wolf Epic | No active scene");
+      return;
+    }
+    
+    const tokens = canvas.tokens.placeables;
+    console.log(`Z-Wolf Epic | Removing Z-Wolf vision from ${tokens.length} tokens...`);
+    
+    for (const token of tokens) {
+      const updates = {
+        'sight.enabled': true,
+        'sight.range': 0,
+        'sight.visionMode': "basic",
+        'detectionModes': [],
+        'flags.zwolf-epic.-=nightsight': null,
+        'flags.zwolf-epic.-=darkvision': null
+      };
+      
+      await token.document.update(updates);
+    }
+    
+    console.log("Z-Wolf Epic | Z-Wolf vision removed from all tokens");
   }
 }

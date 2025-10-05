@@ -50,12 +50,12 @@ export const DEFAULT_ITEMS = {
         0: {
             name: "Generic Dominant Activities",
             type: "dominantAction",
-            description: "<p>Be Careful, Charge, Disarm, Encourage, Grab, Prepare Aid, Ready, Strike, Sunder, Trip</p>"
+            description: "<p>Be Careful, Charge, Disarm, Encourage, Grab, Prepare Aid, Ready, Strike, Sunder, Total Defense, Trip</p>"
         },
         1: {
             name: "Generic Swift Activities",
             type: "swiftAction",
-            description: "<p>Cleave, Demoralize, Escape, Interact, Recall Knowledge, Recover, Stand, Step, Stride</p>"
+            description: "<p>Cleave, Declare Attack Aspect, Demoralize, Escape, Hustle, Interact, Recall Knowledge, Recover, Stand, Step, Stride</p>"
         },
         2: {
             name: "Generic Reaction Activities",
@@ -65,7 +65,7 @@ export const DEFAULT_ITEMS = {
         3: {
             name: "Generic Free Activities",
             type: "freeAction",
-            description: "<p>Exclaim, Seize the Moment</p>"
+            description: "<p>Exclaim, Release, Seize the Moment</p>"
         },
       },
       sideEffects: {

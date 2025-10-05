@@ -29,7 +29,7 @@ export class ActorDataCalculator {
     this._addFoundationItems(context);
 
     // Check vitality boost count (queues update if needed)
-    this._checkVitalityBoostCount();
+    // this._checkVitalityBoostCount();
     
     // Apply side effects and calculate target numbers
     const sideEffects = this._applySideEffects(context.ancestry, context.fundament, this.actor.items);
@@ -490,104 +490,137 @@ export class ActorDataCalculator {
     // Get knacks from all talent items
     const talentItems = this.actor.items.filter(item => item.type === 'talent');
     talentItems.forEach((talent, index) => {
+      console.log(`Z-Wolf Epic | Checking talent: ${talent.name}`, {
+        hasSystem: !!talent.system,
+        knacksProvided: talent.system?.knacksProvided,
+        slotIndex: talent.getFlag('zwolf-epic', 'slotIndex')
+      });
       if (talent.system && talent.system.knacksProvided) {
         totalKnacks += talent.system.knacksProvided;
       }
     });
-    
+    console.log(`Z-Wolf Epic | Total knacks calculated: ${totalKnacks}`);
     return totalKnacks;
   }
 
-  prepareSlots(itemType, slotCount) {
-    const slots = [];
+prepareSlots(itemType, slotCount) {
+  const slots = [];
+  
+  if (itemType === 'talent') {
+    // Get all track items to determine which tracks are assigned
+    const trackItems = this.actor.items.filter(item => item.type === 'track');
+    const assignedTracks = new Map();
     
-    if (itemType === 'talent') {
-      // Get all track items to determine which tracks are assigned
-      const trackItems = this.actor.items.filter(item => item.type === 'track');
-      const assignedTracks = new Map();
-      
-      // Build a map of which track slots are filled
-      trackItems.forEach(track => {
-        const slotIndex = track.getFlag('zwolf-epic', 'slotIndex');
-        if (slotIndex !== undefined && slotIndex < 4) {
-          assignedTracks.set(slotIndex + 1, track);
-        } else {
-          for (let i = 1; i <= 4; i++) {
-            if (!assignedTracks.has(i)) {
-              assignedTracks.set(i, track);
-              track.setFlag('zwolf-epic', 'slotIndex', i - 1);
-              break;
-            }
+    // Build a map of which track slots are filled
+    trackItems.forEach(track => {
+      const slotIndex = track.getFlag('zwolf-epic', 'slotIndex');
+      if (slotIndex !== undefined && slotIndex < 4) {
+        assignedTracks.set(slotIndex + 1, track);
+      } else {
+        for (let i = 1; i <= 4; i++) {
+          if (!assignedTracks.has(i)) {
+            assignedTracks.set(i, track);
+            track.setFlag('zwolf-epic', 'slotIndex', i - 1);
+            break;
           }
         }
-      });
+      }
+    });
+    
+    // Helper function to get track info for a talent slot
+    const getTrackInfoForTalentSlot = (talentSlotNumber) => {
+      const modResult = talentSlotNumber % 4;
+      const trackNumber = modResult === 0 ? 4 : modResult;
+      const assignedTrack = assignedTracks.get(trackNumber);
       
-      // Helper function to get track info for a talent slot
-      const getTrackInfoForTalentSlot = (talentSlotNumber) => {
-        const modResult = talentSlotNumber % 4;
-        const trackNumber = modResult === 0 ? 4 : modResult;
-        const assignedTrack = assignedTracks.get(trackNumber);
-        
-        return {
-          trackNumber: trackNumber,
-          trackName: assignedTrack ? assignedTrack.name : null,
-          hasTrack: !!assignedTrack
-        };
+      return {
+        trackNumber: trackNumber,
+        trackName: assignedTrack ? assignedTrack.name : null,
+        hasTrack: !!assignedTrack
       };
+    };
+    
+    // Get talent items
+    const talentItems = this.actor.items.filter(item => item.type === 'talent');
+    
+    // Create all slots first
+    for (let i = 0; i < slotCount; i++) {
+      const talentSlotNumber = i + 1;
+      const trackInfo = getTrackInfoForTalentSlot(talentSlotNumber);
       
-      // Get talent items
-      const talentItems = this.actor.items.filter(item => item.type === 'talent');
+      slots.push({
+        index: i,
+        item: null,
+        talentNumber: talentSlotNumber,
+        trackNumber: trackInfo.trackNumber,
+        trackName: trackInfo.trackName,
+        hasTrack: trackInfo.hasTrack
+      });
+    }
+    
+    // Fill slots based on stored slotIndex
+    talentItems.forEach((talent, sequentialIndex) => {
+      const slotIndex = talent.getFlag('zwolf-epic', 'slotIndex');
       
-      // Create all slots first
-      for (let i = 0; i < slotCount; i++) {
-        const talentSlotNumber = i + 1;
-        const trackInfo = getTrackInfoForTalentSlot(talentSlotNumber);
-        
-        slots.push({
-          index: i,
-          item: null,
-          talentNumber: talentSlotNumber,
-          trackNumber: trackInfo.trackNumber,
-          trackName: trackInfo.trackName,
-          hasTrack: trackInfo.hasTrack
-        });
-      }
-      
-      // Fill slots based on stored slotIndex
-      talentItems.forEach((talent, sequentialIndex) => {
-        const slotIndex = talent.getFlag('zwolf-epic', 'slotIndex');
-        
-        if (slotIndex !== undefined && slotIndex < slotCount && slots[slotIndex] && !slots[slotIndex].item) {
-          slots[slotIndex].item = talent.toObject();
-        } else {
-          for (let i = 0; i < slotCount; i++) {
-            if (!slots[i].item) {
-              slots[i].item = talent.toObject();
-              talent.setFlag('zwolf-epic', 'slotIndex', i);
-              break;
-            }
+      if (slotIndex !== undefined && slotIndex < slotCount && slots[slotIndex] && !slots[slotIndex].item) {
+        slots[slotIndex].item = talent.toObject();
+      } else {
+        for (let i = 0; i < slotCount; i++) {
+          if (!slots[i].item) {
+            slots[i].item = talent.toObject();
+            talent.setFlag('zwolf-epic', 'slotIndex', i);
+            break;
           }
         }
-      });
+      }
+    });
+    
+    return slots;
+  } else if (itemType === 'track') {
+    // NEW: Tracks now use slotIndex like talents
+    const items = this.actor.items.filter(item => item.type === 'track');
+    
+    // Create all slots first
+    for (let i = 0; i < slotCount; i++) {
+      slots.push({ index: i, item: null });
+    }
+    
+    // Fill slots based on stored slotIndex
+    items.forEach((item, sequentialIndex) => {
+      const slotIndex = item.getFlag('zwolf-epic', 'slotIndex');
       
-      return slots;
-    } else {
-      // Original behavior for knacks and tracks
-      const items = this.actor.items.filter(item => item.type === itemType);
-      
-      for (let i = 0; i < slotCount; i++) {
-        const slot = { index: i, item: null };
-        
-        if (items[i]) {
-          slot.item = items[i].toObject();
+      if (slotIndex !== undefined && slotIndex < slotCount && slots[slotIndex] && !slots[slotIndex].item) {
+        slots[slotIndex].item = item.toObject();
+      } else {
+        // Find first available slot for items without a stored index
+        for (let i = 0; i < slotCount; i++) {
+          if (!slots[i].item) {
+            slots[i].item = item.toObject();
+            item.setFlag('zwolf-epic', 'slotIndex', i);
+            break;
+          }
         }
-        
-        slots.push(slot);
+      }
+    });
+    
+    return slots;
+  } else {
+    // Original sequential behavior for knacks only
+    const items = this.actor.items.filter(item => item.type === itemType);
+    
+    for (let i = 0; i < slotCount; i++) {
+      const slot = { index: i, item: null };
+      
+      if (items[i]) {
+        slot.item = items[i].toObject();
       }
       
-      return slots;
+      slots.push(slot);
     }
+    
+    return slots;
   }
+}
 
   // =================================
   // BUILD POINTS CALCULATION
@@ -693,9 +726,11 @@ export class ActorDataCalculator {
   // GRANTED ABILITIES
   // =================================
 
+  // Updated _categorizeGrantedAbilities method
   _categorizeGrantedAbilities() {
     const categories = {
       passive: [],
+      drawback: [],
       exoticSenses: [],
       dominantAction: [],
       swiftAction: [],
@@ -752,7 +787,7 @@ export class ActorDataCalculator {
                   description: ability.description || 'No description provided.',
                   itemName: item.name,
                   itemId: item.id,
-                  isVirtual: item.flags?.['zwolf-epic']?.isVirtual || false  // ADD THIS LINE
+                  isVirtual: item.flags?.['zwolf-epic']?.isVirtual || false
                 });
                 console.log(`Z-Wolf Epic | Added "${ability.name}" to ${categoryKey} category with tags: "${ability.tags || 'none'}"`);
               } else {
@@ -867,9 +902,11 @@ export class ActorDataCalculator {
     return categories;
   }
 
+  // Updated _ensureAbilityCategories method
   _ensureAbilityCategories(context) {
     const defaultCategories = {
       passive: [],
+      drawback: [],
       exoticSenses: [],
       dominantAction: [],
       swiftAction: [],
@@ -888,65 +925,12 @@ export class ActorDataCalculator {
   // =================================
 
   _calculateFundamentValues(level, fundament = null) {
-    const defaultValues = {
-      maxVitality: 12,
-      coastNumber: 4
+    // Don't recalculate - use the values already computed by Actor.prepareDerivedData()
+    return {
+      maxVitality: this.actor.system.vitalityPoints.max,
+      coastNumber: this.actor.system.coastNumber,
+      maxStamina: this.actor.system.staminaPoints.max
     };
-
-    if (!fundament || !fundament.system) {
-      console.log("Z-Wolf Epic | No fundament assigned, using default values");
-      return defaultValues;
-    }
-
-    const vitalityBoostCount = this.actor.system.vitalityBoostCount || 0;
-    const calculatedValues = { ...defaultValues };
-
-    // Calculate vitality using the function key
-    if (fundament.system.vitalityFunction && fundament.system.vitalityFunction.trim()) {
-      try {
-        const vitalityResult = calculateVitality(
-          fundament.system.vitalityFunction, 
-          level, 
-          null, // attributes not needed
-          null, // skills not needed
-          vitalityBoostCount
-        );
-        
-        if (typeof vitalityResult === 'number' && !isNaN(vitalityResult) && vitalityResult > 0) {
-          calculatedValues.maxVitality = Math.floor(vitalityResult);
-          console.log(`Z-Wolf Epic | Calculated max vitality using "${fundament.system.vitalityFunction}": ${calculatedValues.maxVitality}`);
-        } else {
-          console.warn(`Z-Wolf Epic | Invalid vitality function result: ${vitalityResult}, using default`);
-        }
-      } catch (error) {
-        console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
-        ui.notifications.warn(`Error in vitality calculation: ${error.message}`);
-      }
-    }
-
-    // Calculate coast number using the function key
-    if (fundament.system.coastFunction && fundament.system.coastFunction.trim()) {
-      try {
-        const coastResult = calculateCoast(
-          fundament.system.coastFunction,
-          level,
-          null, // attributes not needed
-          null  // skills not needed
-        );
-        
-        if (typeof coastResult === 'number' && !isNaN(coastResult) && coastResult > 0) {
-          calculatedValues.coastNumber = Math.floor(coastResult);
-          console.log(`Z-Wolf Epic | Calculated coast number using "${fundament.system.coastFunction}": ${calculatedValues.coastNumber}`);
-        } else {
-          console.warn(`Z-Wolf Epic | Invalid coast function result: ${coastResult}, using default`);
-        }
-      } catch (error) {
-        console.error(`Z-Wolf Epic | Error calculating coast number:`, error);
-        ui.notifications.warn(`Error in coast calculation: ${error.message}`);
-      }
-    }
-
-    return calculatedValues;
   }
 
   // =================================
@@ -1126,16 +1110,37 @@ export class ActorDataCalculator {
     
     maxBulk += totalMaxBulkBoost;
 
+    // Helper function to check if item has a specific tag
+    const hasTag = (item, tagToFind) => {
+      if (!item.system?.tags) return false;
+      
+      const tags = typeof item.system.tags === 'string' 
+        ? item.system.tags.split(',').map(t => t.trim().toLowerCase())
+        : [];
+      
+      return tags.includes(tagToFind.toLowerCase());
+    };
+
     // Calculate totals from carried equipment only
     const carriedCategories = ['wielded', 'worn', 'readily_available', 'stowed'];
     
     carriedCategories.forEach(categoryName => {
       const category = equipment[categoryName] || [];
       category.forEach(item => {
-        const quantity = item.system?.quantity || 1;
-        totalValue += (item.system?.value || 0) * quantity;
-        totalWeight += (item.system?.weight || 0) * quantity;
-        totalBulk += (item.system?.bulk || 0) * quantity;
+        const quantity = parseInt(item.system?.quantity) || 1;
+        totalValue += (parseFloat(item.system?.value) || 0) * quantity;
+        totalWeight += (parseFloat(item.system?.weight) || 0) * quantity;
+        
+        let itemBulk = (parseFloat(item.system?.bulk) || 0) * quantity;
+        
+        // Apply clothing bulk reduction when worn
+        if (categoryName === 'worn' && hasTag(item, 'clothing')) {
+          const bulkReduction = 1 * quantity;
+          itemBulk = Math.max(0, itemBulk - bulkReduction);
+          console.log(`Z-Wolf Epic | ${item.name} (Clothing) bulk reduced by ${bulkReduction} while worn`);
+        }
+        
+        totalBulk += itemBulk;
       });
     });
 
@@ -1160,16 +1165,16 @@ export class ActorDataCalculator {
     return count;
   }
 
-  _checkVitalityBoostCount() {
-    const actualCount = this._countVitalityBoostItems();
-    const currentCount = this.actor.system.vitalityBoostCount || 0;
+  // _checkVitalityBoostCount() {
+  //   const actualCount = this._countVitalityBoostItems();
+  //   const currentCount = this.actor.system.vitalityBoostCount || 0;
     
-    if (actualCount !== currentCount) {
-      console.log(`Z-Wolf Epic | Vitality boost count mismatch: ${currentCount} vs ${actualCount}`);
-      // Queue update for next render cycle
-      setTimeout(() => {
-        this.actor.update({ 'system.vitalityBoostCount': actualCount });
-      }, 0);
-    }
-  }
+  //   if (actualCount !== currentCount) {
+  //     console.log(`Z-Wolf Epic | Vitality boost count mismatch: ${currentCount} vs ${actualCount}`);
+  //     // Queue update for next render cycle
+  //     setTimeout(() => {
+  //       this.actor.update({ 'system.vitalityBoostCount': actualCount });
+  //     }, 0);
+  //   }
+  // }
 }

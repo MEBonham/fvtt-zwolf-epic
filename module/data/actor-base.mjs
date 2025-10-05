@@ -21,7 +21,8 @@ function createBaseActorFields() {
       choices: ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"]
     }),
     tags: new fields.StringField({ required: false, initial: "Humanoid" }),
-    nightsight: new fields.NumberField({ required: true, nullable: false, initial: 1, integer: true, min: 0 })
+    nightsight: new fields.NumberField({ required: true, nullable: false, initial: 1, integer: true, min: 0 }),
+    darkvision: new fields.NumberField({ required: true, nullable: false, initial: 0, integer: true, min: 0 })
   };
 }
 

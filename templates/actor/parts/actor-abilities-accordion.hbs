@@ -155,5 +155,29 @@
       </div>
     </details>
 
+    <!-- Drawbacks (only shown if there are drawbacks) -->
+    {{#if abilityCategories.drawback.length}}
+    <details class="ability-category drawback-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-exclamation-triangle"></i>
+        Drawbacks
+        <span class="ability-count">({{abilityCategories.drawback.length}})</span>
+      </summary>
+      <div class="ability-list">
+        {{#each abilityCategories.drawback as |ability|}}
+          <details class="ability-item drawback-ability">
+            <summary class="ability-name">
+              {{ability.name}}
+              {{#if ability.tags}}
+                <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+              {{/if}}
+            </summary>
+            <div class="ability-description">{{{ability.description}}}</div>
+          </details>
+        {{/each}}
+      </div>
+    </details>
+    {{/if}}
+
   </div>
 </div>

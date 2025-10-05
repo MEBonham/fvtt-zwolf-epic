@@ -22,8 +22,19 @@ export const COAST_FUNCTIONS = {
 
 // Helper functions to get the actual calculation function
 export function calculateVitality(functionKey, level, vitalityBoostCount) {
+  console.log("=== CALCULATE VITALITY FUNCTION ===");
+  console.log("Function key:", functionKey);
+  console.log("Level:", level);
+  console.log("Vitality boost count:", vitalityBoostCount);
+  
   const func = VITALITY_FUNCTIONS[functionKey] || VITALITY_FUNCTIONS.standard;
-  return func(level, vitalityBoostCount);
+  console.log("Using function:", func.toString());
+  
+  const result = func(level, vitalityBoostCount);
+  console.log("Function returned:", result);
+  console.log("=== END CALCULATE VITALITY FUNCTION ===");
+  
+  return result;
 }
 
 export function calculateCoast(functionKey, level) {

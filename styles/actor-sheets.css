@@ -393,25 +393,12 @@
 .progression-group {
   margin-bottom: 0.75rem;
   border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
+  border-radius: 2px;
   background: rgba(0, 0, 0, 0.2);
-  overflow: hidden;
 }
 
 .progression-group.collapsed .progression-content {
   display: none;
-}
-
-.progression-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background: var(--z-wolf-primary);
-  font-weight: 600;
-  font-size: 0.9em;
-  cursor: pointer;
-  user-select: none;
 }
 
 .progression-header:hover {
@@ -424,17 +411,6 @@
 
 .progression-group.collapsed .progression-header i.fa-chevron-down {
   transform: rotate(-90deg);
-}
-
-.progression-name {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.progression-die {
-  cursor: pointer;
-  transition: color 0.2s ease;
 }
 
 .progression-die:hover {
@@ -1478,4 +1454,61 @@
   .zwolf-epic.sheet.actor .sheet-body {
     flex-direction: column;
   }
+}
+
+.item-placement {
+  margin-top: 0.25rem;
+}
+
+.equipment-placement-select {
+  width: 100%;
+  padding: 0.25rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--z-wolf-border);
+  border-radius: 3px;
+  background: var(--z-wolf-bg);
+}
+
+/* Updated progression header styling */
+.progression-group {
+  margin-left: 29px; /* Make space for the absolute positioned dice icon */
+  position: relative; /* Needed for absolute positioning of child elements */
+}
+
+.progression-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--z-wolf-primary);
+  font-weight: 600;
+  font-size: 0.9em;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Dice icon positioned absolutely outside the header */
+.progression-header .progression-die {
+  position: absolute;
+  color: var(--z-wolf-surface);
+  top: 8px;
+  left: -21px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.progression-header .progression-die:hover {
+  color: var(--z-wolf-accent);
+}
+
+/* Remove the dice icon from the normal flow within progression-name */
+.progression-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* The chevron icon remains in its normal position */
+.progression-name i.fa-chevron-down {
+  transition: transform 0.2s ease;
 }

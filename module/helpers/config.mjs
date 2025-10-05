@@ -138,22 +138,22 @@ ZWOLF.conditions = {
   },
   "dazed": {
     label: "ZWOLF.ConditionDazed",
-    icon: "icons/svg/daze.svg",
+    icon: "icons/skills/wounds/injury-face-impact-orange.webp",
     description: "ZWOLF.ConditionDazedDesc"
   },
   "stunned": {
     label: "ZWOLF.ConditionStunned",
-    icon: "icons/svg/paralysis.svg",
+    icon: "icons/svg/daze.svg",
     description: "ZWOLF.ConditionStunnedDesc"
   },
   "bruised": {
     label: "ZWOLF.ConditionBruised",
-    icon: "icons/skills/wounds/injury-pain-body-orange.webp",
+    icon: "icons/skills/wounds/blood-spurt-spray-red.webp",
     description: "ZWOLF.ConditionBruisedDesc"
   },
   "wounded": {
     label: "ZWOLF.ConditionWounded",
-    icon: "icons/skills/wounds/blood-spurt-spray-red.webp",
+    icon: "icons/skills/wounds/blood-drip-droplet-red.webp",
     description: "ZWOLF.ConditionWoundedDesc"
   },
   "dying": {
@@ -168,17 +168,17 @@ ZWOLF.conditions = {
   },
   "dead": {
     label: "ZWOLF.ConditionDead",
-    icon: "icons/svg/skull.svg",
+    icon: "icons/environment/settlement/graveyard-tombstone-night.webp",
     description: "ZWOLF.ConditionDeadDesc"
   },
   "suffused": {
     label: "ZWOLF.ConditionSuffused",
-    icon: "icons/magic/light/orb-lightbulb-yellow.webp",
+    icon: "icons/magic/symbols/runes-star-blue.webp",
     description: "ZWOLF.ConditionSuffusedDesc"
   },
   "offGuard": {
     label: "ZWOLF.ConditionOffGuard",
-    icon: "icons/skills/social/intimidation-impressing.webp",
+    icon: "icons/skills/melee/shield-damaged-broken-brown.webp",
     description: "ZWOLF.ConditionOffGuardDesc"
   },
   "paralyzed": {
@@ -188,7 +188,7 @@ ZWOLF.conditions = {
   },
   "momentum": {
     label: "ZWOLF.ConditionMomentum",
-    icon: "icons/skills/movement/arrow-upward-yellow.webp",
+    icon: "icons/svg/upgrade.svg",
     description: "ZWOLF.ConditionMomentumDesc"
   },
   "grabbed": {
@@ -201,29 +201,34 @@ ZWOLF.conditions = {
     icon: "icons/skills/wounds/injury-triple-slash-blood.webp",
     description: "ZWOLF.ConditionHelplessDesc"
   },
+  "helpless": {
+    label: "ZWOLF.ConditionHelpless",
+    icon: "icons/svg/downgrade.svg", // or "icons/skills/wounds/injury-body-pain.webp"
+    description: "ZWOLF.ConditionHelplessDesc"
+  },
   "shaken": {
     label: "ZWOLF.ConditionShaken",
-    icon: "icons/magic/control/fear-fright-monster-grin-red.webp",
+    icon: "icons/svg/terror.svg", // or "icons/magic/control/fear-fright-white.webp"
     description: "ZWOLF.ConditionShakenDesc"
   },
   "battered": {
     label: "ZWOLF.ConditionBattered",
-    icon: "icons/skills/wounds/injury-pain-body-red.webp",
+    icon: "icons/skills/wounds/bone-broken-marrow-red.webp",
     description: "ZWOLF.ConditionBatteredDesc"
   },
   "immobilized": {
     label: "ZWOLF.ConditionImmobilized",
-    icon: "icons/magic/control/bind-shackles-rope.webp",
+    icon: "icons/svg/net.svg", // or "icons/magic/control/bind-chains.webp"
     description: "ZWOLF.ConditionImmobilizedDesc"
   },
   "invisible": {
     label: "ZWOLF.ConditionInvisible",
-    icon: "icons/magic/perception/eye-ringed-glow-black.webp",
+    icon: "icons/svg/invisible.svg", // or "icons/magic/perception/eye-ringed-glow.webp"
     description: "ZWOLF.ConditionInvisibleDesc"
   },
   "quickened": {
     label: "ZWOLF.ConditionQuickened",
-    icon: "icons/magic/time/clock-time-white.webp",
+    icon: "icons/svg/clockwork.svg", // or "icons/magic/time/hourglass-tilted.webp"
     description: "ZWOLF.ConditionQuickenedDesc"
   }
 };

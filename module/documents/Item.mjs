@@ -348,4 +348,184 @@ export class ZWolfItem extends Item {
     console.log("Has grantedProficiency?", changed.system?.sideEffects?.grantedProficiency);
     return super._preUpdate(changed, options, user);
   }
+
+  /**
+   * Get all Actor-embedded copies of this Item
+   * @returns {Array<{actor: Actor, item: Item}>}
+   */
+  getEmbeddedCopies() {
+    if (this.parent) return []; // Only works for world items
+    
+    const copies = [];
+    for (let actor of game.actors) {
+      for (let item of actor.items) {
+        if (item.getFlag("zwolf-epic", "sourceId") === this.id) {
+          copies.push({ actor, item });
+        }
+      }
+    }
+    return copies;
+  }
+
+  /**
+   * Determine which fields should be synced based on item type
+   * @returns {Array<string>} Field paths to sync
+   */
+  getSyncableFields() {
+    // Fields that should NEVER sync (Actor-specific)
+    const neverSync = ['quantity', 'placement'];
+    
+    // Base fields that sync for all items
+    const baseFields = [
+      'name',
+      'img',
+      'system.description',
+      'system.grantedAbilities',
+      'system.sideEffects',
+      'system.tags'
+    ];
+    
+    // Type-specific additions
+    const typeSpecificFields = {
+      ancestry: [
+        'system.characterTags',
+        'system.sizeOptions',
+        'system.required',
+        'system.knacksProvided',
+        'system.knackMenu',
+        'system.buildPoints'
+      ],
+      fundament: [
+        'system.buildPoints',
+        'system.knacksProvided',
+        'system.requiredKnackTag',
+        'system.vitalityFunction',
+        'system.coastFunction'
+      ],
+      equipment: [
+        'system.requiredPlacement',
+        'system.price',
+        'system.bulk',
+        'system.structure'
+      ],
+      knack: [
+        'system.characterTags',
+        'system.required'
+      ],
+      track: [
+        'system.required',
+        'system.tiers'
+      ],
+      talent: [
+        'system.characterTags',
+        'system.required',
+        'system.knacksProvided'
+      ]
+    };
+    
+    const typeFields = typeSpecificFields[this.type] || [];
+    return [...baseFields, ...typeFields].filter(f => !neverSync.some(ns => f.includes(ns)));
+  }
+
+  /**
+   * Push updates from this Item to all Actor copies
+   * @param {Object} options - Options for the push operation
+   * @param {Array<string>} options.fields - Specific fields to sync (defaults to all syncable)
+   * @param {boolean} options.skipConfirm - Skip confirmation dialog
+   * @returns {Promise<number>} Number of copies updated
+   */
+  async pushToActors(options = {}) {
+    if (this.parent) {
+      ui.notifications.warn("Can only push updates from world Items, not embedded copies");
+      return 0;
+    }
+    
+    const copies = this.getEmbeddedCopies();
+    
+    if (copies.length === 0) {
+      ui.notifications.info(`No copies of "${this.name}" found on any Actors`);
+      return 0;
+    }
+    
+    // Determine which fields to sync
+    const fieldsToSync = options.fields || this.getSyncableFields();
+    
+    // Build actor list for dialog
+    const actorNames = [...new Set(copies.map(c => c.actor.name))].sort();
+    const actorList = actorNames.length <= 10 
+      ? actorNames.join(', ')
+      : `${actorNames.slice(0, 10).join(', ')}, and ${actorNames.length - 10} more`;
+    
+    // Confirmation dialog (unless skipped)
+    if (!options.skipConfirm) {
+      const confirmed = await Dialog.confirm({
+        title: "Push Updates to Actors",
+        content: `
+          <p>Update <strong>${copies.length}</strong> cop${copies.length === 1 ? 'y' : 'ies'} of <strong>"${this.name}"</strong>?</p>
+          <p><strong>Affected Actors:</strong> ${actorList}</p>
+          <p class="notification warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            This will overwrite any manual changes made to these copies.
+          </p>
+          <details>
+            <summary>Fields that will be updated (${fieldsToSync.length})</summary>
+            <ul style="max-height: 200px; overflow-y: auto; font-size: 0.9em;">
+              ${fieldsToSync.map(f => `<li>${f}</li>`).join('')}
+            </ul>
+          </details>
+        `,
+        options: { width: 480 }
+      });
+      
+      if (!confirmed) return 0;
+    }
+    
+    // Perform updates
+    let updateCount = 0;
+    const errors = [];
+    
+    for (let {actor, item} of copies) {
+      try {
+        const updateData = { _id: item.id };
+        
+        for (let fieldPath of fieldsToSync) {
+          const value = foundry.utils.getProperty(this, fieldPath);
+          if (value !== undefined) {
+            foundry.utils.setProperty(updateData, fieldPath, foundry.utils.deepClone(value));
+          }
+        }
+        
+        await actor.updateEmbeddedDocuments("Item", [updateData]);
+        updateCount++;
+      } catch (error) {
+        console.error(`Failed to update ${item.name} on ${actor.name}:`, error);
+        errors.push(`${actor.name}: ${error.message}`);
+      }
+    }
+    
+    // Report results
+    if (updateCount > 0) {
+      ui.notifications.info(`Updated ${updateCount} cop${updateCount === 1 ? 'y' : 'ies'} of "${this.name}"`);
+    }
+    
+    if (errors.length > 0) {
+      ui.notifications.error(`Failed to update ${errors.length} items. Check console for details.`);
+      console.error("Push to Actors errors:", errors);
+    }
+    
+    return updateCount;
+  }
+
+  /**
+   * Check if this is a copy of a world Item
+   * @returns {Item|null} The source Item if this is a copy, null otherwise
+   */
+  getSourceItem() {
+    if (!this.parent) return null; // World items have no source
+    
+    const sourceId = this.getFlag("zwolf-epic", "sourceId");
+    if (!sourceId) return null;
+    
+    return game.items.get(sourceId);
+  }
 }

@@ -54,14 +54,6 @@ export class SheetEventHandlers {
       });
     });
 
-    // Stat roll handlers
-    html.querySelectorAll('.stat-rollable').forEach(el => {
-      el.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        this._onStatRoll(ev);
-      });
-    });
-
     // Speed roll handler
     html.querySelectorAll('.speed-roll-die').forEach(el => {
       el.addEventListener('click', (ev) => {

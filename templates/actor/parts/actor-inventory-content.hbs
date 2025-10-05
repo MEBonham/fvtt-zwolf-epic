@@ -24,13 +24,22 @@
           </h4>
           <div class="equipment-list">
             {{#each equipment.wielded as |item|}}
-              <div class="equipment-item {{#unless placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
+              <div class="equipment-item {{#unless item.placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
                 <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
                 <div class="item-info">
                   <div class="item-name">{{item.name}}</div>
                   <div class="item-details">
                     {{#if item.system.bulk}}Bulk: {{item.system.bulk}}{{/if}}
                     {{#if item.system.value}} • Value: {{item.system.value}}{{/if}}
+                  </div>
+                  <div class="item-placement">
+                    <select class="equipment-placement-select" data-item-id="{{item._id}}">
+                      <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                      <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                      <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                      <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                      <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                    </select>
                   </div>
                 </div>
                 <div class="item-controls">
@@ -55,13 +64,22 @@
           </h4>
           <div class="equipment-list">
             {{#each equipment.worn as |item|}}
-              <div class="equipment-item {{#unless placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
+              <div class="equipment-item {{#unless item.placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
                 <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
                 <div class="item-info">
                   <div class="item-name">{{item.name}}</div>
                   <div class="item-details">
                     {{#if item.system.bulk}}Bulk: {{item.system.bulk}}{{/if}}
                     {{#if item.system.value}} • Value: {{item.system.value}}{{/if}}
+                  </div>
+                  <div class="item-placement">
+                    <select class="equipment-placement-select" data-item-id="{{item._id}}">
+                      <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                      <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                      <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                      <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                      <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                    </select>
                   </div>
                 </div>
                 <div class="item-controls">
@@ -86,13 +104,22 @@
           </h4>
           <div class="equipment-list">
             {{#each equipment.readily_available as |item|}}
-              <div class="equipment-item {{#unless placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
+              <div class="equipment-item {{#unless item.placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
                 <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
                 <div class="item-info">
                   <div class="item-name">{{item.name}}</div>
                   <div class="item-details">
                     {{#if item.system.bulk}}Bulk: {{item.system.bulk}}{{/if}}
                     {{#if item.system.value}} • Value: {{item.system.value}}{{/if}}
+                  </div>
+                  <div class="item-placement">
+                    <select class="equipment-placement-select" data-item-id="{{item._id}}">
+                      <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                      <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                      <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                      <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                      <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                    </select>
                   </div>
                 </div>
                 <div class="item-controls">
@@ -117,13 +144,22 @@
           </h4>
           <div class="equipment-list">
             {{#each equipment.stowed as |item|}}
-              <div class="equipment-item {{#unless placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
+              <div class="equipment-item {{#unless item.placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
                 <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
                 <div class="item-info">
                   <div class="item-name">{{item.name}}</div>
                   <div class="item-details">
                     {{#if item.system.bulk}}Bulk: {{item.system.bulk}}{{/if}}
                     {{#if item.system.value}} • Value: {{item.system.value}}{{/if}}
+                  </div>
+                  <div class="item-placement">
+                    <select class="equipment-placement-select" data-item-id="{{item._id}}">
+                      <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                      <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                      <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                      <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                      <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                    </select>
                   </div>
                 </div>
                 <div class="item-controls">
@@ -148,13 +184,22 @@
           </h4>
           <div class="equipment-list">
             {{#each equipment.not_carried as |item|}}
-              <div class="equipment-item {{#unless placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
+              <div class="equipment-item {{#unless item.placementValid}}invalid-placement{{/unless}}" data-item-id="{{item._id}}">
                 <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
                 <div class="item-info">
                   <div class="item-name">{{item.name}}</div>
                   <div class="item-details">
                     {{#if item.system.bulk}}Bulk: {{item.system.bulk}}{{/if}}
                     {{#if item.system.value}} • Value: {{item.system.value}}{{/if}}
+                  </div>
+                  <div class="item-placement">
+                    <select class="equipment-placement-select" data-item-id="{{item._id}}">
+                      <option value="wielded" {{#if (eq item.system.placement "wielded")}}selected{{/if}}>Wielded</option>
+                      <option value="worn" {{#if (eq item.system.placement "worn")}}selected{{/if}}>Worn</option>
+                      <option value="readily_available" {{#if (eq item.system.placement "readily_available")}}selected{{/if}}>Readily Available</option>
+                      <option value="stowed" {{#if (eq item.system.placement "stowed")}}selected{{/if}}>Stowed</option>
+                      <option value="not_carried" {{#if (eq item.system.placement "not_carried")}}selected{{/if}}>Not Carried</option>
+                    </select>
                   </div>
                 </div>
                 <div class="item-controls">

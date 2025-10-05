@@ -31,11 +31,10 @@ export class ZWolfActor extends Actor {
     // Calculate other derived values like knacks, build points, etc.
     this._prepareDerivedValues();
   
-    // Add virtual default items - ADD THIS LINE
+    // Add virtual default items
     this._addVirtualItems();
     
-    // Sync vision to prototype token
-    this._syncVisionToPrototypeToken();
+    // DON'T sync vision to prototype token here - let the vision system handle it
   }
 
   /**
@@ -46,17 +45,18 @@ export class ZWolfActor extends Actor {
   _prepareCharacterDerivedData() {
     const level = this.system.level || 0;
     const vitalityBoostCount = this.system.vitalityBoostCount || 0;
-    
-    // Calculate max vitality from fundament
-    const maxVitality = this._calculateMaxVitality(level, vitalityBoostCount);
+  
+    // Calculate max vitality from fundament (boost count calculated automatically)
+    const maxVitality = this._calculateMaxVitality(level);
     this.system.vitalityPoints.max = maxVitality;
     
-    // Calculate max stamina from fundament
+    // Calculate max stamina (always 4 for now)
     const maxStamina = this._calculateMaxStamina(level);
     this.system.staminaPoints.max = maxStamina;
     
-    // Update coast number to match max stamina
-    this.system.coastNumber = maxStamina;
+    // Calculate coast number separately (can be different from stamina)
+    const coastNumber = this._calculateCoastNumber(level);
+    this.system.coastNumber = coastNumber;
     
     // Ensure current values don't exceed max
     if (this.system.vitalityPoints.value > maxVitality) {
@@ -67,61 +67,111 @@ export class ZWolfActor extends Actor {
       this.system.staminaPoints.value = maxStamina;
     }
     
-    console.log(`Z-Wolf Epic | Derived Data - Level: ${level}, Max VP: ${maxVitality}, Max SP: ${maxStamina}`);
+    console.log(`Z-Wolf Epic | Derived Data - Level: ${level}, Max VP: ${maxVitality}, Max SP: ${maxStamina}, Coast: ${coastNumber}`);
   }
 
   /**
    * Calculate maximum vitality points from fundament
    * @param {number} level - Character level
-   * @param {number} vitalityBoostCount - Number of vitality boost items
+   * @param {number} vitalityBoostCount - Number of vitality boost items (optional, will be calculated if not provided)
    * @returns {number} Maximum vitality points
    * @private
    */
-  _calculateMaxVitality(level, vitalityBoostCount) {
-    const defaultVitality = 10;
-    
-    // Get fundament item if assigned
-    const fundamentId = this.system.fundamentId;
-    if (!fundamentId) {
-      return defaultVitality;
-    }
-    
-    const fundament = this.items.get(fundamentId);
-    if (!fundament || !fundament.system) {
-      return defaultVitality;
-    }
-
-    // Get the vitality function key
-    const vitalityFunctionKey = fundament.system.vitalityFunction;
-    if (!vitalityFunctionKey || !vitalityFunctionKey.trim()) {
-      return defaultVitality;
-    }
-
-    // Use the imported calculation function
-    try {
-      const result = calculateVitality(
-        vitalityFunctionKey,
-        level,
-        vitalityBoostCount
-      );
-      
-      if (typeof result === 'number' && !isNaN(result) && result > 0) {
-        return Math.floor(result);
-      }
-    } catch (error) {
-      console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
-    }
-
+_calculateMaxVitality(level, vitalityBoostCount = null) {
+  const defaultVitality = 12;
+  
+  console.log("=== VITALITY CALCULATION DEBUG ===");
+  console.log("Level:", level);
+  console.log("All items on actor:", this.items.map(i => i.name));
+  
+  // Calculate vitality boost count in real-time if not provided
+  if (vitalityBoostCount === null) {
+    const extraVPItems = this.items.filter(item => {
+      console.log(`Checking item: "${item.name}" (type: ${item.type})`);
+      return item.name === "Extra VP";
+    });
+    vitalityBoostCount = extraVPItems.length;
+    console.log(`Found ${extraVPItems.length} "Extra VP" items:`, extraVPItems.map(i => i.name));
+  }
+  
+  console.log("Final vitalityBoostCount:", vitalityBoostCount);
+  
+  // Get fundament item if assigned
+  const fundamentId = this.system.fundamentId;
+  console.log("Fundament ID:", fundamentId);
+  
+  if (!fundamentId) {
+    console.log("No fundament assigned, returning default:", defaultVitality);
+    return defaultVitality;
+  }
+  
+  const fundament = this.items.get(fundamentId);
+  console.log("Fundament item:", fundament?.name);
+  
+  if (!fundament || !fundament.system) {
+    console.log("No valid fundament found, returning default:", defaultVitality);
     return defaultVitality;
   }
 
+  // Get the vitality function key
+  const vitalityFunctionKey = fundament.system.vitalityFunction;
+  console.log("Vitality function key:", vitalityFunctionKey);
+  
+  if (!vitalityFunctionKey || !vitalityFunctionKey.trim()) {
+    console.log("No vitality function, returning default:", defaultVitality);
+    return defaultVitality;
+  }
+
+  // Use the imported calculation function
+  try {
+    console.log("Calling calculateVitality with:", {
+      functionKey: vitalityFunctionKey,
+      level: level,
+      vitalityBoostCount: vitalityBoostCount
+    });
+    
+    const result = calculateVitality(
+      vitalityFunctionKey,
+      level,
+      vitalityBoostCount
+    );
+    
+    console.log("calculateVitality returned:", result);
+    
+    if (typeof result === 'number' && !isNaN(result) && result > 0) {
+      const finalResult = Math.floor(result);
+      console.log("Final vitality result:", finalResult);
+      console.log("=== END VITALITY CALCULATION ===");
+      return finalResult;
+    }
+  } catch (error) {
+    console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
+  }
+
+  console.log("Fallback to default:", defaultVitality);
+  console.log("=== END VITALITY CALCULATION ===");
+  return defaultVitality;
+}
+
   /**
-   * Calculate maximum stamina/coast from fundament
+   * Calculate maximum stamina points
+   * Currently always returns 4 (no boosts implemented yet)
    * @param {number} level - Character level
    * @returns {number} Maximum stamina points
    * @private
    */
   _calculateMaxStamina(level) {
+    // Stamina is always 4 for now (no boosts implemented yet)
+    return 4;
+  }
+
+  /**
+   * Calculate coast number from fundament
+   * @param {number} level - Character level
+   * @returns {number} Coast number
+   * @private
+   */
+  _calculateCoastNumber(level) {
     const defaultCoast = 4;
     
     // Get fundament item if assigned
@@ -220,7 +270,7 @@ export class ZWolfActor extends Actor {
   }
 
   // ========================================
-  // VISION SYSTEM
+  // VISION SYSTEM - SIMPLIFIED FOR V13
   // ========================================
 
   /**
@@ -241,20 +291,19 @@ export class ZWolfActor extends Actor {
 
   /**
    * Get the actor's darkvision range (vision in darkness)
-   * This pulls from the prototype token's dim vision range
+   * Now stored in system data instead of prototype token
    * @returns {number} The darkvision range in distance units
    */
   get darkvision() {
-    return this.prototypeToken.sight?.range || 0;
+    return this.system.darkvision || 0;
   }
 
   /**
    * Set the actor's darkvision range
-   * This updates the prototype token's dim vision range
    * @param {number} value - The darkvision range in distance units
    */
   async setDarkvision(value) {
-    return this.update({"prototypeToken.sight.range": value});
+    return this.update({"system.darkvision": value});
   }
 
   /**
@@ -267,28 +316,6 @@ export class ZWolfActor extends Actor {
       nightsight: this.nightsight,
       darkvision: this.darkvision
     };
-  }
-
-  /**
-   * Apply vision settings to prototype token based on actor vision data
-   * Called during prepareDerivedData to ensure prototype token stays in sync
-   * @private
-   */
-  _syncVisionToPrototypeToken() {
-    // Sync darkvision to sight.range
-    if (this.prototypeToken.sight?.range !== this.darkvision) {
-      this.prototypeToken.updateSource({
-        "sight.range": this.darkvision
-      });
-    }
-    
-    // Sync nightsight to prototype token flags
-    const currentNightsight = this.prototypeToken.getFlag('zwolf-epic', 'nightsight');
-    if (currentNightsight !== this.nightsight) {
-      this.prototypeToken.updateSource({
-        "flags.zwolf-epic.nightsight": this.nightsight
-      });
-    }
   }
 
   // ========================================
@@ -311,8 +338,10 @@ export class ZWolfActor extends Actor {
         displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
         sight: {
           enabled: true,
-          range: 0
+          range: 0,  // No default sight range - only what vision system provides
+          bright: Infinity  // Always infinite bright sight
         },
+        detectionModes: [],  // Start empty - vision system will populate
         "flags.zwolf-epic.initialized": true
       };
 

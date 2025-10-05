@@ -13,7 +13,7 @@
         "notes": "",
         "size": "medium",
         "tags": "Humanoid",
-        "nightsight": 1
+        "nightsight": 0
       },
       "character": {
         "level": 3,
@@ -84,20 +84,50 @@
         "value": 1,
         "min": 0,
         "max": 3
+      },
+      "prototypeToken": {
+        "sight": {
+          "range": 0
+        },
+        "detectionModes": []
       }
     },
     "npc": {
       "templates": ["base", "character", "attributesAndSkills"],
-      "wealth": 0
+      "wealth": 0,
+      "prototypeToken": {
+        "sight": {
+          "range": 0
+        },
+        "detectionModes": []
+      }
     },
     "eidolon": {
-      "templates": ["base", "character", "summoned", "attributesAndSkills"]
+      "templates": ["base", "character", "summoned", "attributesAndSkills"],
+      "prototypeToken": {
+        "sight": {
+          "range": 0
+        },
+        "detectionModes": []
+      }
     },
     "mook": {
-      "templates": ["base", "summoned"]
+      "templates": ["base", "summoned"],
+      "prototypeToken": {
+        "sight": {
+          "range": 0
+        },
+        "detectionModes": []
+      }
     },
     "spawn": {
-      "templates": ["base", "summoned"]
+      "templates": ["base", "summoned"],
+      "prototypeToken": {
+        "sight": {
+          "range": 0
+        },
+        "detectionModes": []
+      }
     }
   },
   "Item": {

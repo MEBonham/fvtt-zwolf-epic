@@ -40,8 +40,23 @@
     </div>
   </div>
 
-  {{#if (or (eq itemType "talent") (eq itemType "track"))}}
-  <!-- Knacks Provided Section (Talents and Tiers only) -->
+  {{#if (eq itemType "talent")}}
+  <!-- Knacks Provided Section (Talents only - at system level) -->
+  <div class="knacks-provided">
+    <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+      <input type="number" name="system.knacksProvided" 
+             value="{{system.knacksProvided}}" 
+             data-dtype="Number" min="0" max="10" placeholder="0"/>
+      <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+    </div>
+  </div>
+  {{/if}}
+
+  {{!-- Show knacks provided in sideEffects for track tiers OR when pathPrefix indicates we're in a sideEffects context --}}
+  {{#if (or (contains pathPrefix "tiers.tier") (and (eq itemType "track") pathPrefix))}}
+  <!-- Knacks Provided Section (Track Tiers - in sideEffects) -->
   <div class="knacks-provided">
     <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
     <div class="form-group">
@@ -127,8 +142,7 @@
     </div>
   </div>
 
-  {{#if (eq itemType "equipment")}}
-  <!-- Bulk Capacity Upgrades Section (Equipment only) -->
+  <!-- Bulk Capacity Upgrades Section -->
   <div class="bulk-upgrades">
     <h4><i class="fas fa-weight-hanging"></i> {{localize 'ZWOLF.BulkCapacityUpgrades'}}</h4>
     <p class="notes">{{localize 'ZWOLF.BulkCapacityUpgradesHint'}}</p>
@@ -146,7 +160,6 @@
       <p class="notes">{{localize 'ZWOLF.MaxBulkBoostHint'}}</p>
     </div>
   </div>
-  {{/if}}
   
   <!-- Placeholder for Future Side Effects -->
   <div class="future-side-effects">

@@ -64,36 +64,38 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   }
 
   /** @override */
-  async _prepareContext(options) {
-console.log("=== _prepareContext START ===");
-console.log("Item type:", this.document?.type);
-console.log("PARTS:", this.constructor.PARTS);
-console.log("Options:", options);
+/** @override */
+async _prepareContext(options) {
+  console.log("=== _prepareContext START ===");
+  console.log("Item type:", this.document?.type);
+  console.log("PARTS:", this.constructor.PARTS);
+  console.log("Options:", options);
     
-    const context = await super._prepareContext(options);
-    const itemData = this.document.toObject(false);
+  const context = await super._prepareContext(options);
+  const itemData = this.document.toObject(false);
 
-    // Basic context setup
-    const preparedContext = foundry.utils.mergeObject(context, {
-      editable: this.isEditable,
-      owner: this.document.isOwner,
-      system: itemData.system,
-      flags: itemData.flags,
-      config: CONFIG.ZWOLF,
-      
-      // Item-specific data
-      item: this.document,
-      itemType: this.document.type,
-      
-      // Lock state
-      isLocked: this.document.actor && this.document.getFlag('zwolf-epic', 'locked'),
-      isEquipment: this.document.type === 'equipment'
-    });
-  
-    // Prepare data for Summary tab
-    await this._prepareSummaryData(preparedContext, itemData);
+  // Basic context setup
+  const preparedContext = foundry.utils.mergeObject(context, {
+    editable: this.isEditable,
+    owner: this.document.isOwner,
+    system: itemData.system,
+    flags: itemData.flags,
+    config: CONFIG.ZWOLF,
     
-    // Only validate/auto-fill if we're not in the middle of a deletion operation
+    // Item-specific data
+    item: this.document,
+    itemType: this.document.type,
+    
+    // Lock state
+    isLocked: this.document.actor && this.document.getFlag('zwolf-epic', 'locked'),
+    isEquipment: this.document.type === 'equipment'
+  });
+  
+  // Prepare data for Summary tab
+  await this._prepareSummaryData(preparedContext, itemData);
+  
+  // Only process base grantedAbilities for NON-track items
+  if (this.document.type !== 'track') {
     if (!this._skipAbilityValidation) {
       itemData.system.grantedAbilities = ItemDataProcessor.validateGrantedAbilities(
         itemData.system.grantedAbilities
@@ -104,10 +106,6 @@ console.log("Options:", options);
     
     console.log("After validateGrantedAbilities:", itemData.system.grantedAbilities);
 
-    // FIXED: Debug the HTML enricher that's causing the empty array
-    console.log("Before HtmlEnricher.enrichGrantedAbilities:", itemData.system.grantedAbilities);
-    console.log("Type before enricher:", typeof itemData.system.grantedAbilities, Array.isArray(itemData.system.grantedAbilities));
-    
     // Enrich granted abilities descriptions
     itemData.system.grantedAbilities = await HtmlEnricher.enrichGrantedAbilities(
       itemData.system.grantedAbilities,
@@ -115,16 +113,6 @@ console.log("Options:", options);
     );
     
     console.log("After HtmlEnricher.enrichGrantedAbilities:", itemData.system.grantedAbilities);
-    console.log("Type after enricher:", typeof itemData.system.grantedAbilities, Array.isArray(itemData.system.grantedAbilities));
-
-    // Handle knacks calculation for ancestries and talents
-    if (['ancestry', 'talent'].includes(this.document.type) && this.document.system.required) {
-      const totalKnacksProvided = ItemDataProcessor.calculateKnacksProvided(
-        itemData.system.knackMenus || []
-      );
-      itemData.system.knacksProvided = totalKnacksProvided;
-      preparedContext.calculatedKnacksProvided = totalKnacksProvided;
-    }
 
     // Convert grantedAbilities object to array for Handlebars iteration
     if (itemData.system.grantedAbilities && typeof itemData.system.grantedAbilities === 'object') {
@@ -175,7 +163,7 @@ console.log("Options:", options);
             // Add the ability with its original index preserved and proper editor targets
             abilitiesArray.push({
               ...ability,
-              index: index, // Use 'index' instead of 'originalIndex' for template compatibility
+              index: index,
               originalIndex: index,
               enrichedDescription: enrichedDescription,
               nameTarget: `system.grantedAbilities.${index}.name`,
@@ -202,35 +190,45 @@ console.log("Options:", options);
       console.log("No grantedAbilities found or not an object");
       preparedContext.grantedAbilitiesArray = [];
     }
-
-    // Handle item-type specific data
-await this._processItemSpecificData(preparedContext, itemData);
-
-// FIXED: Ensure the processed tier data is available to templates
-if (this.document.type === 'track' && itemData.system.tiers) {
-  preparedContext.system = preparedContext.system || {};
-  preparedContext.system.tiers = itemData.system.tiers;
-}
-
-    // Enrich main description
-    preparedContext.enrichedDescription = await HtmlEnricher.enrichContent(
-      this.document.system.description || "",
-      this.document,
-      "main description"
-    );
-
-    // Enrich required field for ancestries and talents
-    if (['ancestry', 'talent'].includes(this.document.type) && this.document.system.required) {
-      preparedContext.enrichedRequired = await HtmlEnricher.enrichContent(
-        this.document.system.required,
-        this.document,
-        "required field"
-      );
-    }
-
-    console.log("Context prepared:", preparedContext);
-    return preparedContext;
   }
+
+  // Handle knacks calculation for ancestries and talents
+  if (['ancestry', 'talent'].includes(this.document.type) && this.document.system.required) {
+    const totalKnacksProvided = ItemDataProcessor.calculateKnacksProvided(
+      itemData.system.knackMenus || []
+    );
+    itemData.system.knacksProvided = totalKnacksProvided;
+    preparedContext.calculatedKnacksProvided = totalKnacksProvided;
+  }
+
+  // Handle item-type specific data
+  await this._processItemSpecificData(preparedContext, itemData);
+
+  // FIXED: Ensure the processed tier data is available to templates
+  if (this.document.type === 'track' && itemData.system.tiers) {
+    preparedContext.system = preparedContext.system || {};
+    preparedContext.system.tiers = itemData.system.tiers;
+  }
+
+  // Enrich main description
+  preparedContext.enrichedDescription = await HtmlEnricher.enrichContent(
+    this.document.system.description || "",
+    this.document,
+    "main description"
+  );
+
+  // Enrich required field for ancestries and talents
+  if (['ancestry', 'talent'].includes(this.document.type) && this.document.system.required) {
+    preparedContext.enrichedRequired = await HtmlEnricher.enrichContent(
+      this.document.system.required,
+      this.document,
+      "required field"
+    );
+  }
+
+  console.log("Context prepared:", preparedContext);
+  return preparedContext;
+}
 
 /**
  * Process item-type specific data
@@ -244,6 +242,7 @@ async _processItemSpecificData(context, itemData) {
   
   switch (this.document.type) {
     case 'track':
+      await this._processTrackData(context, itemData); 
       // Process track tiers for summary display
       if (itemData.system.tiers) {
         for (const [tierKey, tierData] of Object.entries(itemData.system.tiers)) {
@@ -572,6 +571,15 @@ _attachPartListeners(partId, htmlElement, options) {
     // CRITICAL: Handle image picker for header part
     if (partId === "header") {
       this._attachImagePicker(htmlElement);
+  
+  // Add push to actors button listener
+  const pushButton = htmlElement.querySelector('.push-to-actors');
+  if (pushButton) {
+    pushButton.addEventListener('click', async (event) => {
+      event.preventDefault();
+      await this.document.pushToActors();
+    });
+  }
     }
 
     // Handle lock state

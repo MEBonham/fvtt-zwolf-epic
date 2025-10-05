@@ -88,7 +88,7 @@ class EquipmentData extends foundry.abstract.TypeDataModel {
       placement: new fields.StringField({ 
         required: true, 
         initial: "stowed",
-        choices: ["stowed", "wielded", "worn", "readily-available", "not-carried"]
+        choices: ["stowed", "wielded", "worn", "readily_available", "not_carried"]
       }),
       requiredPlacement: new fields.StringField({ required: false, blank: true, initial: "" }),
       price: new fields.NumberField({ required: true, nullable: false, initial: 0, min: 0 }),
