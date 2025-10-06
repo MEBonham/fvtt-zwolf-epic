@@ -1,0 +1,80 @@
+{{!-- templates/actor/parts/actor-biography-content.hbs --}}
+<div class="tab biography {{#if (eq currentTab 'biography')}}active{{/if}}" 
+     data-group="primary" 
+     data-tab="biography" 
+     data-part-id="tab-biography">
+  {{#if isCharacter}}
+    <div class="biography-content">
+      
+      <!-- Liabilities Section -->
+      <div class="liabilities-section">
+        <h3>{{localize "ZWOLF.Liabilities"}}</h3>
+        <div class="form-group">
+          <div class="form-fields">
+            {{editor system.liabilities 
+                    target="system.liabilities" 
+                    button=true 
+                    owner=owner 
+                    editable=editable 
+                    height=120}}
+          </div>
+        </div>
+      </div>
+
+      <!-- Languages Section -->
+      <details class="languages-section">
+        <summary class="languages-header">
+          <span class="languages-title">{{localize "ZWOLF.Languages"}}</span>
+          <span class="language-count">({{localize "ZWOLF.Max"}}: {{languageLimit}})</span>
+        </summary>
+        <div class="languages-content">
+          <div class="form-group">
+            <div class="form-fields">
+              {{editor system.languages 
+                      target="system.languages" 
+                      button=true 
+                      owner=owner 
+                      editable=editable 
+                      height=120}}
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Journey Abilities -->
+      {{> ability-category 
+          icon="fa-map"
+          title="ZWOLF.JourneyAbilities"
+          abilities=abilityCategories.journey}}
+
+      <!-- Miscellaneous Abilities -->
+      {{> ability-category 
+          icon="fa-ellipsis-h"
+          title="ZWOLF.MiscellaneousAbilities"
+          abilities=abilityCategories.miscellaneous}}
+
+      <!-- Notes Section -->
+      <div class="notes-section">
+        <h3>{{localize "ZWOLF.Notes"}}</h3>
+        <div class="form-group">
+          <div class="form-fields">
+            {{editor system.notes 
+                    target="system.notes" 
+                    button=true 
+                    owner=owner 
+                    editable=editable 
+                    height=200}}
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  {{else}}
+    <div class="biography-content">
+      <div class="no-content-message">
+        <i class="fas fa-info-circle"></i>
+        <span>{{localize "ZWOLF.BiographyOnlyForCharacters"}}</span>
+      </div>
+    </div>
+  {{/if}}
+</div>

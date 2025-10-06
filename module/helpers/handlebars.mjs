@@ -4,15 +4,14 @@
 
 export function registerHandlebarsHelpers() {
   
-  // String manipulation
-  Handlebars.registerHelper('concat', function() {
-    let outStr = '';
-    for (let arg in arguments) {
-      if (typeof arguments[arg] !== 'object') {
-        outStr += arguments[arg];
-      }
-    }
-    return outStr;
+  // ========================================
+  // STRING MANIPULATION
+  // ========================================
+  
+  Handlebars.registerHelper('concat', function(...args) {
+    // Remove the options hash from the end
+    args.pop();
+    return args.join('');
   });
 
   Handlebars.registerHelper('toLowerCase', function(str) {
@@ -35,12 +34,15 @@ export function registerHandlebarsHelpers() {
     return string.includes(substring);
   });
 
-  // Array manipulation
-  Handlebars.registerHelper('join', function(array, separator) {
+  // ========================================
+  // ARRAY MANIPULATION
+  // ========================================
+  
+  Handlebars.registerHelper('join', function(array, options) {
     if (!array) return '';
     if (!Array.isArray(array)) return String(array);
     
-    separator = separator || ', ';
+    const separator = options?.hash?.separator || ', ';
     
     const cleanArray = array
       .filter(item => item !== null && item !== undefined)
@@ -64,15 +66,28 @@ export function registerHandlebarsHelpers() {
 
   Handlebars.registerHelper('range', function(start, end) {
     const result = [];
-    for (let i = start; i <= end; i++) {
+    for (let i = start; i < end; i++) {
       result.push(i);
     }
     return result;
   });
 
-  // Comparison operators
+  Handlebars.registerHelper('array', function(...items) {
+    // Remove the options hash from the end
+    items.pop();
+    return items;
+  });
+
+  // ========================================
+  // COMPARISON OPERATORS
+  // ========================================
+  
   Handlebars.registerHelper('eq', function(a, b) {
     return a === b;
+  });
+
+  Handlebars.registerHelper('ne', function(a, b) {
+    return a !== b;
   });
 
   Handlebars.registerHelper('gt', function(a, b) {
@@ -95,7 +110,10 @@ export function registerHandlebarsHelpers() {
     return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
   });
 
-  // Math operations
+  // ========================================
+  // MATH OPERATIONS
+  // ========================================
+  
   Handlebars.registerHelper('add', function(a, b) {
     return parseInt(a) + parseInt(b);
   });
@@ -117,7 +135,10 @@ export function registerHandlebarsHelpers() {
     return a % b;
   });
 
-  // Form helpers
+  // ========================================
+  // FORM HELPERS
+  // ========================================
+  
   Handlebars.registerHelper('selected', function(option, value) {
     return (option === value) ? 'selected' : '';
   });
@@ -126,9 +147,19 @@ export function registerHandlebarsHelpers() {
     return value ? 'checked' : '';
   });
 
-  // Object/data access
+  // ========================================
+  // OBJECT/DATA ACCESS
+  // ========================================
+  
   Handlebars.registerHelper('lookup', function(obj, key) {
+    if (!obj || key === undefined) return undefined;
     return obj[key];
+  });
+
+  Handlebars.registerHelper('hash', function(...args) {
+    // Remove the options hash from the end
+    const options = args.pop();
+    return options.hash;
   });
 
   Handlebars.registerHelper('json', function(obj) {
@@ -137,5 +168,89 @@ export function registerHandlebarsHelpers() {
 
   Handlebars.registerHelper('getSourceItem', function(item) {
     return item.getSourceItem?.();
+  });
+
+  // ========================================
+  // SYSTEM-SPECIFIC HELPERS
+  // ========================================
+  
+  /**
+   * Get ability type options for dropdown
+   */
+  Handlebars.registerHelper('getAbilityTypes', function() {
+    return [
+      { value: 'passive', label: 'ZWOLF.AbilityTypePassive' },
+      { value: 'drawback', label: 'ZWOLF.AbilityTypeDrawback' },
+      { value: 'exoticSenses', label: 'ZWOLF.AbilityTypeExoticSenses' },
+      { value: 'dominantAction', label: 'ZWOLF.AbilityTypeDominantAction' },
+      { value: 'swiftAction', label: 'ZWOLF.AbilityTypeSwiftAction' },
+      { value: 'reaction', label: 'ZWOLF.AbilityTypeReaction' },
+      { value: 'freeAction', label: 'ZWOLF.AbilityTypeFreeAction' },
+      { value: 'strike', label: 'ZWOLF.AbilityTypeStrike' },
+      { value: 'journey', label: 'ZWOLF.AbilityTypeJourney' },
+      { value: 'miscellaneous', label: 'ZWOLF.AbilityTypeMiscellaneous' }
+    ];
+  });
+
+  /**
+   * Get equipment categories configuration
+   */
+  Handlebars.registerHelper('getEquipmentCategories', function() {
+    return [
+      { key: 'wielded', icon: 'fa-hand-rock', label: 'ZWOLF.Wielded' },
+      { key: 'worn', icon: 'fa-tshirt', label: 'ZWOLF.Worn' },
+      { key: 'readily_available', icon: 'fa-hand-paper', label: 'ZWOLF.ReadilyAvailable' },
+      { key: 'stowed', icon: 'fa-box', label: 'ZWOLF.Stowed' },
+      { key: 'not_carried', icon: 'fa-times-circle', label: 'ZWOLF.NotCarried' }
+    ];
+  });
+
+  /**
+   * Check if actor has any equipment
+   */
+  Handlebars.registerHelper('hasAnyEquipment', function(equipment) {
+    if (!equipment) return false;
+    
+    return equipment.wielded?.length > 0 ||
+           equipment.worn?.length > 0 ||
+           equipment.readily_available?.length > 0 ||
+           equipment.stowed?.length > 0 ||
+           equipment.not_carried?.length > 0;
+  });
+
+  /**
+   * Get CSS class for build points display
+   */
+  Handlebars.registerHelper('getBPClass', function(buildPoints) {
+    if (!buildPoints) return '';
+    
+    if (buildPoints.total < 0) return 'negative';
+    if (buildPoints.total > buildPoints.max) return 'over-max';
+    if (buildPoints.total === buildPoints.max) return 'at-max';
+    return '';
+  });
+
+  /**
+   * Get numeric value for progression (for slider)
+   */
+  Handlebars.registerHelper('getProgressionValue', function(progression) {
+    const values = {
+      'mediocre': 1,
+      'moderate': 2,
+      'specialty': 3,
+      'awesome': 4
+    };
+    return values[progression] || 2; // Default to moderate
+  });
+
+  /**
+   * If/else helper
+   */
+  Handlebars.registerHelper('if', function(condition, options) {
+    if (condition) {
+      return options.fn(this);
+    } else {
+      return options.inverse(this);
+    }
   });
 }
