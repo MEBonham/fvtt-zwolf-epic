@@ -1,4 +1,7 @@
-/**
+foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
+    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
+    makeDefault: true,
+    label: "Z-Wolf Epic I/**
  * Z-Wolf Epic Game System
  * Main initialization file for Foundry VTT v13
  */
@@ -226,7 +229,7 @@ function registerSheets() {
   });
   
   foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
-    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
+    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent"],
     makeDefault: true,
     label: "Z-Wolf Epic Item Sheet"
   });
