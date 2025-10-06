@@ -1,0 +1,224 @@
+{
+  "Actor": {
+    "types": ["pc", "npc", "eidolon", "mook", "spawn"],
+    "templates": {
+      "base": {
+        "level": 3,
+        "vitalityPoints": {
+          "value": 12,
+          "min": 0,
+          "max": 12
+        },
+        "languages": "",
+        "liabilities": "",
+        "notes": "",
+        "size": "medium",
+        "tags": "Humanoid",
+        "nightsight": 1,
+        "darkvision": 0.2
+      },
+      "character": {
+        "ancestryId": null,
+        "fundamentId": null,
+        "staminaPoints": {
+          "value": 4,
+          "min": 0,
+          "max": 4
+        },
+        "coastNumber": 4,
+        "speed": {
+          "progression": null
+        },
+        "vitalityBoostCount": 0,
+        "buildPointsLocked": false
+      },
+      "attributesAndSkills": {
+        "attributes": {
+          "agility": { "progression": "moderate" },
+          "fortitude": { "progression": "moderate" },
+          "perception": { "progression": "moderate" },
+          "willpower": { "progression": "moderate" }
+        },
+        "skills": {
+          "acumen": { "progression": "mediocre" },
+          "athletics": { "progression": "mediocre" },
+          "brawn": { "progression": "mediocre" },
+          "dexterity": { "progression": "mediocre" },
+          "glibness": { "progression": "mediocre" },
+          "influence": { "progression": "mediocre" },
+          "insight": { "progression": "mediocre" },
+          "stealth": { "progression": "mediocre" }
+        }
+      },
+      "summoned": {
+        "baseCreatureId": null
+      }
+    },
+    "pc": {
+      "templates": ["base", "character", "attributesAndSkills"],
+      "wealth": 10,
+      "karmaPoints": {
+        "value": 1,
+        "min": 0,
+        "max": 3
+      }
+    },
+    "npc": {
+      "templates": ["base", "character", "attributesAndSkills"],
+      "wealth": 0
+    },
+    "eidolon": {
+      "templates": ["base", "character", "summoned", "attributesAndSkills"],
+      "wealth": 0
+    },
+    "mook": {
+      "templates": ["base", "summoned"]
+    },
+    "spawn": {
+      "templates": ["base", "summoned"]
+    }
+  },
+  "Item": {
+    "types": ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
+    "templates": {
+      "base": {
+        "description": "",
+        "grantedAbilities": {}
+      },
+      "sideEffectsCapable": {
+        "sideEffects": {
+          "speedProgression": "",
+          "toughnessTNProgression": "",
+          "destinyTNProgression": "",
+          "nightsightRadius": null,
+          "darkvisionRadius": null,
+          "sizeSteps": 0,
+          "maxBulkBoost": 0,
+          "grantedProficiency": ""
+        }
+      },
+      "tagged": {
+        "tags": "",
+        "characterTags": "",
+        "required": ""
+      }
+    },
+    "ancestry": {
+      "templates": ["base", "sideEffectsCapable", "tagged"],
+      "buildPoints": 0,
+      "sizeOptions": ["medium"],
+      "knacksProvided": 0,
+      "knackMenu": ""
+    },
+    "fundament": {
+      "templates": ["base", "sideEffectsCapable"],
+      "buildPoints": 15,
+      "knacksProvided": 4,
+      "requiredKnackTag": "",
+      "vitalityKey": "",
+      "coastKey": ""
+    },
+    "equipment": {
+      "templates": ["base", "sideEffectsCapable"],
+      "tags": "",
+      "quantity": "1",
+      "placement": "stowed",
+      "requiredPlacement": "",
+      "price": 0,
+      "bulk": 0,
+      "structure": 10
+    },
+    "knack": {
+      "templates": ["base", "sideEffectsCapable", "tagged"]
+    },
+    "universal": {
+      "templates": ["base", "sideEffectsCapable", "tagged"]
+    },
+    "track": {
+      "templates": ["base", "sideEffectsCapable"],
+      "tags": "",
+      "required": "",
+      "tiers": {
+        "tier1": {
+          "talentMenu": "",
+          "grantedAbilities": {},
+          "characterTags": "",
+          "sideEffects": {
+            "speedProgression": "",
+            "toughnessTNProgression": "",
+            "destinyTNProgression": "",
+            "nightsightRadius": null,
+            "darkvisionRadius": null,
+            "sizeSteps": 0,
+            "knacksProvided": 0,
+            "grantedProficiency": ""
+          }
+        },
+        "tier2": {
+          "talentMenu": "",
+          "grantedAbilities": {},
+          "characterTags": "",
+          "sideEffects": {
+            "speedProgression": "",
+            "toughnessTNProgression": "",
+            "destinyTNProgression": "",
+            "nightsightRadius": null,
+            "darkvisionRadius": null,
+            "sizeSteps": 0,
+            "knacksProvided": 0,
+            "grantedProficiency": ""
+          }
+        },
+        "tier3": {
+          "talentMenu": "",
+          "grantedAbilities": {},
+          "characterTags": "",
+          "sideEffects": {
+            "speedProgression": "",
+            "toughnessTNProgression": "",
+            "destinyTNProgression": "",
+            "nightsightRadius": null,
+            "darkvisionRadius": null,
+            "sizeSteps": 0,
+            "knacksProvided": 0,
+            "grantedProficiency": ""
+          }
+        },
+        "tier4": {
+          "talentMenu": "",
+          "grantedAbilities": {},
+          "characterTags": "",
+          "sideEffects": {
+            "speedProgression": "",
+            "toughnessTNProgression": "",
+            "destinyTNProgression": "",
+            "nightsightRadius": null,
+            "darkvisionRadius": null,
+            "sizeSteps": 0,
+            "knacksProvided": 0,
+            "grantedProficiency": ""
+          }
+        },
+        "tier5": {
+          "talentMenu": "",
+          "grantedAbilities": {},
+          "characterTags": "",
+          "sideEffects": {
+            "speedProgression": "",
+            "toughnessTNProgression": "",
+            "destinyTNProgression": "",
+            "nightsightRadius": null,
+            "darkvisionRadius": null,
+            "sizeSteps": 0,
+            "knacksProvided": 0,
+            "grantedProficiency": ""
+          }
+        }
+      }
+    },
+    "talent": {
+      "templates": ["base", "sideEffectsCapable", "tagged"],
+      "knacksProvided": 0
+    }
+  }
+}
