@@ -1,0 +1,199 @@
+{{!-- templates/item/partials/side-effects-form.hbs --}}
+<div class="side-effects-form">
+
+  <!-- Proficiency Grants Section -->
+  <div class="proficiency-grants">
+    <h4><i class="fas fa-certificate"></i> {{localize 'ZWOLF.ProficiencyGrants'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.ProficiencyGrantsHint'}}</p>
+    
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.GrantedProficiency'}}</label>
+      <select name="{{pathPrefix}}.grantedProficiency" data-dtype="String">
+        <option value="" {{selected '' sideEffects.grantedProficiency}}>
+          {{localize 'ZWOLF.None'}}
+        </option>
+        
+        <optgroup label="{{localize 'ZWOLF.SeedProficiencies'}}">
+          {{#each config.proficiencies}}
+            {{#if (eq this.type 'seed')}}
+              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>
+                {{localize this.label}}
+              </option>
+            {{/if}}
+          {{/each}}
+        </optgroup>
+        
+        <optgroup label="{{localize 'ZWOLF.WeaponProficiencies'}}">
+          {{#each config.proficiencies}}
+            {{#if (eq this.type 'weapon')}}
+              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>
+                {{localize this.label}}
+              </option>
+            {{/if}}
+          {{/each}}
+        </optgroup>
+        
+        <optgroup label="{{localize 'ZWOLF.MiscellaneousProficiencies'}}">
+          {{#each config.proficiencies}}
+            {{#if (eq this.type 'miscellaneous')}}
+              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>
+                {{localize this.label}}
+              </option>
+            {{/if}}
+          {{/each}}
+        </optgroup>
+      </select>
+      <p class="notes">{{localize 'ZWOLF.GrantedProficiencyHint'}}</p>
+    </div>
+  </div>
+
+  <!-- Knacks Provided (Talents - at system level) -->
+  {{#if (eq itemType "talent")}}
+  <div class="knacks-provided">
+    <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+      <input type="number" 
+             name="system.knacksProvided" 
+             value="{{system.knacksProvided}}" 
+             data-dtype="Number" 
+             min="0" 
+             max="10" 
+             placeholder="0"/>
+      <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+    </div>
+  </div>
+  {{/if}}
+
+  <!-- Knacks Provided (Track Tiers - in sideEffects) -->
+  {{#if (or (contains pathPrefix "tiers.tier") (and (eq itemType "track") pathPrefix))}}
+  <div class="knacks-provided">
+    <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
+      <input type="number" 
+             name="{{pathPrefix}}.knacksProvided" 
+             value="{{sideEffects.knacksProvided}}" 
+             data-dtype="Number" 
+             min="0" 
+             max="10" 
+             placeholder="0"/>
+      <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
+    </div>
+  </div>
+  {{/if}}
+  
+  <!-- Progression Upgrades Section -->
+  <div class="progression-upgrades">
+    <h4><i class="fas fa-arrow-up"></i> {{localize 'ZWOLF.ProgressionUpgrades'}}</h4>
+    
+    {{> progression-select 
+        label="ZWOLF.SpeedProgression" 
+        name=(concat pathPrefix ".speedProgression")
+        value=sideEffects.speedProgression
+        includeNone=true
+        noneLabel="ZWOLF.NoUpgradeSpeed"
+        notes="ZWOLF.SpeedProgressionHint"}}
+    
+    {{> progression-select 
+        label="ZWOLF.ToughnessTNProgression" 
+        name=(concat pathPrefix ".toughnessTNProgression")
+        value=sideEffects.toughnessTNProgression
+        includeNone=true
+        noneLabel="ZWOLF.NoUpgradeToughness"
+        startLevel=2
+        notes="ZWOLF.ToughnessTNProgressionHint"}}
+    
+    {{> progression-select 
+        label="ZWOLF.DestinyTNProgression" 
+        name=(concat pathPrefix ".destinyTNProgression")
+        value=sideEffects.destinyTNProgression
+        includeNone=true
+        noneLabel="ZWOLF.NoUpgradeDestiny"
+        startLevel=3
+        notes="ZWOLF.DestinyTNProgressionHint"}}
+  </div>
+  
+  <!-- Vision Radius Upgrades Section -->
+  <div class="vision-radius-upgrades">
+    <h4><i class="fas fa-eye"></i> {{localize 'ZWOLF.VisionRadiusUpgrades'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.VisionRadiusUpgradesHint'}}</p>
+    
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
+      <div class="vision-input-group">
+        <input type="number" 
+               name="{{pathPrefix}}.nightsightRadius" 
+               value="{{sideEffects.nightsightRadius}}" 
+               data-dtype="Number" 
+               min="0" 
+               step="0.5" 
+               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 1.0"/>
+        <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
+      </div>
+      <p class="notes">{{localize 'ZWOLF.NightsightRadiusHint'}}</p>
+    </div>
+    
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
+      <div class="vision-input-group">
+        <input type="number" 
+               name="{{pathPrefix}}.darkvisionRadius" 
+               value="{{sideEffects.darkvisionRadius}}" 
+               data-dtype="Number" 
+               min="0" 
+               step="0.5" 
+               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 0.5"/>
+        <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
+      </div>
+      <p class="notes">{{localize 'ZWOLF.DarkvisionRadiusHint'}}</p>
+    </div>
+  </div>
+
+  <!-- Bulk Capacity Upgrades Section -->
+  <div class="bulk-upgrades">
+    <h4><i class="fas fa-weight-hanging"></i> {{localize 'ZWOLF.BulkCapacityUpgrades'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.BulkCapacityUpgradesHint'}}</p>
+    
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.MaxBulkBoost'}}</label>
+      <div class="bulk-input-group">
+        <input type="number" 
+               name="{{pathPrefix}}.maxBulkBoost" 
+               value="{{sideEffects.maxBulkBoost}}" 
+               data-dtype="Number" 
+               min="0" 
+               step="1" 
+               placeholder="0"/>
+        <span class="input-suffix">{{localize 'ZWOLF.Bulk'}}</span>
+      </div>
+      <p class="notes">{{localize 'ZWOLF.MaxBulkBoostHint'}}</p>
+    </div>
+  </div>
+
+  <!-- Size Upgrades Section -->
+  <div class="size-upgrades">
+    <h4><i class="fas fa-arrows-alt"></i> {{localize 'ZWOLF.SizeUpgrades'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.SizeUpgradesHint'}}</p>
+    
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.SizeSteps'}}</label>
+      <div class="size-input-group">
+        <input type="number" 
+               name="{{pathPrefix}}.sizeSteps" 
+               value="{{sideEffects.sizeSteps}}" 
+               data-dtype="Number" 
+               step="1" 
+               placeholder="0"/>
+        <span class="input-suffix">{{localize 'ZWOLF.Steps'}}</span>
+      </div>
+      <p class="notes">{{localize 'ZWOLF.SizeStepsHint'}}</p>
+    </div>
+  </div>
+  
+  <!-- Placeholder for Future Side Effects -->
+  <div class="future-side-effects">
+    <h4><i class="fas fa-plus-circle"></i> {{localize 'ZWOLF.FutureSideEffects'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.FutureSideEffectsHint'}}</p>
+  </div>
+</div>

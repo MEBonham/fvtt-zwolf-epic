@@ -1,0 +1,32 @@
+{{!-- templates/item/parts/item-header.hbs --}}
+<header class="sheet-header">
+  <img class="profile-img" 
+       src="{{item.img}}" 
+       data-edit="img" 
+       title="{{item.name}}" 
+       height="64" 
+       width="64"/>
+  
+  <div class="header-fields">
+    <h1 class="charname">
+      <input name="name" 
+             type="text" 
+             value="{{item.name}}" 
+             placeholder="{{localize 'ZWOLF.ItemName'}}"/>
+    </h1>
+    
+    <div class="item-subtitle">
+      {{localize (concat "ZWOLF.ItemType" (capitalize itemType))}}
+    </div>
+    
+    {{#if item.parent}}
+      {{#with (getSourceItem item)}}
+        <span class="source-indicator" 
+              data-tooltip="{{localize 'ZWOLF.CopyOfWorldItem' name=this.name}}">
+          <i class="fas fa-link"></i>
+          <span class="source-name">{{this.name}}</span>
+        </span>
+      {{/with}}
+    {{/if}}
+  </div>
+</header>

@@ -1,0 +1,319 @@
+{{!-- templates/item/parts/item-basics.hbs --}}
+<div class="tab" data-group="primary" data-tab="basics">
+
+  {{!-- ========== FUNDAMENT ========== --}}
+  {{#if (eq itemType "fundament")}}
+    <div class="fundament-basics">
+      {{> form-field 
+          label="ZWOLF.BuildPoints" 
+          type="number" 
+          name="system.buildPoints" 
+          value=system.buildPoints 
+          min=0
+          notes="ZWOLF.BuildPointsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.KnacksProvided" 
+          type="number" 
+          name="system.knacksProvided" 
+          value=system.knacksProvided 
+          min=0
+          notes="ZWOLF.KnacksProvidedHint"}}
+
+      {{> form-field 
+          label="ZWOLF.RequiredKnackTag" 
+          type="text" 
+          name="system.requiredKnackTag" 
+          value=system.requiredKnackTag 
+          placeholder="ZWOLF.RequiredKnackTagPlaceholder"
+          fullWidth=true
+          notes="ZWOLF.RequiredKnackTagHint"}}
+    </div>
+
+  {{!-- ========== KNACK ========== --}}
+  {{else if (eq itemType "knack")}}
+    <div class="knack-basics">
+      {{> form-field 
+          label="ZWOLF.Tags" 
+          type="text" 
+          name="system.tags" 
+          value=tagsString 
+          placeholder="ZWOLF.TagsPlaceholder"
+          notes="ZWOLF.KnackTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.CharacterTags" 
+          type="text" 
+          name="system.characterTags" 
+          value=characterTagsString 
+          placeholder="ZWOLF.CharacterTagsPlaceholder"
+          notes="ZWOLF.CharacterTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.Required" 
+          type="editor" 
+          name="system.required" 
+          value=system.required 
+          owner=owner 
+          editable=editable
+          notes="ZWOLF.KnackRequiredHint"}}
+    </div>
+
+  {{!-- ========== EQUIPMENT ========== --}}
+  {{else if (eq itemType "equipment")}}
+    <div class="equipment-basics">
+      {{> form-field 
+          label="ZWOLF.Tags" 
+          type="text" 
+          name="system.tags" 
+          value=tagsString 
+          placeholder="ZWOLF.TagsPlaceholder"
+          notes="ZWOLF.TagsHint"}}
+
+      <!-- Physical Properties -->
+      <div class="form-group">
+        <div class="form-fields">
+          {{> form-field 
+              label="ZWOLF.Quantity" 
+              type="select" 
+              name="system.quantity" 
+              value=system.quantity 
+              stacked=true
+              options=(array 
+                (hash value="1" label="1")
+                (hash value="many" label="ZWOLF.Many"))
+              notes="ZWOLF.QuantityHint"}}
+
+          {{> form-field 
+              label="ZWOLF.Price" 
+              type="number" 
+              name="system.price" 
+              value=system.price 
+              min=0 
+              step=0.01
+              stacked=true
+              notes="ZWOLF.PriceHint"}}
+
+          {{> form-field 
+              label="ZWOLF.Bulk" 
+              type="number" 
+              name="system.bulk" 
+              value=system.bulk 
+              min=0 
+              step=0.1
+              stacked=true
+              notes="ZWOLF.BulkHint"}}
+
+          {{> form-field 
+              label="ZWOLF.Structure" 
+              type="number" 
+              name="system.structure" 
+              value=system.structure 
+              min=0
+              stacked=true
+              notes="ZWOLF.StructureHint"}}
+        </div>
+      </div>
+
+      <!-- Placement -->
+      {{> form-field 
+          label="ZWOLF.Placement" 
+          type="select" 
+          name="system.placement" 
+          value=system.placement 
+          disabled=(not item.actor)
+          options=(array 
+            (hash value="stowed" label="ZWOLF.Stowed")
+            (hash value="wielded" label="ZWOLF.Wielded")
+            (hash value="worn" label="ZWOLF.Worn")
+            (hash value="readily-available" label="ZWOLF.ReadilyAvailable")
+            (hash value="not-carried" label="ZWOLF.NotCarried"))
+          notes=(if item.actor "ZWOLF.PlacementHint" "ZWOLF.PlacementDisabledHint")}}
+
+      <!-- Required Placement -->
+      <div class="form-group">
+        <label>{{localize 'ZWOLF.RequiredPlacement'}}</label>
+        <select name="system.requiredPlacement" data-dtype="String">
+          <option value="" {{selected '' system.requiredPlacement}}>
+            {{localize 'ZWOLF.NoRequirement'}}
+          </option>
+          <option value="wielded" {{selected 'wielded' system.requiredPlacement}}>
+            {{localize 'ZWOLF.Wielded'}}
+          </option>
+          <option value="worn" {{selected 'worn' system.requiredPlacement}}>
+            {{localize 'ZWOLF.Worn'}}
+          </option>
+          <option value="readily_available" {{selected 'readily_available' system.requiredPlacement}}>
+            {{localize 'ZWOLF.ReadilyAvailable'}}
+          </option>
+          <option value="stowed" {{selected 'stowed' system.requiredPlacement}}>
+            {{localize 'ZWOLF.Stowed'}}
+          </option>
+          <option value="not_carried" {{selected 'not_carried' system.requiredPlacement}}>
+            {{localize 'ZWOLF.NotCarried'}}
+          </option>
+        </select>
+        <p class="notes">{{localize 'ZWOLF.RequiredPlacementHint'}}</p>
+        
+        {{#if system.requiredPlacement}}
+          <div class="placement-warning-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>{{localize 'ZWOLF.PlacementRequirementActive'}}:</strong> 
+            {{localize 'ZWOLF.PlacementRequirementActiveDescription' placement=system.requiredPlacement}}
+          </div>
+        {{/if}}
+      </div>
+
+      <!-- Description -->
+      {{> form-field 
+          label="ZWOLF.Description" 
+          type="editor" 
+          name="system.description" 
+          value=system.description 
+          owner=owner 
+          editable=editable}}
+    </div>
+
+  {{!-- ========== TALENT ========== --}}
+  {{else if (eq itemType "talent")}}
+    <div class="talent-basics">
+      {{> form-field 
+          label="ZWOLF.Tags" 
+          type="text" 
+          name="system.tags" 
+          value=tagsString 
+          placeholder="ZWOLF.TagsPlaceholder"
+          notes="ZWOLF.TalentTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.CharacterTags" 
+          type="text" 
+          name="system.characterTags" 
+          value=characterTagsString 
+          placeholder="ZWOLF.CharacterTagsPlaceholder"
+          notes="ZWOLF.CharacterTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.Required" 
+          type="editor" 
+          name="system.required" 
+          value=system.required 
+          owner=owner 
+          editable=editable
+          notes="ZWOLF.TalentRequiredHint"}}
+
+      {{#if system.required}}
+        {{> form-field 
+            label="ZWOLF.KnacksProvided" 
+            type="number" 
+            name="system.knacksProvided" 
+            value=system.knacksProvided 
+            min=0 
+            readonly=true
+            notes="ZWOLF.TalentKnacksProvidedHint"}}
+      {{/if}}
+    </div>
+
+  {{!-- ========== ANCESTRY ========== --}}
+  {{else if (eq itemType "ancestry")}}
+    <div class="ancestry-basics">
+      {{> form-field 
+          label="ZWOLF.BuildPoints" 
+          type="number" 
+          name="system.buildPoints" 
+          value=system.buildPoints 
+          min=0}}
+
+      {{> form-field 
+          label="ZWOLF.Tags" 
+          type="text" 
+          name="system.tags" 
+          value=tagsString 
+          placeholder="ZWOLF.TagsPlaceholder"
+          notes="ZWOLF.AncestryTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.CharacterTags" 
+          type="text" 
+          name="system.characterTags" 
+          value=characterTagsString 
+          placeholder="ZWOLF.CharacterTagsPlaceholder"
+          notes="ZWOLF.CharacterTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.Required" 
+          type="editor" 
+          name="system.required" 
+          value=system.required 
+          owner=owner 
+          editable=editable
+          notes="ZWOLF.AncestryRequiredHint"}}
+
+      {{> form-field 
+          label="ZWOLF.SizeOptions" 
+          type="multiselect" 
+          name="system.sizeOptions" 
+          value=system.sizeOptions 
+          size=8
+          options=(array 
+            (hash value="diminutive" label="ZWOLF.Diminutive")
+            (hash value="tiny" label="ZWOLF.Tiny")
+            (hash value="small" label="ZWOLF.Small")
+            (hash value="medium" label="ZWOLF.Medium")
+            (hash value="large" label="ZWOLF.Large")
+            (hash value="huge" label="ZWOLF.Huge")
+            (hash value="gargantuan" label="ZWOLF.Gargantuan")
+            (hash value="colossal" label="ZWOLF.Colossal"))
+          notes="ZWOLF.SizeOptionsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.KnacksProvided" 
+          type="number" 
+          name="system.knacksProvided" 
+          value=system.knacksProvided 
+          min=0
+          notes="ZWOLF.KnacksProvidedHint"}}
+
+      {{> form-field 
+          label="ZWOLF.KnackMenu" 
+          type="editor" 
+          name="system.knackMenu" 
+          value=system.knackMenu 
+          owner=owner 
+          editable=editable
+          notes="ZWOLF.KnackMenuHint"}}
+    </div>
+
+  {{!-- ========== TRACK ========== --}}
+  {{else if (eq itemType "track")}}
+    <div class="track-basics">
+      {{> form-field 
+          label="ZWOLF.Tags" 
+          type="text" 
+          name="system.tags" 
+          value=tagsString 
+          placeholder="ZWOLF.TagsPlaceholder"
+          notes="ZWOLF.TrackTagsHint"}}
+
+      {{> form-field 
+          label="ZWOLF.Required" 
+          type="editor" 
+          name="system.required" 
+          value=system.required 
+          owner=owner 
+          editable=editable
+          notes="ZWOLF.TrackRequiredHint"}}
+    </div>
+
+  {{!-- ========== DEFAULT ========== --}}
+  {{else}}
+    {{> form-field 
+        label="ZWOLF.Description" 
+        type="editor" 
+        name="system.description" 
+        value=system.description 
+        owner=owner 
+        editable=editable}}
+  {{/if}}
+  
+</div>

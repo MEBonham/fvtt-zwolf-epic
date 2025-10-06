@@ -1,0 +1,55 @@
+{{!-- templates/item/partials/progression-select.hbs --}}
+{{!--
+  Reusable progression select dropdown
+  
+  Parameters:
+  - label: Localization key for label
+  - name: Input name attribute
+  - value: Current selected value
+  - notes: Localization key for hint text (optional)
+  - includeNone: Boolean to show "No Upgrade" option (optional)
+  - noneLabel: Custom label for none option (optional)
+  - startLevel: Starting progression level (mediocre=1, moderate=2, specialty=3, awesome=4)
+  - endLevel: Ending progression level (default: 4 for awesome)
+--}}
+
+<div class="form-group">
+  <label>{{localize label}}</label>
+  <select name="{{name}}" data-dtype="String">
+    {{#if includeNone}}
+      <option value="" {{selected '' value}}>
+        {{#if noneLabel}}
+          {{localize noneLabel}}
+        {{else}}
+          {{localize 'ZWOLF.NoUpgrade'}}
+        {{/if}}
+      </option>
+    {{/if}}
+    
+    {{#unless (or (eq startLevel 2) (eq startLevel 3) (eq startLevel 4))}}
+      <option value="mediocre" {{selected 'mediocre' value}}>
+        {{localize 'ZWOLF.Mediocre'}}
+      </option>
+    {{/unless}}
+    
+    {{#unless (or (eq startLevel 3) (eq startLevel 4))}}
+      <option value="moderate" {{selected 'moderate' value}}>
+        {{localize 'ZWOLF.Moderate'}}
+      </option>
+    {{/unless}}
+    
+    {{#unless (eq startLevel 4)}}
+      <option value="specialty" {{selected 'specialty' value}}>
+        {{localize 'ZWOLF.Specialty'}}
+      </option>
+    {{/unless}}
+    
+    <option value="awesome" {{selected 'awesome' value}}>
+      {{localize 'ZWOLF.Awesome'}}
+    </option>
+  </select>
+  
+  {{#if notes}}
+    <p class="notes">{{localize notes}}</p>
+  {{/if}}
+</div>
