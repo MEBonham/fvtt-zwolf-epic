@@ -4,8 +4,8 @@
  */
 
 // Import document classes
-import ZWolfActor from "./documents/Actor.mjs";
-import ZWolfItem from "./documents/Item.mjs";
+import { ZWolfActor } from "./documents/Actor.mjs";
+import { ZWolfItem } from "./documents/Item.mjs";
 import ZWolfTokenDocument from "./documents/Token.mjs";
 
 // Import data models
@@ -20,8 +20,9 @@ import ZWolfItemSheet from "./sheets/item-sheet.mjs";
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
 import { ZWolfDice } from "./dice/index.mjs";
-import { ZWolfVisionSystem } from "./helpers/vision.mjs";
+import { ZWolfVisionSystem } from "./helpers/vision-detection-only.mjs";
 import { ZWolfVisionRadiusDisplay } from "./helpers/vision-radius-display.mjs";
+import { registerItemContextMenuOption } from "./helpers/item-sync.mjs";
 
 // Import hook modules
 import { registerCombatHooks } from "./hooks/combat.mjs";
@@ -137,7 +138,7 @@ function configureStatusEffects() {
   }));
 
   CONFIG.specialStatusEffects = {
-    DEFEATED: "dropped",
+    DEFEATED: "dead",
     INVISIBLE: "invisible",
     BLIND: "",
     BURROW: "",
