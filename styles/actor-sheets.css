@@ -1512,3 +1512,53 @@
 .progression-name i.fa-chevron-down {
   transition: transform 0.2s ease;
 }
+
+.effective-size-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: var(--z-wolf-accent);
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: #333;
+}
+
+.effective-size-display i {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+.effective-size-display .effective-size {
+  text-transform: capitalize;
+}
+
+/* Base Creature Selector */
+.base-creature-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.base-creature-dropdown {
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* Ensure dropdown options are readable */
+.base-creature-dropdown option {
+  background: var(--z-wolf-bg-dark);
+  color: white;
+}
+
+.base-creature-info {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1em;
+}

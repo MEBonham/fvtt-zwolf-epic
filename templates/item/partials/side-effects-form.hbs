@@ -160,6 +160,25 @@
       <p class="notes">{{localize 'ZWOLF.MaxBulkBoostHint'}}</p>
     </div>
   </div>
+
+  <!-- Size Upgrades Section -->
+  <div class="size-upgrades">
+    <h4><i class="fas fa-arrows-alt"></i> {{localize 'ZWOLF.SizeUpgrades'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.SizeUpgradesHint'}}</p>
+    
+    <!-- Size Steps -->
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.SizeSteps'}}</label>
+      <div class="size-input-group">
+        <input type="number" name="{{pathPrefix}}.sizeSteps" 
+              value="{{sideEffects.sizeSteps}}" 
+              data-dtype="Number" step="1" 
+              placeholder="0"/>
+        <span class="input-suffix">{{localize 'ZWOLF.Steps'}}</span>
+      </div>
+      <p class="notes">{{localize 'ZWOLF.SizeStepsHint'}}</p>
+    </div>
+  </div>
   
   <!-- Placeholder for Future Side Effects -->
   <div class="future-side-effects">

@@ -1,5 +1,4 @@
 // module/documents/Token.mjs
-
 export default class ZWolfTokenDocument extends TokenDocument {
 
   /**
@@ -15,24 +14,11 @@ export default class ZWolfTokenDocument extends TokenDocument {
   }
 
   /**
-   * Override prepareDerivedData to clean up any modes added after base prep
+   * DON'T clean up in prepareDerivedData - it creates infinite loops
    */
   prepareDerivedData() {
     super.prepareDerivedData();
-    
-    // Clean up detection modes AGAIN in case Foundry added them during derived data prep
-    if (this.actor && !this.getFlag("zwolf-epic", "customVisionRules")) {
-      const unwanted = this.detectionModes.filter(m => 
-        m.id === 'basicSight' || m.id === 'lightPerception'
-      );
-      
-      if (unwanted.length > 0) {
-        this.detectionModes = this.detectionModes.filter(m => 
-          m.id !== 'basicSight' && m.id !== 'lightPerception'
-        );
-        console.log(`Z-Wolf Epic | Cleaned up unwanted modes in prepareDerivedData for ${this.name}`);
-      }
-    }
+    // Removed the cleanup code that was causing cascading prepare cycles
   }
 
   /**
@@ -115,7 +101,8 @@ export default class ZWolfTokenDocument extends TokenDocument {
       const actor = tokenDoc.actor;
       if (!actor) continue;
       
-      const actorSize = actor.system?.size || "medium";
+      // Use effectiveSize instead of base size
+      const actorSize = actor.system?.effectiveSize || actor.system?.size || "medium";
       const sizeData = CONFIG.ZWOLF?.sizes?.[actorSize];
       
       const updateData = {};
@@ -133,7 +120,9 @@ export default class ZWolfTokenDocument extends TokenDocument {
           updateData.height = targetSize;
           needsUpdate = true;
           
-          console.log(`Z-Wolf Epic | Resizing token "${tokenDoc.name}" to ${actorSize} size (${targetSize}x${targetSize})`);
+          const baseSize = actor.system?.size || "medium";
+          const sizeNote = (baseSize !== actorSize) ? ` (base: ${baseSize})` : '';
+          console.log(`Z-Wolf Epic | Resizing token "${tokenDoc.name}" to ${actorSize} size${sizeNote} (${targetSize}x${targetSize})`);
         }
       }
       
@@ -311,8 +300,12 @@ Hooks.on('updateActor', (actor, data, options, userId) => {
     // Update all tokens for this actor that don't have custom overrides
     actor.getActiveTokens().forEach(async token => {
       await token.document.syncVisionFromActor();
-      // Force the token to re-prepare its data to update detection modes
-      token.document.prepareBaseData();
+      // Token will automatically re-prepare when updated, no need to force it
     });
+    
+    // Update visibility after vision changes
+    setTimeout(() => {
+      ZWolfHybridVision._updateAllTokenVisibility();
+    }, 50);
   }
 });

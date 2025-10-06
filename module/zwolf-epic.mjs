@@ -16,7 +16,8 @@ import ZWolfItemSheet from "./sheets/item-sheet.mjs";
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
 import { ZWolfDice } from "./dice/index.mjs";
-import { ZWolfVision } from "./helpers/vision.mjs";
+import { ZWolfVisionSystem } from "./helpers/vision-detection-only.mjs";
+import { ZWolfVisionRadiusDisplay } from "./helpers/vision-radius-display.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -29,7 +30,8 @@ Hooks.once('init', async function() {
   game.zwolf = {
     ZWolfActor,
     ZWolfItem,
-    vision: ZWolfVision,
+    vision: ZWolfVisionSystem,
+    visionDisplay: ZWolfVisionRadiusDisplay,
     // Helper function for macros and console access
     roll: ZWolfDice.roll.bind(ZWolfDice)
   };
@@ -59,7 +61,8 @@ Hooks.once('init', async function() {
   };
 
   // Initialize the detection mode vision system
-  ZWolfVision.initialize();
+  ZWolfVisionSystem.initialize();
+  ZWolfVisionRadiusDisplay.initialize();
 
   /**
    * Remove unwanted buttons from Token HUD

@@ -248,7 +248,7 @@ async _processItemSpecificData(context, itemData) {
         for (const [tierKey, tierData] of Object.entries(itemData.system.tiers)) {
           // Format tier character tags
           if (tierData.characterTags) {
-            tierData.characterTags = formatTags(tierData.characterTags);
+            tierData.characterTags = this._formatTags(tierData.characterTags);
           }
           
           // Enrich talent menu
@@ -507,6 +507,18 @@ async _processTrackData(context, itemData) {
     } else {
       context.tagsString = itemData.system.tags || '';
     }
+  }
+
+  /**
+   * Helper function to format tags (handles both arrays and strings)
+   * @param {Array|string} tags - Tags to format
+   * @returns {string} Formatted tags string
+   * @private
+   */
+  _formatTags(tags) {
+    if (!tags) return '';
+    if (Array.isArray(tags)) return tags.join(', ');
+    return tags.toString();
   }
 
   /* -------------------------------------------- */
@@ -1303,19 +1315,19 @@ async _onAddTierAbility(event) {
     };
     
     // Helper function to format tags (handles both arrays and strings)
-    const formatTags = (tags) => {
-      if (!tags) return '';
-      if (Array.isArray(tags)) return tags.join(', ');
-      return tags.toString();
-    };
+    // const formatTags = (tags) => {
+    //   if (!tags) return '';
+    //   if (Array.isArray(tags)) return tags.join(', ');
+    //   return tags.toString();
+    // };
     
     // Format tags for display
     if (itemData.system.tags) {
-      itemData.system.tags = formatTags(itemData.system.tags);
+      itemData.system.tags = this._formatTags(itemData.system.tags);
     }
     
     if (itemData.system.characterTags) {
-      itemData.system.characterTags = formatTags(itemData.system.characterTags);
+      itemData.system.characterTags = this._formatTags(itemData.system.characterTags);
     }
     
     // Prepare type-specific summary data
@@ -1329,7 +1341,7 @@ async _onAddTierAbility(event) {
             
             // Format tier character tags
             if (tierData.characterTags) {
-              tierData.characterTags = formatTags(tierData.characterTags);
+              tierData.characterTags = this._formatTags(tierData.characterTags);
             }
             
             context.tiersProcessed[tierNum] = {

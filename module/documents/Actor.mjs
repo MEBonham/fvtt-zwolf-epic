@@ -28,13 +28,19 @@ export class ZWolfActor extends Actor {
       this._prepareCharacterDerivedData();
     }
     
+    // Apply base creature inheritance for mooks/spawns
+    if (['mook', 'spawn'].includes(this.type)) {
+      this._applyBaseCreatureInheritance();
+    }
+    
     // Calculate other derived values like knacks, build points, etc.
     this._prepareDerivedValues();
-  
+
+    // Apply vision side effects to actor system data
+    this._applyVisionSideEffects();
+
     // Add virtual default items
     this._addVirtualItems();
-    
-    // DON'T sync vision to prototype token here - let the vision system handle it
   }
 
   /**
@@ -45,7 +51,16 @@ export class ZWolfActor extends Actor {
   _prepareCharacterDerivedData() {
     const level = this.system.level || 0;
     const vitalityBoostCount = this.system.vitalityBoostCount || 0;
-  
+
+    // Initialize vitality and stamina objects if they don't exist
+    if (!this.system.vitalityPoints) {
+      this.system.vitalityPoints = { value: 0, max: 0 };
+    }
+    
+    if (!this.system.staminaPoints) {
+      this.system.staminaPoints = { value: 0, max: 0 };
+    }
+
     // Calculate max vitality from fundament (boost count calculated automatically)
     const maxVitality = this._calculateMaxVitality(level);
     this.system.vitalityPoints.max = maxVitality;
@@ -77,81 +92,57 @@ export class ZWolfActor extends Actor {
    * @returns {number} Maximum vitality points
    * @private
    */
-_calculateMaxVitality(level, vitalityBoostCount = null) {
-  const defaultVitality = 12;
-  
-  console.log("=== VITALITY CALCULATION DEBUG ===");
-  console.log("Level:", level);
-  console.log("All items on actor:", this.items.map(i => i.name));
-  
-  // Calculate vitality boost count in real-time if not provided
-  if (vitalityBoostCount === null) {
-    const extraVPItems = this.items.filter(item => {
-      console.log(`Checking item: "${item.name}" (type: ${item.type})`);
-      return item.name === "Extra VP";
-    });
-    vitalityBoostCount = extraVPItems.length;
-    console.log(`Found ${extraVPItems.length} "Extra VP" items:`, extraVPItems.map(i => i.name));
-  }
-  
-  console.log("Final vitalityBoostCount:", vitalityBoostCount);
-  
-  // Get fundament item if assigned
-  const fundamentId = this.system.fundamentId;
-  console.log("Fundament ID:", fundamentId);
-  
-  if (!fundamentId) {
-    console.log("No fundament assigned, returning default:", defaultVitality);
-    return defaultVitality;
-  }
-  
-  const fundament = this.items.get(fundamentId);
-  console.log("Fundament item:", fundament?.name);
-  
-  if (!fundament || !fundament.system) {
-    console.log("No valid fundament found, returning default:", defaultVitality);
-    return defaultVitality;
-  }
-
-  // Get the vitality function key
-  const vitalityFunctionKey = fundament.system.vitalityFunction;
-  console.log("Vitality function key:", vitalityFunctionKey);
-  
-  if (!vitalityFunctionKey || !vitalityFunctionKey.trim()) {
-    console.log("No vitality function, returning default:", defaultVitality);
-    return defaultVitality;
-  }
-
-  // Use the imported calculation function
-  try {
-    console.log("Calling calculateVitality with:", {
-      functionKey: vitalityFunctionKey,
-      level: level,
-      vitalityBoostCount: vitalityBoostCount
-    });
+  _calculateMaxVitality(level, vitalityBoostCount = null) {
+    const defaultVitality = 12;
     
-    const result = calculateVitality(
-      vitalityFunctionKey,
-      level,
-      vitalityBoostCount
-    );
-    
-    console.log("calculateVitality returned:", result);
-    
-    if (typeof result === 'number' && !isNaN(result) && result > 0) {
-      const finalResult = Math.floor(result);
-      console.log("Final vitality result:", finalResult);
-      console.log("=== END VITALITY CALCULATION ===");
-      return finalResult;
+    // Calculate vitality boost count in real-time if not provided
+    if (vitalityBoostCount === null) {
+      const extraVPItems = this.items.filter(item => {
+        return item.name === "Extra VP";
+      });
+      vitalityBoostCount = extraVPItems.length;
     }
-  } catch (error) {
-    console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
-  }
+    
+    // Get fundament item if assigned
+    const fundamentId = this.system.fundamentId;
+    
+    if (!fundamentId) {
+      return defaultVitality;
+    }
+    
+    const fundament = this.items.get(fundamentId);
+    
+    if (!fundament || !fundament.system) {
+      console.log("No valid fundament found, returning default:", defaultVitality);
+      return defaultVitality;
+    }
 
-  console.log("Fallback to default:", defaultVitality);
-  console.log("=== END VITALITY CALCULATION ===");
-  return defaultVitality;
-}
+    // Get the vitality function key
+    const vitalityFunctionKey = fundament.system.vitalityFunction;
+    
+    if (!vitalityFunctionKey || !vitalityFunctionKey.trim()) {
+      console.log("No vitality function, returning default:", defaultVitality);
+      return defaultVitality;
+    }
+
+    // Use the imported calculation function
+    try {
+      const result = calculateVitality(
+        vitalityFunctionKey,
+        level,
+        vitalityBoostCount
+      );
+      
+      if (typeof result === 'number' && !isNaN(result) && result > 0) {
+        const finalResult = Math.floor(result);
+        return finalResult;
+      }
+    } catch (error) {
+      console.error(`Z-Wolf Epic | Error calculating vitality:`, error);
+    }
+
+    return defaultVitality;
+  }
 
   /**
    * Calculate maximum stamina points
@@ -215,7 +206,8 @@ _calculateMaxVitality(level, vitalityBoostCount = null) {
     // Calculate total knacks provided
     this.system.totalKnacksProvided = this._calculateTotalKnacksProvided();
     
-    // You can add other derived calculations here as needed
+    // Calculate effective size
+    this.system.effectiveSize = this._calculateEffectiveSize();
   }
 
   /**
@@ -258,6 +250,129 @@ _calculateMaxVitality(level, vitalityBoostCount = null) {
     
     console.log(`Z-Wolf Epic | Total knacks provided: ${totalKnacks}`);
     return totalKnacks;
+  }
+
+  /**
+   * Apply vision side effects from items to actor system data
+   * @private
+   */
+  _applyVisionSideEffects() {
+    // Spawns inherit vision from base creature, don't calculate from own items
+    if (this.type === 'spawn') {
+      console.log(`Z-Wolf Epic | Spawn ${this.name} using inherited vision values`);
+      return;
+    }
+    
+    // Get ancestry and fundament
+    const ancestry = this.system.ancestryId ? this.items.get(this.system.ancestryId) : null;
+    const fundament = this.system.fundamentId ? this.items.get(this.system.fundamentId) : null;
+    
+    // ... rest of the existing method
+
+  /**
+   * Calculate the highest vision values from all items
+   * @param {Object} ancestry - Ancestry item
+   * @param {Object} fundament - Fundament item  
+   * @param {Collection} allItems - All items on the actor
+   * @returns {Object} Object with nightsight and darkvision values
+   * @private
+   */
+  _calculateHighestVisionValues(ancestry, fundament, allItems) {
+    let highestNightsight = 1; // Default 1m
+    let highestDarkvision = 0.2; // Default 0.5m
+    
+    const checkVisionRadius = (item, type) => {
+      if (!item?.system?.sideEffects) return;
+      
+      const value = parseFloat(item.system.sideEffects[type]);
+      if (isNaN(value) || value === null || value === undefined) return;
+      
+      if (type === 'nightsightRadius' && value > highestNightsight) {
+        highestNightsight = value;
+        console.log(`Z-Wolf Epic | ${item.name} provides nightsight: ${value}m`);
+      } else if (type === 'darkvisionRadius' && value > highestDarkvision) {
+        highestDarkvision = value;
+        console.log(`Z-Wolf Epic | ${item.name} provides darkvision: ${value}m`);
+      }
+    };
+    
+    // Check ancestry
+    if (ancestry) {
+      checkVisionRadius(ancestry, 'nightsightRadius');
+      checkVisionRadius(ancestry, 'darkvisionRadius');
+    }
+    
+    // Check fundament
+    if (fundament) {
+      checkVisionRadius(fundament, 'nightsightRadius');
+      checkVisionRadius(fundament, 'darkvisionRadius');
+    }
+    
+    // Check all other items (including tracks with tiers)
+    if (allItems) {
+      const characterLevel = this.system.level || 0;
+      
+      allItems.forEach(item => {
+        if (item.type === 'ancestry' || item.type === 'fundament') return;
+        
+        // Handle track items with tier-based vision
+        if (item.type === 'track') {
+          const trackItems = this.items.filter(i => i.type === 'track');
+          const trackSlotIndex = item.getFlag('zwolf-epic', 'slotIndex') ?? trackItems.findIndex(t => t.id === item.id);
+          const unlockedTiers = this._getTrackTiersForLevel(trackSlotIndex, characterLevel);
+          
+          // Check base track vision
+          checkVisionRadius(item, 'nightsightRadius');
+          checkVisionRadius(item, 'darkvisionRadius');
+          
+          // Check tier-specific vision
+          unlockedTiers.forEach(tierNumber => {
+            const tierData = item.system.tiers?.[`tier${tierNumber}`];
+            if (tierData?.sideEffects) {
+              const tierItem = { name: `${item.name} (Tier ${tierNumber})`, system: { sideEffects: tierData.sideEffects } };
+              checkVisionRadius(tierItem, 'nightsightRadius');
+              checkVisionRadius(tierItem, 'darkvisionRadius');
+            }
+          });
+          
+          return;
+        }
+        
+        // Equipment placement filtering
+        if (item.type === 'equipment') {
+          const requiredPlacement = item.system.requiredPlacement;
+          const currentPlacement = item.system.placement;
+          
+          if (requiredPlacement && requiredPlacement !== '' && requiredPlacement !== currentPlacement) {
+            return;
+          }
+        }
+        
+        // Regular item vision check
+        checkVisionRadius(item, 'nightsightRadius');
+        checkVisionRadius(item, 'darkvisionRadius');
+      });
+    }
+    
+    return {
+      nightsight: highestNightsight,
+      darkvision: highestDarkvision
+    };
+  }
+
+  /**
+   * Helper to get unlocked track tiers for a given level
+   * @private
+   */
+  _getTrackTiersForLevel(trackSlotIndex, characterLevel) {
+    const tierLevels = [];
+    for (let tier = 1; tier <= 5; tier++) {
+      const tierLevel = trackSlotIndex + 1 + ((tier - 1) * 4);
+      if (characterLevel >= tierLevel) {
+        tierLevels.push(tier);
+      }
+    }
+    return tierLevels;
   }
 
   /** @override */
@@ -373,11 +488,12 @@ _calculateMaxVitality(level, vitalityBoostCount = null) {
   }
   
   /**
-   * Set token size based on actor size from system data
+   * Set token size based on actor's effective size from system data
    * @private
    */
   _setTokenSizeFromActorSize() {
-    const size = this.system.size || "medium";
+    // Use effective size if available, otherwise fall back to base size
+    const size = this.system.effectiveSize || this.system.size || "medium";
     const sizeData = CONFIG.ZWOLF?.sizes?.[size];
     
     if (sizeData && !this.prototypeToken.width) {
@@ -445,8 +561,6 @@ _calculateMaxVitality(level, vitalityBoostCount = null) {
 
   /** @override */
   async _preUpdate(changed, options, user) {
-    console.log('🔵 Actor _preUpdate called with:', changed);
-    console.trace();
     return super._preUpdate(changed, options, user);
   }
 
@@ -480,4 +594,321 @@ _calculateMaxVitality(level, vitalityBoostCount = null) {
       this.items.set(item.id, item);
     });
   }
+
+  /**
+   * Calculate effective size including side effect modifications
+   * @returns {string} The effective size key
+   * @private
+   */
+  _calculateEffectiveSize() {
+    const baseSize = this.system.size || "medium";
+    const sizeOrder = ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"];
+    const baseSizeIndex = sizeOrder.indexOf(baseSize);
+    
+    if (baseSizeIndex === -1) {
+      console.warn(`Z-Wolf Epic | Invalid base size: ${baseSize}`);
+      return baseSize;
+    }
+    
+    let totalSizeSteps = 0;
+    
+    // Helper to add size steps from an item
+    const addSizeSteps = (item, source) => {
+      if (!item?.system?.sideEffects?.sizeSteps) return;
+      
+      const steps = parseInt(item.system.sideEffects.sizeSteps);
+      if (!isNaN(steps) && steps !== 0) {
+        totalSizeSteps += steps;
+        console.log(`Z-Wolf Epic | ${source} "${item.name}" provides ${steps} size steps`);
+      }
+    };
+    
+    // Check ancestry
+    if (this.system.ancestryId) {
+      const ancestry = this.items.get(this.system.ancestryId);
+      if (ancestry) addSizeSteps(ancestry, "Ancestry");
+    }
+    
+    // Check fundament
+    if (this.system.fundamentId) {
+      const fundament = this.items.get(this.system.fundamentId);
+      if (fundament) addSizeSteps(fundament, "Fundament");
+    }
+    
+    // Check all other items
+    const characterLevel = this.system.level || 0;
+    
+    this.items.forEach(item => {
+      if (item.type === 'ancestry' || item.type === 'fundament') return;
+      
+      // Handle track items with tier-based size steps
+      if (item.type === 'track') {
+        const trackItems = this.items.filter(i => i.type === 'track');
+        const trackSlotIndex = item.getFlag('zwolf-epic', 'slotIndex') ?? trackItems.findIndex(t => t.id === item.id);
+        const unlockedTiers = this._getTrackTiersForLevel(trackSlotIndex, characterLevel);
+        
+        // Check base track size steps
+        addSizeSteps(item, "Track");
+        
+        // Check tier-specific size steps
+        unlockedTiers.forEach(tierNumber => {
+          const tierData = item.system.tiers?.[`tier${tierNumber}`];
+          if (tierData?.sideEffects?.sizeSteps) {
+            const tierItem = { 
+              name: `${item.name} (Tier ${tierNumber})`, 
+              system: { sideEffects: tierData.sideEffects } 
+            };
+            addSizeSteps(tierItem, "Track Tier");
+          }
+        });
+        
+        return;
+      }
+      
+      // Equipment placement filtering
+      if (item.type === 'equipment') {
+        const requiredPlacement = item.system.requiredPlacement;
+        const currentPlacement = item.system.placement;
+        
+        if (requiredPlacement && requiredPlacement !== '' && requiredPlacement !== currentPlacement) {
+          return;
+        }
+      }
+      
+      // Regular item size steps check
+      addSizeSteps(item, "Item");
+    });
+    
+    // Calculate final size index
+    const finalSizeIndex = Math.max(0, Math.min(sizeOrder.length - 1, baseSizeIndex + totalSizeSteps));
+    const effectiveSize = sizeOrder[finalSizeIndex];
+    
+    if (totalSizeSteps !== 0) {
+      console.log(`Z-Wolf Epic | Size calculation - Base: ${baseSize} (${baseSizeIndex}), Steps: ${totalSizeSteps}, Final: ${effectiveSize} (${finalSizeIndex})`);
+    }
+    
+    return effectiveSize;
+  }
+
+  /**
+   * Get the actor's effective size including side effect modifications
+   * @returns {string} The effective size key
+   */
+  get effectiveSize() {
+    return this._calculateEffectiveSize();
+  }
+
+  /**
+   * Apply inherited properties from base creature for summoned actors
+   * @private
+   */
+  _applyBaseCreatureInheritance() {
+    // Only apply to mooks and spawns
+    if (!['mook', 'spawn'].includes(this.type)) return;
+    
+    const baseCreatureId = this.system.baseCreatureId;
+    if (!baseCreatureId) {
+      console.log(`Z-Wolf Epic | ${this.name} has no base creature assigned`);
+      return;
+    }
+    
+    const baseCreature = game.actors.get(baseCreatureId);
+    if (!baseCreature) {
+      console.warn(`Z-Wolf Epic | ${this.name} references non-existent base creature: ${baseCreatureId}`);
+      return;
+    }
+    
+    // Inherit level
+    if (this.system.level !== baseCreature.system.level) {
+      this.system.level = baseCreature.system.level;
+      console.log(`Z-Wolf Epic | ${this.name} inherited level ${this.system.level} from ${baseCreature.name}`);
+    }
+    
+    // Inherit size (with modification for spawns)
+    let inheritedSize;
+    if (this.type === 'spawn') {
+      // Spawns are two size categories smaller
+      const sizeOrder = ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"];
+      const baseSizeIndex = sizeOrder.indexOf(baseCreature.system.size || "medium");
+      const spawnSizeIndex = Math.max(0, baseSizeIndex - 2);
+      inheritedSize = sizeOrder[spawnSizeIndex];
+      
+      if (this.system.size !== inheritedSize) {
+        this.system.size = inheritedSize;
+        console.log(`Z-Wolf Epic | Spawn ${this.name} inherited size ${inheritedSize} (2 steps smaller than ${baseCreature.system.size}) from ${baseCreature.name}`);
+      }
+    } else if (this.type === 'mook') {
+      // Mooks keep the same size
+      inheritedSize = baseCreature.system.size;
+      if (this.system.size !== inheritedSize) {
+        this.system.size = inheritedSize;
+        console.log(`Z-Wolf Epic | Mook ${this.name} inherited size ${inheritedSize} from ${baseCreature.name}`);
+      }
+    }
+    
+    // Inherit tags - calculate them from the base creature's items
+    const baseCreatureTags = this._calculateTagsFromCreature(baseCreature);
+    if (this.system.tags !== baseCreatureTags) {
+      this.system.tags = baseCreatureTags;
+      console.log(`Z-Wolf Epic | ${this.name} inherited tags "${baseCreatureTags}" from ${baseCreature.name}`);
+    }
+    
+    // Inherit vision for spawns - use the values calculated in base creature's system
+    if (this.type === 'spawn') {
+      const baseNightsight = baseCreature.nightsight || 1;
+      const baseDarkvision = baseCreature.darkvision || 0.2;
+      
+      if (this.system.nightsight !== baseNightsight) {
+        this.system.nightsight = baseNightsight;
+        console.log(`Z-Wolf Epic | Spawn ${this.name} inherited nightsight ${baseNightsight}m from ${baseCreature.name}`);
+      }
+      
+      if (this.system.darkvision !== baseDarkvision) {
+        this.system.darkvision = baseDarkvision;
+        console.log(`Z-Wolf Epic | Spawn ${this.name} inherited darkvision ${baseDarkvision}m from ${baseCreature.name}`);
+      }
+    }
+  }
+
+  /**
+   * Calculate character tags from a creature's items
+   * @param {Actor} creature - The creature to calculate tags from
+   * @returns {string} Comma-separated tags
+   * @private
+   */
+  _calculateTagsFromCreature(creature) {
+    const allTags = [];
+    
+    const parseTags = (tags) => {
+      if (!tags) return [];
+      
+      if (Array.isArray(tags)) {
+        return tags.filter(tag => tag && tag.trim().length > 0);
+      } else if (typeof tags === 'string') {
+        return tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
+      }
+      
+      return [];
+    };
+    
+    const getTrackTierForLevel = (trackSlotIndex, characterLevel) => {
+      const tierLevels = [];
+      for (let tier = 1; tier <= 5; tier++) {
+        const tierLevel = trackSlotIndex + 1 + ((tier - 1) * 4);
+        if (characterLevel >= tierLevel) {
+          tierLevels.push(tier);
+        }
+      }
+      return tierLevels;
+    };
+    
+    // Collect tags from all items that have characterTags
+    creature.items.forEach(item => {
+      // Handle track items with tier-based character tags
+      if (item.type === 'track') {
+        const trackItems = creature.items.filter(i => i.type === 'track');
+        const trackSlotIndex = item.getFlag('zwolf-epic', 'slotIndex') ?? trackItems.findIndex(t => t.id === item.id);
+        const characterLevel = creature.system.level || 0;
+        const unlockedTiers = getTrackTierForLevel(trackSlotIndex, characterLevel);
+        
+        // Collect character tags from unlocked tiers
+        unlockedTiers.forEach(tierNumber => {
+          const tierData = item.system.tiers?.[`tier${tierNumber}`];
+          if (tierData && tierData.characterTags) {
+            const tierTags = parseTags(tierData.characterTags);
+            allTags.push(...tierTags);
+          }
+        });
+      } 
+      // Handle regular items with characterTags
+      else if (item.system && item.system.characterTags) {
+        const itemTags = parseTags(item.system.characterTags);
+        allTags.push(...itemTags);
+      }
+    });
+    
+    // Remove duplicates and sort
+    const uniqueTags = [...new Set(allTags)].sort();
+    
+    if (uniqueTags.length > 0) {
+      return uniqueTags.join(', ');
+    }
+    
+    // Default fallback
+    return 'Humanoid';
+  }
 }
+
+// Hook to update token sizes when effective size changes
+Hooks.on('updateActor', (actor, data, options, userId) => {
+  // Check if size or items that affect size were updated
+  const sizeChanged = data.system?.size !== undefined;
+  
+  // If size potentially changed, recalculate and update tokens
+  if (sizeChanged || actor.system.effectiveSize) {
+    const effectiveSize = actor.effectiveSize;
+    const sizeData = CONFIG.ZWOLF?.sizes?.[effectiveSize];
+    
+    if (sizeData) {
+      const targetScale = sizeData.tokenScale;
+      
+      // Update all placed tokens for this actor
+      actor.getActiveTokens().forEach(async token => {
+        if (token.document.width !== targetScale || token.document.height !== targetScale) {
+          await token.document.update({
+            width: targetScale,
+            height: targetScale
+          });
+          
+          console.log(`Z-Wolf Epic | Updated token "${token.name}" size to ${effectiveSize} (${targetScale}x${targetScale})`);
+        }
+      });
+    }
+  }
+});
+
+// Hook to update spawns/mooks when their base creature changes
+Hooks.on('updateActor', (actor, data, options, userId) => {
+  // If this actor was updated, check if any spawns/mooks reference it
+  const dependentActors = game.actors.filter(a => 
+    ['mook', 'spawn'].includes(a.type) && 
+    a.system.baseCreatureId === actor.id
+  );
+  
+  if (dependentActors.length > 0) {
+    console.log(`Z-Wolf Epic | Base creature ${actor.name} updated, refreshing ${dependentActors.length} dependent actors`);
+    
+    dependentActors.forEach(dependent => {
+      // Trigger re-preparation of derived data
+      dependent.prepareData();
+      
+      // Re-render open sheets
+      if (dependent.sheet?.rendered) {
+        dependent.sheet.render(false);
+      }
+    });
+  }
+});
+
+// Hook to update spawns/mooks when their base creature changes
+Hooks.on('updateActor', (actor, data, options, userId) => {
+  // If this actor was updated, check if any spawns/mooks reference it
+  const dependentActors = game.actors.filter(a => 
+    ['mook', 'spawn'].includes(a.type) && 
+    a.system.baseCreatureId === actor.id
+  );
+  
+  if (dependentActors.length > 0) {
+    console.log(`Z-Wolf Epic | Base creature ${actor.name} updated, refreshing ${dependentActors.length} dependent actors`);
+    
+    dependentActors.forEach(dependent => {
+      // Trigger re-preparation of derived data
+      dependent.prepareData();
+      
+      // Re-render open sheets
+      if (dependent.sheet?.rendered) {
+        dependent.sheet.render(false);
+      }
+    });
+  }
+});

@@ -27,7 +27,8 @@ class SideEffectsCapableTemplate extends foundry.abstract.DataModel {
         nightsightRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
         darkvisionRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
         maxBulkBoost: new fields.NumberField({ required: false, initial: 0, integer: true }),
-        grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" })
+        grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" }),
+        sizeSteps: new fields.NumberField({ required: false, initial: 0, integer: true })  // ADD THIS LINE
       })
     };
   }
@@ -128,10 +129,11 @@ function createTierSchema() {
       speedProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
       toughnessTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
       destinyTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
-      nightsight: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
-      darkvision: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
+      nightsightRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),  // Changed from nightsight
+      darkvisionRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),  // Changed from darkvision
       knacksProvided: new fields.NumberField({ required: false, initial: 0, integer: true, min: 0 }),
-      grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" })
+      grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" }),
+      sizeSteps: new fields.NumberField({ required: false, initial: 0, integer: true })
     })
   });
 }

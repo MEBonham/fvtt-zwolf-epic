@@ -7,9 +7,6 @@ export class ActorDataCalculator {
     this.actor = actor;
   }
 
-  /**
-   * Main method to prepare all sheet data
-   */
   prepareSheetData(context) {
     // Get the actor data
     const actorData = this.actor;
@@ -21,48 +18,70 @@ export class ActorDataCalculator {
     // Get character level
     const level = context.system.level ?? 0;
     
-    // Calculate progression-related data
-    const progressionOnlyLevel = this._getProgressionOnlyLevel(actorData);
-    context.progressionBonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+    // Handle spawns specially - they mirror their base creature
+    if (this.actor.type === 'spawn') {
+      // Set available base creatures for the dropdown
+      context.availableBaseCreatures = game.actors.filter(a => 
+        ['pc', 'npc'].includes(a.type)
+      );
+      
+      const spawnDataPrepared = this._prepareSpawnData(context);
+      
+      if (!spawnDataPrepared) {
+        // No base creature - use minimal defaults
+        context.progressionBonuses = { mediocre: 0, moderate: 0, specialty: 0, awesome: 0 };
+        context.tns = { toughness: 6, destiny: 6, improvised: 6, healing: 6, challenge: 6 };
+        context.progressions = this._getEmptyProgressions();
+        context.abilityCategories = {};
+        context.calculatedValues = { maxVitality: 12, coastNumber: 4, maxStamina: 4 };
+      }
+    } else {
+      // Normal calculation for non-spawn actors
+      const progressionOnlyLevel = this._getProgressionOnlyLevel(actorData);
+      context.progressionBonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+      
+      // Get foundation items
+      this._addFoundationItems(context);
+      
+      // Apply side effects and calculate target numbers
+      const sideEffects = this._applySideEffects(context.ancestry, context.fundament, this.actor.items);
+      context.sideEffects = sideEffects;
+      
+      context.tns = {
+        toughness: 6 + context.progressionBonuses[sideEffects.toughnessTNProgression],
+        destiny: 6 + context.progressionBonuses[sideEffects.destinyTNProgression],
+        improvised: 6 + context.progressionBonuses.mediocre,
+        healing: 6 + context.progressionBonuses.moderate,
+        challenge: 6 + context.progressionBonuses.specialty
+      };
+      
+      // Organize stats by progression
+      context.progressions = this._organizeByProgression(context.system, context.progressionBonuses, sideEffects);
+      
+      // Gather granted abilities
+      context.abilityCategories = this._categorizeGrantedAbilities();
+      
+      // Calculate fundament-based values
+      context.calculatedValues = this._calculateFundamentValues(level, context.fundament);
+    }
     
-    // Get foundation items
-    this._addFoundationItems(context);
-
-    // Check vitality boost count (queues update if needed)
-    // this._checkVitalityBoostCount();
+    // Add base creature data for mooks
+    if (this.actor.type === 'mook') {
+      // Set available base creatures for the dropdown
+      context.availableBaseCreatures = game.actors.filter(a => 
+        ['pc', 'npc'].includes(a.type)
+      );
+      
+      this._prepareBaseCreatureData(context);
+    }
     
-    // Apply side effects and calculate target numbers
-    const sideEffects = this._applySideEffects(context.ancestry, context.fundament, this.actor.items);
-    context.sideEffects = sideEffects;
-    
-    context.tns = {
-      toughness: 6 + context.progressionBonuses[sideEffects.toughnessTNProgression],
-      destiny: 6 + context.progressionBonuses[sideEffects.destinyTNProgression],
-      improvised: 6 + context.progressionBonuses.mediocre,
-      healing: 6 + context.progressionBonuses.moderate,
-      challenge: 6 + context.progressionBonuses.specialty
-    };
-    
-    // Organize stats by progression
-    context.progressions = this._organizeByProgression(context.system, context.progressionBonuses, sideEffects);
-    
-    // Add labels
+    // Common calculations for all types
     this._addStatLabels(context);
-    
-    // Calculate slots
     this._calculateSlots(context);
     
-    // Calculate Build Points
-    context.buildPoints = this._calculateTotalBP(context.system, context.ancestry, context.fundament);
-    
-    // Gather granted abilities
-    context.abilityCategories = this._categorizeGrantedAbilities();
-    
-    // Ensure all ability categories exist
-    this._ensureAbilityCategories(context);
-    
-    // Calculate fundament-based values
-    context.calculatedValues = this._calculateFundamentValues(level, context.fundament);
+    if (['pc', 'npc', 'eidolon'].includes(this.actor.type)) {
+      context.buildPoints = this._calculateTotalBP(context.system, context.ancestry, context.fundament);
+    }
     
     // Calculate character tags
     context.characterTags = this._calculateCharacterTags();
@@ -78,26 +97,78 @@ export class ActorDataCalculator {
     if (!context.system.buildPointsLocked) {
       context.system.buildPointsLocked = false;
     }
-
-    // Add base creature data for mooks/spawns
-    if (['mook', 'spawn'].includes(this.actor.type)) {
-      this._prepareBaseCreatureData(context);
-    }
     
-    console.log("Z-Wolf Epic | Final context data:", {
-      progressionBonuses: context.progressionBonuses,
-      abilityCategories: context.abilityCategories,
-      calculatedValues: context.calculatedValues,
-      equipment: context.equipment ? Object.keys(context.equipment) : 'undefined'
-    });
+    // Ensure all ability categories exist
+    this._ensureAbilityCategories(context);
     
     return context;
   }
 
-  // Add base creature data for mooks/spawns
+  /**
+   * Get empty progressions structure
+   * @private
+   */
+  _getEmptyProgressions() {
+    return {
+      mediocre: { name: "Mediocre", bonus: 0, stats: [] },
+      moderate: { name: "Moderate", bonus: 0, stats: [] },
+      specialty: { name: "Specialty", bonus: 0, stats: [] },
+      awesome: { name: "Awesome", bonus: 0, stats: [] }
+    };
+  }
+
   _prepareBaseCreatureData(context) {
     if (context.system.baseCreatureId) {
-      context.baseCreature = game.actors.get(context.system.baseCreatureId);
+      const baseCreature = game.actors.get(context.system.baseCreatureId);
+      context.baseCreature = baseCreature;
+      
+      if (baseCreature && this.actor.type === 'spawn') {
+        // Calculate base creature's calculator data
+        const baseCalculator = new ActorDataCalculator(baseCreature);
+        const baseContext = { system: baseCreature.system };
+        
+        // Get base creature's progression bonuses
+        const baseProgressionOnlyLevel = this._getProgressionOnlyLevel(baseCreature);
+        context.baseProgressionBonuses = baseCalculator._calculateProgressionBonuses(
+          baseCreature.system.level ?? 0,
+          baseProgressionOnlyLevel
+        );
+        
+        // Get base creature's side effects
+        const baseAncestry = baseCreature.system.ancestryId ? baseCreature.items.get(baseCreature.system.ancestryId) : null;
+        const baseFundament = baseCreature.system.fundamentId ? baseCreature.items.get(baseCreature.system.fundamentId) : null;
+        const baseSideEffects = baseCalculator._applySideEffects(
+          baseAncestry?.toObject(), 
+          baseFundament?.toObject(), 
+          baseCreature.items
+        );
+        
+        // Calculate base creature's TNs for the spawn
+        context.tns = {
+          toughness: 6 + context.baseProgressionBonuses[baseSideEffects.toughnessTNProgression],
+          destiny: 6 + context.baseProgressionBonuses[baseSideEffects.destinyTNProgression],
+          combined: 6 + context.baseProgressionBonuses[baseSideEffects.destinyTNProgression] // Use destiny for combined TN
+        };
+        
+        // Use base creature's progressions for sidebar
+        context.progressions = baseCalculator._organizeByProgression(
+          baseCreature.system, 
+          context.baseProgressionBonuses, 
+          baseSideEffects
+        );
+        
+        // Use base creature's calculated values
+        context.calculatedValues = {
+          maxVitality: baseCreature.system.vitalityPoints.max,
+          coastNumber: baseCreature.system.coastNumber,
+          maxStamina: baseCreature.system.staminaPoints.max
+        };
+        
+        // Use base creature's granted abilities
+        context.abilityCategories = baseCalculator._categorizeGrantedAbilities();
+        
+        console.log(`Z-Wolf Epic | Spawn ${this.actor.name} mirroring base creature ${baseCreature.name}`);
+      }
     }
     
     // Get available base creatures
@@ -179,7 +250,7 @@ export class ActorDataCalculator {
       destinyTNProgressionSource: 'default',
       nightsightRadius: this.actor.system.vision?.nightsightRadius || 1,
       nightsightRadiusSource: 'default',
-      darkvisionRadius: this.actor.system.vision?.darkvisionRadius || 0.5,
+      darkvisionRadius: this.actor.system.vision?.darkvisionRadius || 0.2,
       darkvisionRadiusSource: 'default'
     };
     
@@ -925,6 +996,17 @@ prepareSlots(itemType, slotCount) {
   // =================================
 
   _calculateFundamentValues(level, fundament = null) {
+    // Initialize objects if they don't exist (defensive programming)
+    if (!this.actor.system.vitalityPoints) {
+      this.actor.system.vitalityPoints = { value: 12, min: 0, max: 12 };
+    }
+    if (!this.actor.system.staminaPoints) {
+      this.actor.system.staminaPoints = { value: 4, min: 0, max: 4 };
+    }
+    if (this.actor.system.coastNumber === undefined) {
+      this.actor.system.coastNumber = 4;
+    }
+
     // Don't recalculate - use the values already computed by Actor.prepareDerivedData()
     return {
       maxVitality: this.actor.system.vitalityPoints.max,
@@ -938,6 +1020,13 @@ prepareSlots(itemType, slotCount) {
   // =================================
 
   _calculateCharacterTags() {
+    // For spawns and mooks, tags are inherited in Actor.prepareDerivedData()
+    // Just return the current system value
+    if (['spawn', 'mook'].includes(this.actor.type)) {
+      return this.actor.system.tags || 'Humanoid';
+    }
+    
+    // Original tag calculation for other actor types
     const allTags = [];
     
     const getTrackTierForLevel = (trackSlotIndex, characterLevel) => {
@@ -1177,4 +1266,79 @@ prepareSlots(itemType, slotCount) {
   //     }, 0);
   //   }
   // }
+
+  /**
+   * Prepare base creature data for spawns - they mirror their base creature completely
+   * @private
+   */
+  _prepareSpawnData(context) {
+    if (!context.system.baseCreatureId) {
+      console.warn(`Z-Wolf Epic | Spawn ${this.actor.name} has no base creature assigned`);
+      return false;
+    }
+    
+    const baseCreature = game.actors.get(context.system.baseCreatureId);
+    if (!baseCreature) {
+      console.warn(`Z-Wolf Epic | Spawn ${this.actor.name} references non-existent base creature: ${context.system.baseCreatureId}`);
+      return false;
+    }
+    
+    context.baseCreature = baseCreature;
+    
+    console.log(`Z-Wolf Epic | Spawn ${this.actor.name} mirroring base creature ${baseCreature.name}`);
+    
+    // Create a calculator for the base creature
+    const baseCalculator = new ActorDataCalculator(baseCreature);
+    const baseContext = { system: baseCreature.system, flags: baseCreature.flags };
+    
+    // Get base creature's progression data
+    const baseProgressionOnlyLevel = this._getProgressionOnlyLevel(baseCreature);
+    context.progressionBonuses = baseCalculator._calculateProgressionBonuses(
+      baseCreature.system.level ?? 0,
+      baseProgressionOnlyLevel
+    );
+    
+    // Get base creature's foundation items
+    baseCalculator._addFoundationItems(baseContext);
+    context.ancestry = baseContext.ancestry;
+    context.fundament = baseContext.fundament;
+    
+    // Get base creature's side effects
+    const baseSideEffects = baseCalculator._applySideEffects(
+      baseContext.ancestry,
+      baseContext.fundament,
+      baseCreature.items
+    );
+    context.sideEffects = baseSideEffects;
+    
+    // Calculate TNs from base creature
+    context.tns = {
+      toughness: 6 + context.progressionBonuses[baseSideEffects.toughnessTNProgression],
+      destiny: 6 + context.progressionBonuses[baseSideEffects.destinyTNProgression],
+      improvised: 6 + context.progressionBonuses.mediocre,
+      healing: 6 + context.progressionBonuses.moderate,
+      challenge: 6 + context.progressionBonuses.specialty
+    };
+    
+    // Use base creature's progressions for sidebar
+    context.progressions = baseCalculator._organizeByProgression(
+      baseCreature.system,
+      context.progressionBonuses,
+      baseSideEffects
+    );
+    
+    // Use base creature's calculated values (CN, etc.)
+    context.calculatedValues = {
+      maxVitality: baseCreature.system.vitalityPoints.max,
+      coastNumber: baseCreature.system.coastNumber,
+      maxStamina: baseCreature.system.staminaPoints.max
+    };
+    
+    // Use base creature's granted abilities
+    context.abilityCategories = baseCalculator._categorizeGrantedAbilities();
+    
+    console.log(`Z-Wolf Epic | Spawn mirrored data - TNs: ${context.tns.toughness}/${context.tns.destiny}, CN: ${context.calculatedValues.coastNumber}`);
+    
+    return true;
+  }
 }

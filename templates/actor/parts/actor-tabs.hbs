@@ -4,4 +4,6 @@
     <a class="item {{tab.cssClass}}" data-tab="{{tab.id}}">{{tab.label}}</a>
   {{/each}}
 </nav>
+{{else}}
+<div data-part-id="tabs" style="display: none;"></div>
 {{/if}}
