@@ -1,5 +1,7 @@
 /**
  * Z-Wolf Epic Dice System Constants
+ * 
+ * Note: User-facing strings are now localized in lang/en.json under ZWOLF_DICE
  */
 
 export const ZWOLF_CONSTANTS = {
@@ -40,25 +42,10 @@ export const ZWOLF_CONSTANTS = {
     AUTO_RESET_BOOSTS: 'autoResetBoosts'
   },
   
-  // Messages
-  MESSAGES: {
-    NO_ACTOR: "No actor selected for roll",
-    INVALID_SKILL_ATTRIBUTE: "Invalid skill or attribute",
-    INVALID_ATTRIBUTE: "Invalid attribute",
-    DEFAULT_FLAVOR: "Z-Wolf Epic Roll"
-  },
-  
-  // Key die positions
+  // Key die positions (internal use - not localized)
   KEY_DIE_POSITIONS: {
     SECOND_HIGHEST: "second-highest",
     SECOND_LOWEST: "second-lowest",
     MEDIAN: "median"
-  },
-  
-  // Crit messages
-  CRIT_MESSAGES: {
-    SUCCESS: "✨ CRITICAL SUCCESS CHANCE! ✨",
-    FAILURE: "💀 CRITICAL FAILURE CHANCE! 💀",
-    WILD_CARD: "⚡ CRITICAL WILD CARD! ⚡"
   }
 };

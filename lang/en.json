@@ -298,5 +298,37 @@
     "CopyOfWorldItem": "Copy of world Item: {name}",
     "PushToActors": "Push to Actors",
     "PushToActorsTooltip": "Update all Actor copies of this Item"
+  },
+  "ZWOLF_DICE": {
+    "QuickRoll": "Quick roll with current boosts",
+    "RemoveBoost": "Remove Boost / Add Jinx",
+    "AddBoost": "Add Boost / Remove Jinx",
+    "ResetBoosts": "Reset to 0",
+    "NetBoosts": "Net Boosts",
+    "Boosts": "Boosts",
+    "Jinxes": "Jinxes",
+    "BoostsJinxes": "Positive = Boosts, Negative = Jinxes",
+    "OneBoost": "1 Boost",
+    "MultipleBoosts": "{count} Boosts",
+    "OneJinx": "1 Jinx",
+    "MultipleJinxes": "{count} Jinxes",
+    "QuickZWolfRoll": "Quick Z-Wolf Roll",
+    "DefaultFlavor": "Z-Wolf Epic Roll",
+    "NoActor": "No actor selected for roll",
+    "InvalidSkillAttribute": "Invalid skill or attribute",
+    "InvalidAttribute": "Invalid attribute",
+    "CritSuccessChance": "✨ CRITICAL SUCCESS CHANCE! ✨",
+    "CritFailureChance": "💀 CRITICAL FAILURE CHANCE! 💀",
+    "CritWildCard": "⚡ CRITICAL WILD CARD! ⚡",
+    "VersusTarget": "vs {target}",
+    "Success": "SUCCESS",
+    "Failure": "FAILURE",
+    
+    "Settings": {
+      "AutoResetBoostsName": "Auto-Reset Boosts",
+      "AutoResetBoostsHint": "Automatically reset Net Boosts to 0 after each roll",
+      "DebugModeName": "Debug Mode",
+      "DebugModeHint": "Enable debug logging for Z-Wolf Epic dice system"
+    }
   }
 }

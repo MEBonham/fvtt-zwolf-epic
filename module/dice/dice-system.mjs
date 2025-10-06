@@ -54,14 +54,14 @@ export class ZWolfDice {
    */
   static async rollSkill(actor, skillName, attributeName = null, netBoosts = null) {
     if (!actor) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.NO_ACTOR);
+      ui.notifications.warn(game.i18n.localize("ZWOLF_DICE.NoActor"));
       return null;
     }
     
     const skill = actor.system.skills?.[skillName];
     
     if (!skill || !skill.progression) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.INVALID_SKILL_ATTRIBUTE);
+      ui.notifications.warn(game.i18n.localize("ZWOLF_DICE.InvalidSkillAttribute"));
       return null;
     }
     
@@ -90,14 +90,14 @@ export class ZWolfDice {
    */
   static async rollAttribute(actor, attributeName, netBoosts = null) {
     if (!actor) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.NO_ACTOR);
+      ui.notifications.warn(game.i18n.localize("ZWOLF_DICE.NoActor"));
       return null;
     }
     
     const attribute = actor.system.attributes?.[attributeName];
     
     if (!attribute || !attribute.progression) {
-      ui.notifications.warn(ZWOLF_CONSTANTS.MESSAGES.INVALID_ATTRIBUTE);
+      ui.notifications.warn(game.i18n.localize("ZWOLF_DICE.InvalidAttribute"));
       return null;
     }
     
@@ -186,7 +186,7 @@ async function performRoll({netBoosts = 0, modifier = 0, targetNumber = null, fl
     roll,
     success,
     targetNumber,
-    flavor: flavor || ZWOLF_CONSTANTS.MESSAGES.DEFAULT_FLAVOR,
+    flavor: flavor || game.i18n.localize("ZWOLF_DICE.DefaultFlavor"),
     actor,
     netBoosts,
     modifier,
@@ -287,7 +287,7 @@ async function createChatMessage(rollData) {
   try {
     const messageData = {
       speaker: rollData.actor ? ChatMessage.getSpeaker({ actor: rollData.actor }) : ChatMessage.getSpeaker(),
-      flavor: rollData.flavor || ZWOLF_CONSTANTS.MESSAGES.DEFAULT_FLAVOR,
+      flavor: rollData.flavor || game.i18n.localize("ZWOLF_DICE.DefaultFlavor"),
       roll: [rollData.roll],
       content: await createRollContent(rollData),
       sound: CONFIG.sounds.dice
@@ -314,7 +314,7 @@ async function createRollContent(rollData) {
   tooltip += `\nKey Die (${keyDiePosition}): ${keyDie}`;
   if (modifier !== 0) tooltip += ` + ${modifier} modifier`;
   if (netBoosts !== 0) {
-    const boostType = netBoosts > 0 ? 'Boosts' : 'Jinxes';
+    const boostType = netBoosts > 0 ? game.i18n.localize("ZWOLF_DICE.Boosts") : game.i18n.localize("ZWOLF_DICE.Jinxes");
     tooltip += `\nNet ${boostType}: ${Math.abs(netBoosts)}`;
   }
   
@@ -332,7 +332,7 @@ async function createRollContent(rollData) {
   let content = `
     <div class="zwolf-roll-compact ${critClass}">
       <div class="roll-main" title="${tooltip}">
-        <div class="roll-stat">${flavor || 'Roll'}</div>
+        <div class="roll-stat">${flavor || game.i18n.localize("ZWOLF_DICE.DefaultFlavor")}</div>
         <div class="roll-result-big">${finalResult}</div>
       </div>
   `;
@@ -342,11 +342,11 @@ async function createRollContent(rollData) {
     content += `<div class="crit-notification">`;
     
     if (critSuccessChance && critFailureChance) {
-      content += `<span class="crit-both">${ZWOLF_CONSTANTS.CRIT_MESSAGES.WILD_CARD}</span>`;
+      content += `<span class="crit-both">${game.i18n.localize("ZWOLF_DICE.CritWildCard")}</span>`;
     } else if (critSuccessChance) {
-      content += `<span class="crit-success">${ZWOLF_CONSTANTS.CRIT_MESSAGES.SUCCESS}</span>`;
+      content += `<span class="crit-success">${game.i18n.localize("ZWOLF_DICE.CritSuccessChance")}</span>`;
     } else if (critFailureChance) {
-      content += `<span class="crit-failure">${ZWOLF_CONSTANTS.CRIT_MESSAGES.FAILURE}</span>`;
+      content += `<span class="crit-failure">${game.i18n.localize("ZWOLF_DICE.CritFailureChance")}</span>`;
     }
     
     content += `</div>`;
@@ -354,11 +354,14 @@ async function createRollContent(rollData) {
   
   // Add target and outcome
   if (targetNumber !== null) {
+    const vsText = game.i18n.format("ZWOLF_DICE.VersusTarget", { target: targetNumber });
+    const outcomeText = success ? game.i18n.localize("ZWOLF_DICE.Success") : game.i18n.localize("ZWOLF_DICE.Failure");
+    
     content += `
       <div class="roll-outcome-compact">
-        <span class="target">vs ${targetNumber}</span>
+        <span class="target">${vsText}</span>
         <span class="outcome ${success ? 'success' : 'failure'}">
-          ${success ? 'SUCCESS' : 'FAILURE'}
+          ${outcomeText}
         </span>
       </div>
     `;
@@ -406,8 +409,8 @@ function registerSettings() {
   if (!systemId) return;
   
   game.settings.register(systemId, ZWOLF_CONSTANTS.SETTINGS.AUTO_RESET_BOOSTS, {
-    name: 'Auto-Reset Boosts',
-    hint: 'Automatically reset Net Boosts to 0 after each roll',
+    name: game.i18n.localize("ZWOLF_DICE.Settings.AutoResetBoostsName"),
+    hint: game.i18n.localize("ZWOLF_DICE.Settings.AutoResetBoostsHint"),
     scope: 'client',
     config: true,
     type: Boolean,
@@ -415,8 +418,8 @@ function registerSettings() {
   });
   
   game.settings.register(systemId, 'debugMode', {
-    name: 'Debug Mode',
-    hint: 'Enable debug logging for Z-Wolf Epic dice system',
+    name: game.i18n.localize("ZWOLF_DICE.Settings.DebugModeName"),
+    hint: game.i18n.localize("ZWOLF_DICE.Settings.DebugModeHint"),
     scope: 'client',
     config: true,
     type: Boolean,

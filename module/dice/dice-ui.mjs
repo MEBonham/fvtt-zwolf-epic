@@ -45,15 +45,15 @@ export class ZWolfUI {
     
     // Update label text and styling
     if (value > 0) {
-      label.textContent = `Boosts: ${value}`;
+      label.textContent = `${game.i18n.localize("ZWOLF_DICE.Boosts")}: ${value}`;
       container?.classList.remove(ZWOLF_CONSTANTS.CSS_CLASSES.JINX_ACTIVE);
       container?.classList.add(ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_ACTIVE);
     } else if (value < 0) {
-      label.textContent = `Jinxes: ${Math.abs(value)}`;
+      label.textContent = `${game.i18n.localize("ZWOLF_DICE.Jinxes")}: ${Math.abs(value)}`;
       container?.classList.remove(ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_ACTIVE);
       container?.classList.add(ZWOLF_CONSTANTS.CSS_CLASSES.JINX_ACTIVE);
     } else {
-      label.textContent = 'Net Boosts: 0';
+      label.textContent = `${game.i18n.localize("ZWOLF_DICE.NetBoosts")}: 0`;
       container?.classList.remove(
         ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_ACTIVE, 
         ZWOLF_CONSTANTS.CSS_CLASSES.JINX_ACTIVE
@@ -69,22 +69,22 @@ export class ZWolfUI {
     return `
       <div class="${ZWOLF_CONSTANTS.CSS_CLASSES.BOOST_CONTROL}">
         <div class="zwolf-boost-header">
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.QUICK_ROLL}" class="zwolf-icon-button" title="Quick roll with current boosts">
+          <button id="${ZWOLF_CONSTANTS.ELEMENTS.QUICK_ROLL}" class="zwolf-icon-button" title="${game.i18n.localize("ZWOLF_DICE.QuickRoll")}">
             <i class="fas fa-dice-d12"></i>
           </button>
-          <span class="zwolf-boost-label">Net Boosts: 0</span>
+          <span class="zwolf-boost-label">${game.i18n.localize("ZWOLF_DICE.NetBoosts")}: 0</span>
         </div>
         <div class="zwolf-boost-inputs">
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_MINUS}" title="Remove Boost / Add Jinx">
+          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_MINUS}" title="${game.i18n.localize("ZWOLF_DICE.RemoveBoost")}">
             <i class="fas fa-minus"></i>
           </button>
           <input type="number" id="${ZWOLF_CONSTANTS.ELEMENTS.NET_BOOSTS_INPUT}" 
                  value="0" min="${ZWOLF_CONSTANTS.MIN_BOOSTS}" max="${ZWOLF_CONSTANTS.MAX_BOOSTS}" 
-                 title="Positive = Boosts, Negative = Jinxes"/>
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_PLUS}" title="Add Boost / Remove Jinx">
+                 title="${game.i18n.localize("ZWOLF_DICE.BoostsJinxes")}"/>
+          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_PLUS}" title="${game.i18n.localize("ZWOLF_DICE.AddBoost")}">
             <i class="fas fa-plus"></i>
           </button>
-          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_RESET}" title="Reset to 0">
+          <button id="${ZWOLF_CONSTANTS.ELEMENTS.BOOST_RESET}" title="${game.i18n.localize("ZWOLF_DICE.ResetBoosts")}">
             <i class="fas fa-undo"></i>
           </button>
         </div>
@@ -105,13 +105,17 @@ export class ZWolfUI {
     // Jinx buttons (-3 to -1)
     for (let i = -3; i <= -1; i++) {
       const absValue = Math.abs(i);
-      const title = absValue === 1 ? '1 Jinx' : `${absValue} Jinxes`;
+      const title = absValue === 1 
+        ? game.i18n.localize("ZWOLF_DICE.OneJinx")
+        : game.i18n.format("ZWOLF_DICE.MultipleJinxes", { count: absValue });
       buttons.push(`<button class="zwolf-quick-boost" data-value="${i}" title="${title}">${i}</button>`);
     }
     
     // Boost buttons (+1 to +3)
     for (let i = 1; i <= 3; i++) {
-      const title = i === 1 ? '1 Boost' : `${i} Boosts`;
+      const title = i === 1 
+        ? game.i18n.localize("ZWOLF_DICE.OneBoost")
+        : game.i18n.format("ZWOLF_DICE.MultipleBoosts", { count: i });
       buttons.push(`<button class="zwolf-quick-boost" data-value="${i}" title="${title}">+${i}</button>`);
     }
     
@@ -194,7 +198,11 @@ export class ZWolfUI {
   static async _performQuickRoll(netBoosts) {
     // Dynamic import to avoid circular dependency
     const { ZWolfDice } = await import('./dice-system.mjs');
-    await ZWolfDice.roll({ netBoosts, modifier: 0, flavor: "Quick Z-Wolf Roll" });
+    await ZWolfDice.roll({ 
+      netBoosts, 
+      modifier: 0, 
+      flavor: game.i18n.localize("ZWOLF_DICE.QuickZWolfRoll")
+    });
   }
   
   /**
