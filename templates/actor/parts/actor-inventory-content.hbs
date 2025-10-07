@@ -25,19 +25,21 @@
     <!-- Equipment Categories -->
     <div class="inventory-categories">
       {{#each (getEquipmentCategories) as |category|}}
-        {{#if (lookup ../equipment category.key).length}}
-          <div class="equipment-category">
-            <h4 class="category-header">
-              <i class="fas {{category.icon}}"></i>
-              {{localize category.label}}
-            </h4>
-            <div class="equipment-list">
-              {{#each (lookup ../../equipment category.key) as |item|}}
-                {{> equipment-item item=item}}
-              {{/each}}
+        {{#with (lookup ../equipment category.key) as |categoryItems|}}
+          {{#if categoryItems.length}}
+            <div class="equipment-category">
+              <h4 class="category-header">
+                <i class="fas {{category.icon}}"></i>
+                {{localize category.label}}
+              </h4>
+              <div class="equipment-list">
+                {{#each categoryItems as |item|}}
+                  {{> equipment-item item=item}}
+                {{/each}}
+              </div>
             </div>
-          </div>
-        {{/if}}
+          {{/if}}
+        {{/with}}
       {{/each}}
 
       <!-- No Equipment Message -->

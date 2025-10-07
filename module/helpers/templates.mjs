@@ -15,9 +15,11 @@ export const preloadHandlebarsTemplates = async function() {
     
     // Actor partials (NOT parts!)
     "systems/zwolf-epic/templates/actor/partials/ability-category.hbs",
+    "systems/zwolf-epic/templates/actor/partials/ability-detail.hbs",
     "systems/zwolf-epic/templates/actor/partials/base-creature-selector.hbs",
     "systems/zwolf-epic/templates/actor/partials/equipment-item.hbs",
     "systems/zwolf-epic/templates/actor/partials/foundation-slot.hbs",
+    "systems/zwolf-epic/templates/actor/partials/item-slot.hbs",
     "systems/zwolf-epic/templates/actor/partials/progression-slider.hbs",
     "systems/zwolf-epic/templates/actor/partials/resource-display.hbs",
     "systems/zwolf-epic/templates/actor/partials/tn-display.hbs",

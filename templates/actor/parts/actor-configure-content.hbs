@@ -49,10 +49,10 @@
                 <button type="button" 
                         class="build-points-lock-btn {{#if system.buildPointsLocked}}locked{{else}}unlocked{{/if}}" 
                         data-action="toggleLock"
-                        title="{{localize (if system.buildPointsLocked 'ZWOLF.UnlockSliders' 'ZWOLF.LockSliders')}}">
+                        title="{{localize (ternary system.buildPointsLocked 'ZWOLF.UnlockSliders' 'ZWOLF.LockSliders')}}">
                   <i class="fas {{#if system.buildPointsLocked}}fa-lock{{else}}fa-unlock{{/if}}"></i>
                   <span class="lock-label">
-                    {{localize (if system.buildPointsLocked 'ZWOLF.Locked' 'ZWOLF.Unlocked')}}
+                    {{localize (ternary system.buildPointsLocked 'ZWOLF.Locked' 'ZWOLF.Unlocked')}}
                   </span>
                 </button>
               </div>
@@ -177,7 +177,7 @@
                       icon="fa-gem"
                       isDisabled=(not slot.hasTrack)
                       disabledReason=(localize "ZWOLF.RequiresTrack" trackNumber=slot.trackNumber)
-                      extraInfo=(if slot.hasTrack 
+                      extraInfo=(ternary slot.hasTrack 
                                   (concat "(" (localize "ZWOLF.Track") " " slot.trackNumber ": " slot.trackName ")")
                                   (concat "(" (localize "ZWOLF.Track") " " slot.trackNumber ": " (localize "ZWOLF.NotAssigned") ")"))}}
                 {{/each}}

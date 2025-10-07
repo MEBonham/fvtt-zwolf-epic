@@ -34,7 +34,8 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
       extendedRest: ZWolfActorSheet._onExtendedRest,
       editItem: ZWolfActorSheet._onEditItem,
       deleteItem: ZWolfActorSheet._onDeleteItem,
-      viewBaseCreature: ZWolfActorSheet._onViewBaseCreature
+      viewBaseCreature: ZWolfActorSheet._onViewBaseCreature,
+      changeTab: ZWolfActorSheet._onChangeTab
     },
     window: {
       resizable: true,
@@ -117,9 +118,14 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     sheetData.isMook = this.document.type === 'mook';
     sheetData.isSpawn = this.document.type === 'spawn';
     
+    // Ensure tabGroups.primary has a value
+    if (!this.tabGroups.primary) {
+      this.tabGroups.primary = "main";
+    }
+    
     // Add tabs configuration
     sheetData.tabs = this._getTabs();
-    sheetData.currentTab = this.tabGroups.primary;
+    sheetData.currentTab = this.tabGroups.primary; // Use the stored value
     
     // Determine visible parts
     sheetData.showTabs = !sheetData.isSpawn;
@@ -137,6 +143,9 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   /** @override */
   _onRender(context, options) {
     super._onRender(context, options);
+    
+    // Activate the correct tab FIRST
+    this._activateTab();
     
     // Activate rich text editors
     EditorSaveHandler.activateEditors(this);
@@ -162,6 +171,36 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     
     // Restore state AFTER everything else
     this.stateManager.restoreState();
+  }
+
+  /**
+   * Activate the current tab
+   * @private
+   */
+  _activateTab() {
+    const activeTab = this.tabGroups.primary || "main";
+    
+    // Show the active tab content
+    const tabContents = this.element.querySelectorAll('.tab[data-tab]');
+    tabContents.forEach(tab => {
+      if (tab.dataset.tab === activeTab) {
+        tab.classList.add('active');
+        tab.style.display = 'block';
+      } else {
+        tab.classList.remove('active');
+        tab.style.display = 'none';
+      }
+    });
+    
+    // Highlight the active tab button
+    const tabButtons = this.element.querySelectorAll('[data-group="primary"][data-tab]');
+    tabButtons.forEach(btn => {
+      if (btn.dataset.tab === activeTab) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
   }
 
   // ========================================
@@ -404,6 +443,46 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     const progressionGroup = target.closest('.progression-group');
     if (progressionGroup) {
       progressionGroup.classList.toggle('collapsed');
+    }
+  }
+
+  static async _onChangeTab(event, target) {
+    const newTab = target.dataset.tab;
+    const group = target.dataset.group || "primary";
+    
+    if (this.tabGroups[group] !== newTab) {
+      // Update the tab group
+      this.tabGroups[group] = newTab;
+      
+      // IMPORTANT: Update the state manager BEFORE any rendering
+      this.stateManager.state.activeTab = newTab;
+      
+      // Use CSS to show/hide tabs immediately (no render needed)
+      const tabContents = this.element.querySelectorAll('.tab[data-tab]');
+      
+      tabContents.forEach(tab => {
+        if (tab.dataset.tab === newTab) {
+          tab.classList.add('active');
+          tab.style.display = 'block';
+        } else {
+          tab.classList.remove('active');
+          tab.style.display = 'none';
+        }
+      });
+      
+      // Update tab button active states
+      const tabButtons = this.element.querySelectorAll('[data-group="primary"][data-tab]');
+      
+      tabButtons.forEach(btn => {
+        console.log(`Processing button: ${btn.dataset.tab}, making active: ${btn.dataset.tab === newTab}`);
+        if (btn.dataset.tab === newTab) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    } else {
+      console.log("Tab already active, no change needed");
     }
   }
 

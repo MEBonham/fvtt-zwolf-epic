@@ -1,7 +1,12 @@
 {{#if showTabs}}
 <nav class="sheet-tabs tabs" data-group="primary" data-part-id="tabs">
   {{#each tabs as |tab|}}
-    <a class="item {{tab.cssClass}}" data-tab="{{tab.id}}">{{tab.label}}</a>
+    <a class="item {{tab.cssClass}}" 
+       data-tab="{{tab.id}}" 
+       data-group="{{tab.group}}"
+       data-action="changeTab">
+      {{tab.label}}
+    </a>
   {{/each}}
 </nav>
 {{else}}

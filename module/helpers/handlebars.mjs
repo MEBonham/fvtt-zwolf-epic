@@ -314,13 +314,9 @@ export function registerHandlebarsHelpers() {
   });
 
   /**
-   * If/else helper
+   * Ternary conditional helper (inline if/else)
    */
-  Handlebars.registerHelper('if', function(condition, options) {
-    if (condition) {
-      return options.fn(this);
-    } else {
-      return options.inverse(this);
-    }
+  Handlebars.registerHelper('ternary', function(condition, trueValue, falseValue) {
+    return condition ? trueValue : falseValue;
   });
 }

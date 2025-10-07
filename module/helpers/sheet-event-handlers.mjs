@@ -15,20 +15,6 @@ export class SheetEventHandlers {
    * Bind all event listeners to the sheet HTML
    */
   bindEventListeners(html) {
-    // TAB NAVIGATION HANDLERS
-    html.querySelectorAll('[data-group="primary"] .item[data-tab]').forEach(tab => {
-      tab.addEventListener('click', (event) => {
-        event.preventDefault();
-        const tabId = event.currentTarget.dataset.tab;
-        
-        // Update the tab group
-        this.sheet.tabGroups.primary = tabId;
-        
-        // Re-render the sheet to show the new tab
-        this.sheet.render(false);
-      });
-    });
-
     // Dice roll handlers
     html.querySelectorAll('.progression-die').forEach(el => {
       el.addEventListener('click', (ev) => {
