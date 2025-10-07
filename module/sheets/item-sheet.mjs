@@ -55,13 +55,11 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   // ========================================
 
   async _prepareContext(options) {
-    // Capture state BEFORE any data changes
     this.stateManager.captureState();
     
     const context = await super._prepareContext(options);
     const itemData = this.document.toObject(false);
 
-    // Basic context
     Object.assign(context, {
       editable: this.isEditable,
       owner: this.document.isOwner,
@@ -74,18 +72,18 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
       isEquipment: this.document.type === 'equipment'
     });
 
-    // Enrich main description
+    // Only enrich description once (not in type-specific methods)
     context.enrichedDescription = await HtmlEnricher.enrichContent(
       this.document.system.description || "",
       this.document,
       "main description"
     );
 
-    // Process type-specific data
+    // Only prepare data for type-specific if needed
     await this._prepareTypeSpecificData(context, itemData);
     
-    // Prepare summary-specific data (lightweight)
-    await this._prepareSummaryData(context, itemData);
+    // REMOVE THIS - summary data is prepared in type-specific methods
+    // await this._prepareSummaryData(context, itemData);
 
     return context;
   }
@@ -311,6 +309,9 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   _onRender(context, options) {
     super._onRender(context, options);
     
+    // Ensure active tab is visible
+    this._activateTab();
+    
     // Activate rich text editors
     EditorSaveHandler.activateEditors(this);
     
@@ -321,6 +322,36 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     if (context.isLocked) {
       this._applyLockState();
     }
+  }
+
+  /**
+   * Activate the current tab
+   * @private
+   */
+  _activateTab() {
+    const activeTab = this._activeTab || "summary";
+    
+    // Show the active tab content
+    const tabContents = this.element.querySelectorAll('.tab[data-tab]');
+    tabContents.forEach(tab => {
+      if (tab.dataset.tab === activeTab) {
+        tab.classList.add('active');
+        tab.style.display = 'block';
+      } else {
+        tab.classList.remove('active');
+        tab.style.display = 'none';
+      }
+    });
+    
+    // Highlight the active tab button
+    const tabButtons = this.element.querySelectorAll('[data-group="primary"][data-tab]');
+    tabButtons.forEach(btn => {
+      if (btn.dataset.tab === activeTab) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
   }
 
   /**
@@ -382,6 +413,7 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
         const tabId = event.currentTarget.dataset.tab;
         this._activeTab = tabId;
         this.stateManager.setActiveTab(tabId);
+        this._activateTab(); // ← ADD THIS to immediately show the tab
       });
     });
   }
