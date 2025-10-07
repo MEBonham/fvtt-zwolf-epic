@@ -128,7 +128,7 @@
             (hash value="worn" label="ZWOLF.Worn")
             (hash value="readily-available" label="ZWOLF.ReadilyAvailable")
             (hash value="not-carried" label="ZWOLF.NotCarried"))
-          notes=(if item.actor "ZWOLF.PlacementHint" "ZWOLF.PlacementDisabledHint")}}
+          notes=(ternary item.actor "ZWOLF.PlacementHint" "ZWOLF.PlacementDisabledHint")}}
 
       <!-- Required Placement -->
       <div class="form-group">

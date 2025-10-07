@@ -36,33 +36,6 @@ export class DropZoneHandler {
   }
 
   // =================================
-  // SCROLL PRESERVATION UTILITIES
-  // =================================
-
-  /**
-   * Preserve scroll position before re-render
-   */
-  _preserveScrollPosition() {
-    // This method is now just a wrapper
-    if (typeof this.sheet._captureScrollPositions === 'function') {
-      this.sheet._captureScrollPositions();
-    }
-  }
-
-  /**
-   * Render sheet with scroll preservation
-   */
-  async _renderWithScrollPreservation() {
-    // Use the sheet's scroll capture mechanism
-    if (typeof this.sheet._captureScrollPositions === 'function') {
-      this.sheet._captureScrollPositions();
-    }
-    
-    // Just render - the sheet's _onRender will restore scroll
-    await this.sheet.render(false);
-  }
-
-  // =================================
   // FOUNDATION DROP HANDLERS
   // =================================
 
@@ -93,6 +66,11 @@ export class DropZoneHandler {
     this.sheet._processingCustomDrop = true;
     event.preventDefault();
     event.stopPropagation();
+    
+    // Capture scroll position BEFORE any operations
+    if (this.sheet.stateManager) {
+      this.sheet.stateManager.captureState();
+    }
     
     try {
       const dropZone = event.currentTarget;
@@ -144,16 +122,6 @@ export class DropZoneHandler {
         } else {
           actorItem = item;
         }
-
-        // After successfully assigning an ancestry, validate the size
-        if (expectedType === 'ancestry') {
-          setTimeout(async () => {
-            const sizeChanged = await this._validateActorSize();
-            if (sizeChanged) {
-              await this._renderWithScrollPreservation();
-            }
-          }, 100);
-        }
         
         // STEP 4: Set the new ID reference
         updateData = {};
@@ -164,18 +132,25 @@ export class DropZoneHandler {
         await actorItem.setFlag('zwolf-epic', 'locked', true);
         
         ui.notifications.info(`${item.name} has been set as your ${expectedType}.`);
-        await this._renderWithScrollPreservation();
+        
+        // After successfully assigning an ancestry, validate the size
+        if (expectedType === 'ancestry') {
+          await this._validateActorSize();
+        }
+        
+        // Final render with preserved scroll
+        await this.sheet.render(false);
         
       } catch (err) {
         console.error("Z-Wolf Epic | Foundation drop error:", err);
         ui.notifications.error("Failed to assign the item to this slot.");
       }
     } finally {
-      console.log("Z-Wolf Epic | _onFoundationDrop FINALLY - resetting flag after 500ms");
+      console.log("Z-Wolf Epic | _onFoundationDrop FINALLY - resetting flag after 100ms");
       setTimeout(() => {
         console.log("Z-Wolf Epic | _onFoundationDrop flag reset to false");
         this.sheet._processingCustomDrop = false;
-      }, 500);
+      }, 100);
     }
   }
 
@@ -201,103 +176,110 @@ export class DropZoneHandler {
     }
   }
 
-async _onSlotDrop(event) {
-  console.log("Z-Wolf Epic | _onSlotDrop START - setting flag to true");
-  this.sheet._processingCustomDrop = true;
-  event.preventDefault();
-  event.stopPropagation();
-  
-  try {
-    const dropZone = event.currentTarget;
-    dropZone.classList.remove('drag-over', 'invalid-drop');
+  async _onSlotDrop(event) {
+    console.log("Z-Wolf Epic | _onSlotDrop START - setting flag to true");
+    this.sheet._processingCustomDrop = true;
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Capture scroll position BEFORE any operations
+    if (this.sheet.stateManager) {
+      this.sheet.stateManager.captureState();
+    }
     
     try {
-      const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
+      const dropZone = event.currentTarget;
+      dropZone.classList.remove('drag-over', 'invalid-drop');
       
-      if (data.type !== 'Item') return;
-      
-      const item = await fromUuid(data.uuid);
-      if (!item) {
-        ui.notifications.error("Could not find the dropped item.");
-        return;
-      }
-      
-      const expectedType = dropZone.dataset.itemType;
-      const slot = dropZone.dataset.slot;
-      
-      if (item.type !== expectedType) {
-        ui.notifications.warn(`This slot only accepts ${expectedType} items.`);
-        return;
-      }
-      
-      // Parse slot index from slot string (e.g., "talent-4" -> 4, "track-2" -> 2)
-      const slotIndex = parseInt(slot.split('-')[1]);
-      
-      // Check slot capacity
-      const currentItems = this.actor.items.filter(i => i.type === expectedType);
-      const maxSlots = this._getMaxSlotsForType(expectedType);
-      
-      let existingItem = null;
-      
-      if (expectedType === 'talent' || expectedType === 'track') {
-        // For talents and tracks, check if there's already an item in this specific slot
-        existingItem = currentItems.find(i => i.getFlag('zwolf-epic', 'slotIndex') === slotIndex);
+      try {
+        const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
         
-        // Validate slot index is within bounds
-        if (slotIndex >= maxSlots) {
-          ui.notifications.warn(`Invalid ${expectedType} slot ${slotIndex + 1}. Maximum slots: ${maxSlots}.`);
+        if (data.type !== 'Item') return;
+        
+        const item = await fromUuid(data.uuid);
+        if (!item) {
+          ui.notifications.error("Could not find the dropped item.");
           return;
         }
-      } else {
-        // For knacks, use sequential logic
-        existingItem = currentItems[slotIndex];
         
-        if (currentItems.length >= maxSlots && !existingItem) {
-          ui.notifications.warn(`You have reached the maximum number of ${expectedType} slots.`);
+        const expectedType = dropZone.dataset.itemType;
+        const slot = dropZone.dataset.slot;
+        
+        if (item.type !== expectedType) {
+          ui.notifications.warn(`This slot only accepts ${expectedType} items.`);
           return;
         }
+        
+        // Parse slot index from slot string (e.g., "talent-4" -> 4, "track-2" -> 2)
+        const slotIndex = parseInt(slot.split('-')[1]);
+        
+        // Check slot capacity
+        const currentItems = this.actor.items.filter(i => i.type === expectedType);
+        const maxSlots = this._getMaxSlotsForType(expectedType);
+        
+        let existingItem = null;
+        
+        if (expectedType === 'talent' || expectedType === 'track') {
+          // For talents and tracks, check if there's already an item in this specific slot
+          existingItem = currentItems.find(i => i.getFlag('zwolf-epic', 'slotIndex') === slotIndex);
+          
+          // Validate slot index is within bounds
+          if (slotIndex >= maxSlots) {
+            ui.notifications.warn(`Invalid ${expectedType} slot ${slotIndex + 1}. Maximum slots: ${maxSlots}.`);
+            return;
+          }
+        } else {
+          // For knacks, use sequential logic
+          existingItem = currentItems[slotIndex];
+          
+          if (currentItems.length >= maxSlots && !existingItem) {
+            ui.notifications.warn(`You have reached the maximum number of ${expectedType} slots.`);
+            return;
+          }
+        }
+        
+        // Create or get the item on the actor if it's not already owned
+        let actorItem;
+        if (item.actor?.id !== this.actor.id) {
+          const itemData = item.toObject();
+          const createdItems = await this.actor.createEmbeddedDocuments("Item", [itemData]);
+          actorItem = createdItems[0];
+        } else {
+          actorItem = item;
+        }
+        
+        // Handle replacement if needed
+        if (existingItem && existingItem.id !== actorItem.id) {
+          await existingItem.delete();
+          ui.notifications.info(`Replaced ${existingItem.name} with ${item.name}.`);
+        } else if (!existingItem) {
+          ui.notifications.info(`${item.name} has been added as a ${expectedType}.`);
+        }
+        
+        // Set locked flag
+        await actorItem.setFlag('zwolf-epic', 'locked', true);
+        
+        // For talents and tracks, store the specific slot index
+        if (expectedType === 'talent' || expectedType === 'track') {
+          await actorItem.setFlag('zwolf-epic', 'slotIndex', slotIndex);
+          console.log(`Z-Wolf Epic | Set ${expectedType} ${item.name} to slot index ${slotIndex}`);
+        }
+        
+        // Final render with preserved scroll
+        await this.sheet.render(false);
+        
+      } catch (err) {
+        console.error("Z-Wolf Epic | Slot drop error:", err);
+        ui.notifications.error("Failed to assign the item to this slot.");
       }
-      
-      // Create or get the item on the actor if it's not already owned
-      let actorItem;
-      if (item.actor?.id !== this.actor.id) {
-        const itemData = item.toObject();
-        const createdItems = await this.actor.createEmbeddedDocuments("Item", [itemData]);
-        actorItem = createdItems[0];
-      } else {
-        actorItem = item;
-      }
-      
-      // Handle replacement if needed
-      if (existingItem && existingItem.id !== actorItem.id) {
-        await existingItem.delete();
-        ui.notifications.info(`Replaced ${existingItem.name} with ${item.name}.`);
-      } else if (!existingItem) {
-        ui.notifications.info(`${item.name} has been added as a ${expectedType}.`);
-      }
-      
-      // Set locked flag
-      await actorItem.setFlag('zwolf-epic', 'locked', true);
-      
-      // For talents and tracks, store the specific slot index
-      if (expectedType === 'talent' || expectedType === 'track') {
-        await actorItem.setFlag('zwolf-epic', 'slotIndex', slotIndex);
-        console.log(`Z-Wolf Epic | Set ${expectedType} ${item.name} to slot index ${slotIndex}`);
-      }
-      
-      await this._renderWithScrollPreservation();
-    } catch (err) {
-      console.error("Z-Wolf Epic | Slot drop error:", err);
-      ui.notifications.error("Failed to assign the item to this slot.");
+    } finally {
+      console.log("Z-Wolf Epic | _onSlotDrop FINALLY - resetting flag after 100ms");
+      setTimeout(() => {
+        console.log("Z-Wolf Epic | _onSlotDrop flag reset to false");
+        this.sheet._processingCustomDrop = false;
+      }, 100);
     }
-  } finally {
-    console.log("Z-Wolf Epic | _onSlotDrop FINALLY - resetting flag after 500ms");
-    setTimeout(() => {
-      console.log("Z-Wolf Epic | _onSlotDrop flag reset to false");
-      this.sheet._processingCustomDrop = false;
-    }, 500);
   }
-}
 
   // =================================
   // EQUIPMENT DROP HANDLERS
@@ -324,6 +306,11 @@ async _onSlotDrop(event) {
     this.sheet._processingCustomDrop = true;
     event.preventDefault();
     event.stopPropagation();
+    
+    // Capture scroll position BEFORE any operations
+    if (this.sheet.stateManager) {
+      this.sheet.stateManager.captureState();
+    }
     
     try {
       const dropZone = event.currentTarget;
@@ -361,7 +348,9 @@ async _onSlotDrop(event) {
         // Equipment items don't get locked (unlike talents/knacks/tracks)
         
         ui.notifications.info(`${item.name} has been added to your inventory.`);
-        await this._renderWithScrollPreservation();
+        
+        // Final render with preserved scroll
+        await this.sheet.render(false);
         
       } catch (err) {
         console.error("Z-Wolf Epic | Equipment drop error:", err);
@@ -370,7 +359,7 @@ async _onSlotDrop(event) {
     } finally {
       setTimeout(() => {
         this.sheet._processingCustomDrop = false;
-      }, 500);
+      }, 100);
     }
   }
 

@@ -104,8 +104,11 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
 
   /** @override */
   async _prepareContext(options) {
-    // Capture state BEFORE context preparation
-    this.stateManager.captureState();
+    // Don't capture state if we're in the middle of a custom drop operation
+    // The drop handler will capture state at the right time
+    if (!this._processingCustomDrop && this.stateManager) {
+      this.stateManager.captureState();
+    }
     
     const context = await super._prepareContext(options);
     const calculator = new ActorDataCalculator(this.document);
@@ -125,7 +128,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     
     // Add tabs configuration
     sheetData.tabs = this._getTabs();
-    sheetData.currentTab = this.tabGroups.primary; // Use the stored value
+    sheetData.currentTab = this.tabGroups.primary;
     
     // Determine visible parts
     sheetData.showTabs = !sheetData.isSpawn;

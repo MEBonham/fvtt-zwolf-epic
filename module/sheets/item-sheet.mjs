@@ -306,22 +306,23 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     return options;
   }
 
+  /** @override */
   _onRender(context, options) {
     super._onRender(context, options);
     
-    // Ensure active tab is visible
+    // Capture state BEFORE any form inputs change
+    this.element.addEventListener('input', () => {
+      this.stateManager.captureState();
+    }, { capture: true });
+    
+    // Activate the correct tab FIRST
     this._activateTab();
     
     // Activate rich text editors
     EditorSaveHandler.activateEditors(this);
     
-    // Restore state (tabs, scrolls, accordions)
+    // Restore state AFTER everything else
     this.stateManager.restoreState();
-    
-    // Apply lock state if needed
-    if (context.isLocked) {
-      this._applyLockState();
-    }
   }
 
   /**
@@ -476,25 +477,31 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   // FORM SUBMISSION
   // ========================================
 
-  async _onSubmitForm(formConfig, event, formData) {
-    let submitData = formData?.object || formData || {};
-    
-    // Convert number fields
+  async _onSubmitForm(formConfig, event) {
+    // Get the form element
     const form = event?.target?.form || event?.target?.closest('form');
-    if (form) {
-      const numberInputs = form.querySelectorAll('input[data-dtype="Number"], input[type="number"]');
-      numberInputs.forEach(input => {
-        const fieldPath = input.name;
-        if (submitData[fieldPath] !== null && submitData[fieldPath] !== undefined && submitData[fieldPath] !== '') {
-          const parsedValue = Number(submitData[fieldPath]);
-          const finalValue = input.step && input.step !== '1' ? parsedValue : Math.floor(parsedValue);
-          submitData[fieldPath] = isNaN(finalValue) ? 0 : finalValue;
-        }
-      });
-
-      // Handle multi-select fields
-      ItemDataProcessor.processMultiSelectFields(form, submitData);
+    if (!form) {
+      console.error("Z-Wolf Epic | No form found in submit event");
+      return;
     }
+
+    // Extract form data using FormDataExtended
+    const formData = new foundry.applications.ux.FormDataExtended(form);
+    let submitData = formData.object;
+    
+    // Convert number fields explicitly
+    const numberInputs = form.querySelectorAll('input[data-dtype="Number"], input[type="number"]');
+    numberInputs.forEach(input => {
+      const fieldPath = input.name;
+      if (fieldPath && submitData[fieldPath] !== null && submitData[fieldPath] !== undefined && submitData[fieldPath] !== '') {
+        const parsedValue = Number(submitData[fieldPath]);
+        const finalValue = input.step && input.step !== '1' ? parsedValue : Math.floor(parsedValue);
+        submitData[fieldPath] = isNaN(finalValue) ? 0 : finalValue;
+      }
+    });
+
+    // Handle multi-select fields
+    ItemDataProcessor.processMultiSelectFields(form, submitData);
 
     // Expand object structure
     submitData = foundry.utils.expandObject(submitData);

@@ -110,6 +110,10 @@ export function registerHandlebarsHelpers() {
     return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
   });
 
+  Handlebars.registerHelper('not', function(value) {
+    return !value;
+  });
+
   // ========================================
   // MATH OPERATIONS
   // ========================================

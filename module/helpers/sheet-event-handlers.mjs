@@ -226,19 +226,20 @@ export class SheetEventHandlers {
     
     if (updatePath && newProgression) {
       await this.actor.update({ [updatePath]: newProgression });
-      await this.sheet.render(false);
+      // Don't call render() - submitOnChange handles it automatically
       // SheetStateManager will handle scroll restoration
     }
   }
 
-  async _onLevelChange(event) {
-    event.preventDefault();
-    const newLevel = parseInt(event.currentTarget.value) || 0;
-    const clampedLevel = Math.max(0, Math.min(20, newLevel));
-    
-    await this.actor.update({ 'system.level': clampedLevel });
-    this.sheet.render(false);
-  }
+async _onLevelChange(event) {
+  event.preventDefault();
+  const newLevel = parseInt(event.currentTarget.value) || 0;
+  const clampedLevel = Math.max(0, Math.min(20, newLevel));
+  
+  await this.actor.update({ 'system.level': clampedLevel });
+  // Remove this line:
+  // this.sheet.render(false);
+}
 
   // =================================
   // ITEM CONTROL HANDLERS

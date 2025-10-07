@@ -29,7 +29,7 @@ export function getSyncableFields(itemType) {
       'system.sizeOptions',
       'system.required',
       'system.knacksProvided',
-      'system.knackMenu',
+      'system.knackMenus',
       'system.buildPoints'
     ],
     fundament: [
@@ -56,7 +56,8 @@ export function getSyncableFields(itemType) {
     talent: [
       'system.characterTags',
       'system.required',
-      'system.knacksProvided'
+      'system.knacksProvided',
+      'system.knackMenus'
     ],
     universal: [
       'system.characterTags'
@@ -200,23 +201,42 @@ async function performPushUpdates(sourceItem, copies, fieldsToSync) {
 
 /**
  * Add context menu option to world items for pushing to actors
- * Call this during system initialization
+ * Uses libWrapper to inject into the Items directory context menu
+ * MUST be called during the 'init' hook BEFORE the Items sidebar is rendered
  */
 export function registerItemContextMenuOption() {
-  Hooks.on("getItemDirectoryEntryContext", (html, menuItems) => {
-    menuItems.push({
+  if (typeof libWrapper !== 'function') {
+    console.error('Z-Wolf Epic | libWrapper not found - Push to Actors feature disabled');
+    ui.notifications.warn('Z-Wolf Epic requires libWrapper module for full functionality');
+    return;
+  }
+
+  console.log('Z-Wolf Epic | Registering item context menu with libWrapper');
+
+  // Wrap the _getEntryContextOptions method for ItemDirectory
+  libWrapper.register('zwolf-epic', 'foundry.applications.sidebar.tabs.ItemDirectory.prototype._getEntryContextOptions', function(wrapped, ...args) {
+    const options = wrapped(...args);
+    
+    // Add our custom option
+    options.push({
       name: "Push to Actors",
       icon: '<i class="fas fa-sync"></i>',
       condition: li => {
-        const item = game.items.get(li.data("documentId"));
-        return item && !item.parent && getEmbeddedCopies(item).length > 0;
+        const item = game.items.get(li.dataset.entryId);
+        if (!item || item.parent) return false;
+        const copies = getEmbeddedCopies(item);
+        return copies.length > 0;
       },
       callback: async li => {
-        const item = game.items.get(li.data("documentId"));
+        const item = game.items.get(li.dataset.entryId);
         if (item) {
           await pushItemToActors(item);
         }
       }
     });
-  });
+    
+    return options;
+  }, 'WRAPPER');
+
+  console.log('Z-Wolf Epic | Item context menu registered successfully');
 }

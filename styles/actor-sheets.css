@@ -875,8 +875,11 @@
 .equipment-item,
 .slotted-item {
   display: flex;
+  justify-content: center;
   align-items: center;
   gap: 0.75rem;
+  margin: 0 1rem;
+  width: 100%;
   padding: 0.5rem;
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--z-wolf-border);
@@ -994,7 +997,7 @@
   background: rgba(0, 0, 0, 0.3);
   border: 2px dashed var(--z-wolf-border);
   border-radius: 6px;
-  min-height: 80px;
+  min-height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1011,9 +1014,10 @@
   min-height: 100px;
 }
 
-.compact-drop-zone {
+/* .compact-drop-zone {
   min-height: 60px;
-}
+  padding: 0 1rem;
+} */
 
 .equipment-drop-zone:hover,
 .foundation-drop-zone:hover,

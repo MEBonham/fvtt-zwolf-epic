@@ -1004,12 +1004,13 @@ export class ActorDataCalculator {
     // Calculate max bulk
     let maxBulk = 10;
     
-    // Size modifier
+    // Size modifier (use effective size, not base size)
     const sizeModifiers = {
       'diminutive': -12, 'tiny': -8, 'small': -4, 'medium': 0,
-      'large': 4, 'huge': 8, 'gargantuan': 12
+      'large': 4, 'huge': 8, 'gargantuan': 12, 'colossal': 16
     };
-    maxBulk += sizeModifiers[this.actor.system?.size || 'medium'] || 0;
+    const effectiveSize = this.actor.system?.effectiveSize || this.actor.system?.size || 'medium';
+    maxBulk += sizeModifiers[effectiveSize] || 0;
     
     // Brawn modifier
     const brawnProgression = this.actor.system?.skills?.brawn?.progression || 'mediocre';
