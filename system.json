@@ -15,7 +15,10 @@
   }],
   "esmodules": ["module/zwolf-epic.mjs"],
   "styles": [
-    "styles/variables.css"
+    "styles/variables.css",
+    "styles/misc-styles.css",
+    "styles/actor-sheets.css",
+    "styles/item-sheets.css"
   ],
   "scripts": [],
   "packs": [],

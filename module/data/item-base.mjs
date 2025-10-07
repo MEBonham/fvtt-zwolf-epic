@@ -1,247 +1,208 @@
-foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
-    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
-    makeDefault: true,
-    label: "Z-Wolf Epic I/**
- * Z-Wolf Epic Game System
- * Main initialization file for Foundry VTT v13
- */
-
-// Import document classes
-import { ZWolfActor } from "./documents/Actor.mjs";
-import { ZWolfItem } from "./documents/Item.mjs";
-import ZWolfTokenDocument from "./documents/Token.mjs";
-
-// Import data models
-import * as actorDataModels from "./data/actor-base.mjs";
-import * as itemDataModels from "./data/item-base.mjs";
-
-// Import sheet classes
-import ZWolfActorSheet from "./sheets/actor-sheet.mjs";
-import ZWolfItemSheet from "./sheets/item-sheet.mjs";
-
-// Import helpers and utilities
-import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
-import { ZWOLF } from "./helpers/config.mjs";
-import { ZWolfDice } from "./dice/index.mjs";
-import { ZWolfVisionSystem } from "./helpers/vision-detection-only.mjs";
-import { ZWolfVisionRadiusDisplay } from "./helpers/vision-radius-display.mjs";
-import { registerItemContextMenuOption } from "./helpers/item-sync.mjs";
-
-// Import hook modules
-import { registerCombatHooks } from "./hooks/combat.mjs";
-import { registerTokenHooks } from "./hooks/token.mjs";
-import { registerItemHooks } from "./hooks/item.mjs";
-import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
-import { registerMacroHooks } from "./hooks/macros.mjs";
-
-/* -------------------------------------------- */
-/*  Init Hook                                   */
-/* -------------------------------------------- */
-
-Hooks.once('init', async function() {
-  console.log('Z-Wolf Epic | Initializing system');
-
-  // Add utility classes to global game object
-  game.zwolf = {
-    ZWolfActor,
-    ZWolfItem,
-    vision: ZWolfVisionSystem,
-    visionDisplay: ZWolfVisionRadiusDisplay,
-    roll: ZWolfDice.roll.bind(ZWolfDice)
-  };
-
-  // Add custom constants
-  CONFIG.ZWOLF = ZWOLF;
-
-  // Configure documents
-  configureDocuments();
-  
-  // Configure status effects
-  configureStatusEffects();
-  
-  // Configure canvas and grid
-  configureCanvas();
-  
-  // Configure combat
-  configureCombat();
-  
-  // Register sheets
-  registerSheets();
-  
-  // Initialize vision systems
-  ZWolfVisionSystem.initialize();
-  ZWolfVisionRadiusDisplay.initialize();
-  
-  // Register all Handlebars helpers
-  registerHandlebarsHelpers();
-  
-  // Register hook modules
-  registerTokenHooks();
-  registerCombatHooks();
-  registerItemHooks();
-  
-  // Register item sync context menu
-  registerItemContextMenuOption();
-  
-  // Preload templates
-  await preloadHandlebarsTemplates();
-  
-  console.log('Z-Wolf Epic | System initialized');
-});
-
-/* -------------------------------------------- */
-/*  Configuration Functions                     */
-/* -------------------------------------------- */
+// module/data/item-base.js
 
 /**
- * Configure document classes and data models
+ * Base template for all items
  */
-function configureDocuments() {
-  // Set custom document classes
-  CONFIG.Actor.documentClass = ZWolfActor;
-  CONFIG.Item.documentClass = ZWolfItem;
-  CONFIG.Token.documentClass = ZWolfTokenDocument;
-  
-  // Register Actor data models
-  CONFIG.Actor.dataModels = {
-    pc: actorDataModels.PCData,
-    npc: actorDataModels.NPCData,
-    eidolon: actorDataModels.EidolonData,
-    mook: actorDataModels.MookData,
-    spawn: actorDataModels.SpawnData
-  };
-  
-  // Register Item data models
-  CONFIG.Item.dataModels = {
-    ancestry: itemDataModels.AncestryData,
-    fundament: itemDataModels.FundamentData,
-    equipment: itemDataModels.EquipmentData,
-    knack: itemDataModels.KnackData,
-    track: itemDataModels.TrackData,
-    talent: itemDataModels.TalentData,
-    universal: itemDataModels.UniversalData
-  };
-
-  // Register actor type labels
-  CONFIG.Actor.typeLabels = {
-    pc: "Player Character",
-    npc: "Non-Player Character",
-    eidolon: "Eidolon",
-    mook: "Mook",
-    spawn: "Spawn"
-  };
+class BaseItemTemplate extends foundry.abstract.DataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      description: new fields.HTMLField({ required: false, blank: true, initial: "" }),
+      grantedAbilities: new fields.ObjectField({ required: false, initial: {} })
+    };
+  }
 }
 
 /**
- * Configure custom status effects
+ * Template for items with side effects
  */
-function configureStatusEffects() {
-  CONFIG.statusEffects = Object.entries(ZWOLF.conditions).map(([id, condition]) => ({
-    id: id,
-    name: condition.label,
-    icon: condition.icon,
-    description: condition.description,
-    statuses: [id]
-  }));
-
-  CONFIG.specialStatusEffects = {
-    DEFEATED: "dead",
-    INVISIBLE: "invisible",
-    BLIND: "",
-    BURROW: "",
-    HOVER: "",
-    FLY: ""
-  };
+class SideEffectsCapableTemplate extends foundry.abstract.DataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      sideEffects: new fields.SchemaField({
+        speedProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
+        toughnessTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
+        destinyTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
+        nightsightRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
+        darkvisionRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),
+        maxBulkBoost: new fields.NumberField({ required: false, initial: 0, integer: true }),
+        grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" }),
+        sizeSteps: new fields.NumberField({ required: false, initial: 0, integer: true })  // ADD THIS LINE
+      })
+    };
+  }
 }
 
 /**
- * Configure canvas and grid settings
+ * Ancestry Item DataModel
  */
-function configureCanvas() {
-  CONFIG.Canvas.gridPrecision = 2;
-  CONFIG.Canvas.rulerUnits = "m";
-  
-  // Set default scene to gridless
-  Hooks.on("preCreateScene", (document, data, options, userId) => {
-    if (!data.grid) data.grid = {};
-    if (data.grid.type === undefined) {
-      data.grid.type = CONST.GRID_TYPES.GRIDLESS;
-    }
+class AncestryData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      buildPoints: new fields.NumberField({ required: true, nullable: false, initial: 0, integer: true, min: 0 }),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      sizeOptions: new fields.ArrayField(
+        new fields.StringField({ required: true }),
+        { required: false, initial: ["medium"] }
+      ),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" }),
+      knacksProvided: new fields.NumberField({ required: true, nullable: false, initial: 0, integer: true, min: 0 }),
+      knackMenu: new fields.HTMLField({ required: false, blank: true, initial: "" })
+    };
+  }
+}
+
+/**
+ * Fundament Item DataModel
+ */
+class FundamentData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      buildPoints: new fields.NumberField({ required: true, nullable: false, initial: 15, integer: true, min: 0 }),
+      knacksProvided: new fields.NumberField({ required: true, nullable: false, initial: 4, integer: true, min: 0 }),
+      requiredKnackTag: new fields.StringField({ required: false, blank: true, initial: "" }),
+      vitalityFunction: new fields.StringField({ required: false, blank: true, initial: "" }),
+      coastFunction: new fields.StringField({ required: false, blank: true, initial: "" })
+    };
+  }
+}
+
+/**
+ * Equipment Item DataModel
+ */
+class EquipmentData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      quantity: new fields.StringField({ required: true, initial: "1", choices: ["1", "many"] }),
+      placement: new fields.StringField({ 
+        required: true, 
+        initial: "stowed",
+        choices: ["stowed", "wielded", "worn", "readily_available", "not_carried"]
+      }),
+      requiredPlacement: new fields.StringField({ required: false, blank: true, initial: "" }),
+      price: new fields.NumberField({ required: true, nullable: false, initial: 0, min: 0 }),
+      bulk: new fields.NumberField({ required: true, nullable: false, initial: 0, min: 0 }),
+      structure: new fields.NumberField({ required: true, nullable: false, initial: 10, integer: true, min: 0 })
+    };
+  }
+}
+
+/**
+ * Knack Item DataModel
+ */
+class KnackData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" })
+    };
+  }
+}
+
+/**
+ * Helper function to create tier schema
+ * Returns a new schema each time to avoid field reuse errors
+ */
+function createTierSchema() {
+  const fields = foundry.data.fields;
+  return new fields.SchemaField({
+    talentMenu: new fields.HTMLField({ required: false, blank: true, initial: "" }),
+    grantedAbilities: new fields.ObjectField({ required: false, initial: {} }),
+    characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+    sideEffects: new fields.SchemaField({
+      speedProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
+      toughnessTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
+      destinyTNProgression: new fields.StringField({ required: false, blank: true, initial: "" }),
+      nightsightRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),  // Changed from nightsight
+      darkvisionRadius: new fields.NumberField({ required: false, nullable: true, initial: null, integer: true }),  // Changed from darkvision
+      knacksProvided: new fields.NumberField({ required: false, initial: 0, integer: true, min: 0 }),
+      grantedProficiency: new fields.StringField({ required: false, blank: true, initial: "" }),
+      sizeSteps: new fields.NumberField({ required: false, initial: 0, integer: true })
+    })
   });
 }
 
 /**
- * Configure combat system
+ * Track Item DataModel
  */
-function configureCombat() {
-  CONFIG.Combat.initiative = {
-    formula: "1d12 + @attributes.agility.value",
-    decimals: 2
-  };
+class TrackData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
 
-  // Override initiative rolling to use Z-Wolf dice
-  Combat.prototype.rollInitiative = async function(ids, {formula=null, updateTurn=true, messageOptions={}} = {}) {
-    ids = typeof ids === "string" ? [ids] : ids;
-    const updates = [];
-    
-    for (let id of ids) {
-      const combatant = this.combatants.get(id);
-      if (!combatant?.actor) continue;
-      
-      const agilityMod = combatant.actor.system.attributes?.agility?.value || 0;
-      const rollResult = await ZWolfDice.roll({
-        netBoosts: 0,
-        modifier: agilityMod,
-        flavor: `Initiative Roll - ${combatant.name}`
-      });
-      
-      updates.push({
-        _id: id,
-        initiative: rollResult.finalResult
-      });
-    }
-    
-    if (updates.length) {
-      await this.updateEmbeddedDocuments("Combatant", updates);
-    }
-    
-    if (updateTurn && this.combatant?.initiative === null) {
-      await this.nextTurn();
-    }
-    
-    return this;
-  };
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" }),
+      tiers: new fields.SchemaField({
+        tier1: createTierSchema(),
+        tier2: createTierSchema(),
+        tier3: createTierSchema(),
+        tier4: createTierSchema(),
+        tier5: createTierSchema()
+      })
+    };
+  }
 }
 
 /**
- * Register sheet applications
+ * Talent Item DataModel
  */
-function registerSheets() {
-  // Unregister core sheets
-  foundry.documents.collections.Actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);
-  foundry.documents.collections.Items.unregisterSheet("core", foundry.applications.sheets.ItemSheetV2);
-  
-  // Register Z-Wolf sheets
-  foundry.documents.collections.Actors.registerSheet("zwolf-epic", ZWolfActorSheet, {
-    types: ["pc", "npc", "eidolon", "mook", "spawn"],
-    makeDefault: true,
-    label: "Z-Wolf Epic Character Sheet"
-  });
-  
-  foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
-    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent"],
-    makeDefault: true,
-    label: "Z-Wolf Epic Item Sheet"
-  });
+class TalentData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" }),
+      knacksProvided: new fields.NumberField({ required: true, nullable: false, initial: 0, integer: true, min: 0 })
+    };
+  }
 }
 
-/* -------------------------------------------- */
-/*  Ready Hook                                  */
-/* -------------------------------------------- */
+/**
+ * Universal Item DataModel
+ */
+class UniversalData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" })
+    };
+  }
+}
 
-Hooks.once("ready", async function() {
-  console.log('Z-Wolf Epic | System ready');
-  
-  // Register macro hooks
-  registerMacroHooks();
-});
+// Export all DataModels
+export {
+  BaseItemTemplate,
+  SideEffectsCapableTemplate,
+  AncestryData,
+  FundamentData,
+  EquipmentData,
+  KnackData,
+  TrackData,
+  TalentData,
+  UniversalData
+};

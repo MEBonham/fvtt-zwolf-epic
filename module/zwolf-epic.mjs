@@ -19,7 +19,7 @@ import ZWolfItemSheet from "./sheets/item-sheet.mjs";
 // Import helpers and utilities
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
-import { ZWolfDice } from './modules/dice/dice-system.mjs';
+import { ZWolfDice } from './dice/dice-system.mjs';
 import { ZWolfVisionSystem } from "./helpers/vision-detection-only.mjs";
 import { ZWolfVisionRadiusDisplay } from "./helpers/vision-radius-display.mjs";
 import { registerItemContextMenuOption } from "./helpers/item-sync.mjs";
@@ -64,6 +64,9 @@ Hooks.once('init', async function() {
   
   // Register sheets
   registerSheets();
+  
+  // Initialize dice system
+  ZWolfDice.initialize(); 
   
   // Initialize vision systems
   ZWolfVisionSystem.initialize();

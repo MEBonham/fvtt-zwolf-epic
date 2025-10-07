@@ -437,6 +437,3 @@ function getSetting(settingName, defaultValue = null) {
     return defaultValue;
   }
 }
-
-// Auto-initialize
-ZWolfDice.initialize();

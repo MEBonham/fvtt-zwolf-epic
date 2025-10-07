@@ -3,7 +3,7 @@
  * Adds custom initiative rolling with boosts/jinxes
  */
 
-import { ZWolfDice } from "../dice/index.mjs";
+import { ZWolfDice } from "../dice/dice-system.mjs";
 
 export function registerCombatHooks() {
   Hooks.on('renderCombatTracker', (app, html, data) => {

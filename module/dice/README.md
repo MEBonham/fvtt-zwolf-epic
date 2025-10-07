@@ -62,7 +62,7 @@ ZWolfDice.setNetBoosts(3);
 1. Place all files in your system's dice module folder
 2. Import the main module in your system:
    ```javascript
-   import { ZWolfDice } from './modules/dice/dice-system.mjs';
+   import { ZWolfDice } from './dice/dice-system.mjs';
    ```
 3. Include the CSS file in your system's CSS imports
 4. The system will auto-initialize when loaded
