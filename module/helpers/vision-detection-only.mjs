@@ -207,12 +207,23 @@ function evaluateVisibility(distance, lightLevel, nightsight, darkvision) {
  * @returns {number} Light level: 0 = dark, 0.25 = dim, 1 = bright
  */
 function sampleLightingAt(point) {
-  let maxLight = 0;
-  
   console.log(`Sampling light at (${point.x.toFixed(0)}, ${point.y.toFixed(0)})`);
   
+  // Check for global illumination first
+  const hasGlobalLight = canvas.effects.lightSources.some(
+    source => source.constructor.name === "GlobalLightSource" && source.active
+  );
+  
+  if (hasGlobalLight) {
+    console.log(`  -> GLOBAL ILLUMINATION (bright)`);
+    return 1;
+  }
+  
+  // Check point light sources
+  let maxLight = 0;
+  
   for (const source of canvas.effects.lightSources.values()) {
-    // Skip global light and inactive sources
+    // Skip global light (already checked) and inactive sources
     if (source.constructor.name === "GlobalLightSource" || !source.active) {
       continue;
     }

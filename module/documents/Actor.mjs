@@ -400,7 +400,7 @@ export class ZWolfActor extends Actor {
    */
   _calculateEffectiveSize() {
     const baseSize = this.system.size || "medium";
-    const sizeOrder = ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"];
+    const sizeOrder = ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal", "titanic"];
     const baseSizeIndex = sizeOrder.indexOf(baseSize);
     
     if (baseSizeIndex === -1) {
@@ -529,7 +529,7 @@ export class ZWolfActor extends Actor {
    * @private
    */
   _calculateSpawnSize(baseSize) {
-    const sizeOrder = ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"];
+    const sizeOrder = ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal", "titanic"];
     const baseSizeIndex = sizeOrder.indexOf(baseSize || "medium");
     const spawnSizeIndex = Math.max(0, baseSizeIndex - 2);
     return sizeOrder[spawnSizeIndex];

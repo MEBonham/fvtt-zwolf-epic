@@ -61,12 +61,12 @@ function createBaseFields() {
     size: new fields.StringField({ 
       required: true, 
       initial: "medium",
-      choices: ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"]
+      choices: ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal", "titanic"]
     }),
     effectiveSize: new fields.StringField({ 
       required: false, 
       initial: "medium",
-      choices: ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal"]
+      choices: ["diminutive", "tiny", "small", "medium", "large", "huge", "gargantuan", "colossal", "titanic"]
     }),
     tags: new fields.StringField({ 
       required: false, 

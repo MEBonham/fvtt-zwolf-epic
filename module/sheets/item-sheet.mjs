@@ -84,6 +84,9 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     
     // REMOVE THIS - summary data is prepared in type-specific methods
     // await this._prepareSummaryData(context, itemData);
+  
+    // Prepare tag strings for form inputs ← ADD THIS
+    this._prepareTagStrings(context, itemData);
 
     return context;
   }
@@ -283,6 +286,22 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     // Equipment-specific logic if needed
   }
 
+  /**
+ * Prepare tag strings for display in form inputs
+ * @private
+ */
+_prepareTagStrings(context, itemData) {
+  // For items with tags field
+  if (itemData.system.tags !== undefined) {
+    context.tagsString = itemData.system.tags || "";
+  }
+  
+  // For items with characterTags field
+  if (itemData.system.characterTags !== undefined) {
+    context.characterTagsString = itemData.system.characterTags || "";
+  }
+}
+
   // ========================================
   // RENDERING
   // ========================================
@@ -478,6 +497,10 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   // ========================================
 
   async _onSubmitForm(formConfig, event) {
+    console.log("=== FORM SUBMIT TRIGGERED ===");
+    console.log("Event:", event);
+    console.log("Event type:", event?.type);
+    
     // Get the form element
     const form = event?.target?.form || event?.target?.closest('form');
     if (!form) {
@@ -485,9 +508,13 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
       return;
     }
 
+    console.log("Form element:", form);
+
     // Extract form data using FormDataExtended
     const formData = new foundry.applications.ux.FormDataExtended(form);
     let submitData = formData.object;
+    
+    console.log("Raw submitData from form:", submitData);
     
     // Convert number fields explicitly
     const numberInputs = form.querySelectorAll('input[data-dtype="Number"], input[type="number"]');
@@ -503,11 +530,19 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     // Handle multi-select fields
     ItemDataProcessor.processMultiSelectFields(form, submitData);
 
+    console.log("submitData before expand:", submitData);
+    
     // Expand object structure
     submitData = foundry.utils.expandObject(submitData);
+    
+    console.log("submitData after expand:", submitData);
+    console.log("grantedAbilities in submitData:", submitData.system?.grantedAbilities);
+    console.log("Current document grantedAbilities:", this.document.system.grantedAbilities);
 
     try {
       await this.document.update(submitData, { render: false, diff: true });
+      console.log("Update completed successfully");
+      console.log("New document grantedAbilities:", this.document.system.grantedAbilities);
     } catch (error) {
       console.error("Z-Wolf Epic | Failed to update item:", error);
       ui.notifications.error("Failed to save changes: " + error.message);

@@ -4,18 +4,6 @@
 export class EditorSaveHandler {
 
   /**
-   * Handle rich text editor saves - mainly for validation
-   */
-  static async handleEditorSave(document, target, element, content) {
-    if (content && content.length > 10000) {
-      console.warn("Very long description detected:", content.length, "characters");
-      ui.notifications.warn("Description is very long - consider breaking it into sections");
-    }
-    
-    return false; // Let V2 framework handle the save
-  }
-
-  /**
    * Activate V2 editors for a sheet
    */
   static activateEditors(sheet) {
@@ -52,21 +40,13 @@ export class EditorSaveHandler {
     // Get existing content
     let content = "";
     try {
-      console.log("=== CONTENT RETRIEVAL DEBUG ===");
-      console.log("Target:", target);
-      console.log("editorContent element:", editorContent);
-      console.log("editorContent.innerHTML:", editorContent?.innerHTML);
-      
       if (editorContent && editorContent.innerHTML && !editorContent.innerHTML.includes("<em>No description</em>")) {
         content = editorContent.innerHTML;
-        console.log("Strategy 1: Got from editorContent.innerHTML");
       } else if (target.startsWith("system.")) {
         const propertyPath = target.replace("system.", "");
         content = foundry.utils.getProperty(sheet.document.system, propertyPath) || "";
-        console.log("Strategy 2: Got from system property:", propertyPath);
       } else {
         content = foundry.utils.getProperty(sheet.document, target) || "";
-        console.log("Strategy 3: Got from document property");
       }
       
       // Special handling for abilities
@@ -75,33 +55,38 @@ export class EditorSaveHandler {
         if (abilityMatch) {
           const abilityIndex = abilityMatch[1];
           const abilities = sheet.document.system.grantedAbilities || {};
-          console.log("All abilities:", abilities);
-          console.log("Looking for ability at index:", abilityIndex);
           if (abilities[abilityIndex]) {
             content = abilities[abilityIndex].description || "";
-            console.log("Strategy 4: Got from abilities array");
           }
         }
       }
       
-      console.log("Final retrieved content:", content);
-      console.log("Content length:", content.length);
-      console.log("Content preview:", content.substring(0, 200));
+      // Special handling for tier abilities
+      if (!content && target.includes("tiers.tier")) {
+        const tierMatch = target.match(/system\.tiers\.tier(\d+)\.grantedAbilities\.(\d+)\.description/);
+        if (tierMatch) {
+          const tier = tierMatch[1];
+          const abilityIndex = tierMatch[2];
+          const tierAbilities = sheet.document.system.tiers?.[`tier${tier}`]?.grantedAbilities || {};
+          if (tierAbilities[abilityIndex]) {
+            content = tierAbilities[abilityIndex].description || "";
+          }
+        }
+      }
+      
+      console.log("Retrieved content length:", content.length);
       
     } catch (error) {
       console.error("Failed to get existing content:", error);
       content = "";
     }
     
-    let proseMirrorEditor = null;
     let editorContainer = null;
     let isCleanedUp = false;
     
     const cleanup = () => {
       if (isCleanedUp) return;
       isCleanedUp = true;
-      
-      console.log("Cleaning up editor");
       
       if (editorContainer && editorContainer.parentNode) {
         editorContainer.remove();
@@ -113,14 +98,6 @@ export class EditorSaveHandler {
       
       if (button) {
         button.style.display = 'block';
-      }
-      
-      if (proseMirrorEditor && typeof proseMirrorEditor.destroy === 'function') {
-        try {
-          proseMirrorEditor.destroy();
-        } catch (error) {
-          console.warn("Error destroying editor (this is usually harmless):", error.message);
-        }
       }
     };
     
@@ -161,51 +138,54 @@ export class EditorSaveHandler {
       parent.insertBefore(editorContainer, editorContent);
       editorContent.style.display = 'none';
       
-      // Create ProseMirror editor with V13 API
-      console.log("Creating ProseMirror with content length:", content.length);
-      
-      proseMirrorEditor = await foundry.applications.ux.TextEditor.create({
+      // Create ProseMirror editor
+      await foundry.applications.ux.TextEditor.create({
         target: editorElement,
         engine: "prosemirror",
         height: 150
       });
       
-      console.log("ProseMirror editor created");
-      console.log("editorElement IS the editor:", editorElement.classList.contains('ProseMirror'));
-      console.log("Current content:", editorElement.innerHTML);
+      // Wait for editor to initialize
+      await new Promise(resolve => setTimeout(resolve, 100));
       
-      // The editorElement itself IS the ProseMirror editor now
-      // Set content directly on it
+      // Set content
       if (content && content.trim() !== "") {
-        console.log("Setting content directly on editor element");
-        
-        // Small delay to ensure editor is fully initialized
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        // Set the HTML content
         editorElement.innerHTML = content;
-        
-        // Trigger events to let ProseMirror know content changed
         editorElement.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        console.log("Content set. Final innerHTML:", editorElement.innerHTML.substring(0, 100));
-        console.log("Visible text:", editorElement.textContent.substring(0, 100));
       }
       
-      // Save handler
+      // Save handler - CRITICAL: Update using form submission, not direct document update
       const handleSave = async () => {
         if (isCleanedUp) return;
         
         try {
-          let newContent;
-          if (proseMirrorEditor && typeof proseMirrorEditor.getContent === 'function') {
-            newContent = proseMirrorEditor.getContent();
+          const prosemirrorDiv = editorElement.querySelector('.ProseMirror');
+          const newContent = prosemirrorDiv ? prosemirrorDiv.innerHTML : editorElement.innerHTML;
+          
+          console.log("Saving content for:", target);
+          console.log("Content length:", newContent.length);
+          
+          // Instead of updating directly, trigger form submission with this data
+          // This ensures all form data is captured together
+          const form = sheet.element.querySelector('form');
+          if (form) {
+            // Find or create hidden input for this field
+            let hiddenInput = form.querySelector(`input[name="${target}"]`);
+            if (!hiddenInput) {
+              hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = target;
+              form.appendChild(hiddenInput);
+            }
+            hiddenInput.value = newContent;
+            
+            // Trigger form change event to initiate auto-save
+            form.dispatchEvent(new Event('change', { bubbles: true }));
           } else {
-            const prosemirrorDiv = editorElement.querySelector('.ProseMirror');
-            newContent = prosemirrorDiv ? prosemirrorDiv.innerHTML : editorElement.innerHTML;
+            // Fallback: direct update if no form found
+            await sheet.document.update({ [target]: newContent });
           }
           
-          await sheet.document.update({ [target]: newContent });
           cleanup();
           ui.notifications.info("Content saved");
           

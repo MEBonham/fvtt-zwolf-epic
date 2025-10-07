@@ -15,12 +15,6 @@
                placeholder="{{localize (getActorNamePlaceholder document.type)}}" />
       </h1>
       
-      {{#if (or isMook isSpawn)}}
-        <div class="header-line-base">
-          {{> base-creature-selector}}
-        </div>
-      {{/if}}
-      
       <div class="header-line-2">
         <div class="header-field level-field">
           <label>{{localize "ZWOLF.Level"}}</label>
@@ -88,6 +82,10 @@
 
   <!-- Header Resources -->
   <div class="header-resources {{#if isMook}}mook-resources{{/if}}{{#if isSpawn}}spawn-resources{{/if}}">
+    {{#if (or isMook isSpawn)}}
+      {{> base-creature-selector}}
+    {{/if}}
+    
     {{#unless isSpawn}}
       {{> resource-display 
           label="VP"
@@ -202,7 +200,7 @@
     
     {{#if abilityCategories.exoticSenses.length}}
       <div class="exotic-senses-icon" 
-           title="{{#each abilityCategories.exoticSenses}}{{name}}{{#if tags}} · <{{tags}}>{{/if}}{{#unless @last}}, {{/unless}}{{/each}}">
+           title="{{#each abilityCategories.exoticSenses}}{{name}}{{#if tags}} · {{tags}}{{/if}}{{#unless @last}}, {{/unless}}{{/each}}">
         <i class="fas fa-eye"></i>
       </div>
     {{/if}}

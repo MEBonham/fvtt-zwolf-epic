@@ -12,15 +12,15 @@
     
     <div class="abilities-list">
       {{#each grantedAbilitiesArray as |ability arrayIndex|}}
-      {{> ability-item 
-          ability=ability 
-          index=ability.originalIndex
-          nameTarget=(concat "system.grantedAbilities." ability.originalIndex ".name")
-          tagsTarget=(concat "system.grantedAbilities." ability.originalIndex ".tags")
-          typeTarget=(concat "system.grantedAbilities." ability.originalIndex ".type")
-          descriptionTarget=(concat "system.grantedAbilities." ability.originalIndex ".description")
-          deleteAction="delete-ability"
-          editable=../editable}}
+        {{> ability-item 
+            ability=ability 
+            index=ability.index
+            nameTarget=ability.nameTarget
+            tagsTarget=ability.tagsTarget
+            typeTarget=ability.typeTarget
+            descriptionTarget=ability.descriptionTarget
+            deleteAction="delete-ability"
+            editable=../editable}}
       {{else}}
       <div class="no-abilities">
         {{localize "ZWOLF.NoAbilitiesYet"}}

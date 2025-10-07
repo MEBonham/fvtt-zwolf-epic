@@ -61,6 +61,11 @@ ZWOLF.sizes = {
     label: "ZWOLF.SizeColossal",
     diameter: 5,
     tokenScale: 5
+  },
+  "titanic": {
+    label: "ZWOLF.SizeTitanic",
+    diameter: 6,
+    tokenScale: 6
   }
 };
 

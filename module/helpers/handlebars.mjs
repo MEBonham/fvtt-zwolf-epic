@@ -214,7 +214,6 @@ export function registerHandlebarsHelpers() {
    */
   Handlebars.registerHelper('getSizeLabel', function(size) {
     const sizeLabels = {
-      'fine': 'ZWOLF.Fine',
       'diminutive': 'ZWOLF.Diminutive',
       'tiny': 'ZWOLF.Tiny',
       'small': 'ZWOLF.Small',
@@ -233,7 +232,6 @@ export function registerHandlebarsHelpers() {
    */
   Handlebars.registerHelper('getCommonSizes', function() {
     return [
-      'fine',
       'diminutive',
       'tiny',
       'small',

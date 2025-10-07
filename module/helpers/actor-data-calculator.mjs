@@ -198,12 +198,47 @@ export class ActorDataCalculator {
   }
 
   /**
-   * Get available base creatures for dropdowns
+   * Get available base creatures for dropdowns with filtering based on actor type
    * @returns {Array} Available actors
    * @private
    */
   _getAvailableBaseCreatures() {
-    return game.actors.filter(a => ['pc', 'npc'].includes(a.type));
+    // Get all potential base creatures (PCs and NPCs)
+    const potentialCreatures = game.actors.filter(a => ['pc', 'npc'].includes(a.type));
+    
+    // Determine what filtering is needed based on the current actor type
+    const actorType = this.actor.type;
+    
+    // No filtering needed for types we don't recognize
+    if (!['eidolon', 'spawn', 'mook'].includes(actorType)) {
+      return potentialCreatures;
+    }
+    
+    // Filter based on actor type
+    return potentialCreatures.filter(creature => {
+      switch (actorType) {
+        case 'eidolon':
+          // Eidolons require base creature to have "Gemini" track
+          return creature.items.some(item => 
+            item.type === 'track' && item.name === 'Gemini'
+          );
+          
+        case 'spawn':
+          // Spawns require base creature to have "Swarmer" track
+          return creature.items.some(item => 
+            item.type === 'track' && item.name === 'Swarmer'
+          );
+          
+        case 'mook':
+          // Mooks require base creature to have "Shape Ally" talent
+          return creature.items.some(item => 
+            item.type === 'talent' && item.name === 'Shape Ally'
+          );
+          
+        default:
+          return true;
+      }
+    });
   }
 
   // ========================================
@@ -1007,7 +1042,8 @@ export class ActorDataCalculator {
     // Size modifier (use effective size, not base size)
     const sizeModifiers = {
       'diminutive': -12, 'tiny': -8, 'small': -4, 'medium': 0,
-      'large': 4, 'huge': 8, 'gargantuan': 12, 'colossal': 16
+      'large': 4, 'huge': 8, 'gargantuan': 12, 'colossal': 16,
+      'titanic': 20
     };
     const effectiveSize = this.actor.system?.effectiveSize || this.actor.system?.size || 'medium';
     maxBulk += sizeModifiers[effectiveSize] || 0;

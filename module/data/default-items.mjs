@@ -188,6 +188,18 @@ export function generateProficienciesDescription(actor) {
       <p>You currently have no proficiencies granted by your items.</p>`;
   }
   
-  const profList = Array.from(proficiencies).join(', ');
+  // Escape HTML in proficiency names to display angle brackets correctly
+  const escapeHtml = (text) => {
+    return text.replace(/&/g, '&amp;')
+               .replace(/</g, '&lt;')
+               .replace(/>/g, '&gt;')
+               .replace(/"/g, '&quot;')
+               .replace(/'/g, '&#039;');
+  };
+  
+  const profList = Array.from(proficiencies)
+    .map(prof => escapeHtml(prof))
+    .join(', ');
+    
   return `<p><strong>Proficiencies:</strong> ${profList}</p>`;
 }
