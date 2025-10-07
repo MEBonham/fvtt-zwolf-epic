@@ -1,0 +1,40 @@
+{{!-- templates/actor/partials/ability-category.hbs --}}
+{{!-- 
+  Reusable ability category accordion
+  
+  Parameters:
+  - icon: Font Awesome icon class
+  - title: Category title
+  - abilities: Array of abilities
+  - categoryClass: Optional CSS class for category (e.g., "drawback-category")
+  - subsections: Optional array of subsections with {title, abilities}
+--}}
+<details class="ability-category {{categoryClass}}">
+  <summary class="ability-category-header">
+    <i class="fas {{icon}}"></i>
+    {{localize title}}
+    <span class="ability-count">({{abilities.length}})</span>
+  </summary>
+  <div class="ability-list">
+    {{#if abilities.length}}
+      {{#if subsections}}
+        {{!-- Render with subsections --}}
+        {{#each subsections as |subsection|}}
+          <div class="ability-subsection">
+            <h6 class="ability-subsection-header">{{localize subsection.title}}</h6>
+            {{#each subsection.abilities as |ability|}}
+              {{> ability-detail ability=ability}}
+            {{/each}}
+          </div>
+        {{/each}}
+      {{else}}
+        {{!-- Render flat list --}}
+        {{#each abilities as |ability|}}
+          {{> ability-detail ability=ability abilityClass=../abilityClass}}
+        {{/each}}
+      {{/if}}
+    {{else}}
+      <div class="no-abilities">{{localize (getNoAbilitiesKey title)}}</div>
+    {{/if}}
+  </div>
+</details>

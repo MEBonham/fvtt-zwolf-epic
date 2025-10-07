@@ -30,6 +30,7 @@
     "EidolonName": "Eidolon Name",
     "MookName": "Mook Name",
     "SpawnName": "Spawn Name",
+    "NPCName": "NPC Name",
     
     "ItemTypeFundament": "Fundament",
     "ItemTypeKnack": "Knack",
@@ -103,6 +104,7 @@
     "Huge": "Huge",
     "Gargantuan": "Gargantuan",
     "Colossal": "Colossal",
+    "Titanic": "Titanic",
     
     "KnackMenu": "Knack Menu",
     "KnackMenuHint": "Description of available knacks for this ancestry",

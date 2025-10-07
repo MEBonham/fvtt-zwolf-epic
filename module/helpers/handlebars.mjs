@@ -206,6 +206,66 @@ export function registerHandlebarsHelpers() {
   });
 
   /**
+   * Get localization key for size label
+   */
+  Handlebars.registerHelper('getSizeLabel', function(size) {
+    const sizeLabels = {
+      'fine': 'ZWOLF.Fine',
+      'diminutive': 'ZWOLF.Diminutive',
+      'tiny': 'ZWOLF.Tiny',
+      'small': 'ZWOLF.Small',
+      'medium': 'ZWOLF.Medium',
+      'large': 'ZWOLF.Large',
+      'huge': 'ZWOLF.Huge',
+      'gargantuan': 'ZWOLF.Gargantuan',
+      'colossal': 'ZWOLF.Colossal',
+      'titanic': 'ZWOLF.Titanic'
+    };
+    return sizeLabels[size] || 'ZWOLF.Medium';
+  });
+
+  /**
+   * Get array of common size options
+   */
+  Handlebars.registerHelper('getCommonSizes', function() {
+    return [
+      'fine',
+      'diminutive',
+      'tiny',
+      'small',
+      'medium',
+      'large',
+      'huge',
+      'gargantuan',
+      'colossal',
+      'titanic'
+    ];
+  });
+
+  /**
+   * Get placeholder text for actor name input based on actor type
+   */
+  Handlebars.registerHelper('getActorNamePlaceholder', function(actorType) {
+    const placeholders = {
+      'pc': 'ZWOLF.CharacterName',
+      'npc': 'ZWOLF.NPCName',
+      'mook': 'ZWOLF.MookName',
+      'spawn': 'ZWOLF.SpawnName'
+    };
+    return placeholders[actorType] || 'ZWOLF.ActorName';
+  });
+
+  /**
+   * Get the "No X" version of an ability category localization key
+   */
+  Handlebars.registerHelper('getNoAbilitiesKey', function(titleKey) {
+    // Extract the last part (e.g., "PassiveAbilities" from "ZWOLF.PassiveAbilities")
+    const parts = titleKey.split('.');
+    const lastPart = parts[parts.length - 1];
+    return `ZWOLF.No${lastPart}`;
+  });
+
+  /**
    * Check if actor has any equipment
    */
   Handlebars.registerHelper('hasAnyEquipment', function(equipment) {
@@ -216,6 +276,16 @@ export function registerHandlebarsHelpers() {
            equipment.readily_available?.length > 0 ||
            equipment.stowed?.length > 0 ||
            equipment.not_carried?.length > 0;
+  });
+
+  /**
+   * Format a bonus value with + or - sign
+   */
+  Handlebars.registerHelper('formatBonus', function(value) {
+    const num = Number(value);
+    if (isNaN(num)) return '+0';
+    if (num >= 0) return `+${num}`;
+    return String(num); // Negative numbers already have the minus sign
   });
 
   /**
