@@ -1,5 +1,3 @@
-// /helpers/sheet-event-handlers.mjs - All sheet event handling logic
-
 import { ZWolfDice } from "../dice/dice-system.mjs";
 import { RestHandler } from "./rest-handler.mjs";
 import { ActorDataCalculator } from "./actor-data-calculator.mjs";
@@ -9,6 +7,7 @@ export class SheetEventHandlers {
   constructor(sheet) {
     this.sheet = sheet;
     this.actor = sheet.actor;
+    this.calculator = new ActorDataCalculator(this.actor);
   }
 
   /**
@@ -21,6 +20,14 @@ export class SheetEventHandlers {
         ev.preventDefault();
         ev.stopPropagation();
         this._onProgressionDiceRoll(ev);
+      });
+    });
+
+    html.querySelectorAll('.speed-roll-die').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._onSpeedRoll(ev);
       });
     });
 
@@ -40,15 +47,6 @@ export class SheetEventHandlers {
       });
     });
 
-    // Speed roll handler
-    html.querySelectorAll('.speed-roll-die').forEach(el => {
-      el.addEventListener('click', (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        this._onSpeedRoll(ev);
-      });
-    });
-
     // Progression slider handlers
     html.querySelectorAll('.progression-slider').forEach(el => {
       el.addEventListener('input', (ev) => this._onProgressionSliderChange(ev));
@@ -57,132 +55,52 @@ export class SheetEventHandlers {
 
     // Level change handler
     const levelInputs = html.querySelectorAll('input[name="system.level"], input[name="data.level"], .level-input, input.level');
-    console.log("Z-Wolf Epic | Level input found:", levelInputs.length, "elements");
-    
-    if (levelInputs.length > 0) {
-      levelInputs.forEach(el => {
-        el.addEventListener('change', (ev) => {
-          console.log("Z-Wolf Epic | Level changed to:", ev.currentTarget.value);
-          this._onLevelChange(ev);
-        });
-      });
-    } else {
-      console.warn("Z-Wolf Epic | No level input field found. Check your HTML template.");
-    }
+    levelInputs.forEach(el => {
+      el.addEventListener('change', (ev) => this._onLevelChange(ev));
+    });
 
     // Exotic senses tooltip enhancement
-    const exoticSensesIcon = html.querySelector('.exotic-senses-icon');
-    if (exoticSensesIcon) {
-      exoticSensesIcon.addEventListener('mouseenter', (e) => {
-        const abilities = this.sheet._preparedContext?.abilityCategories?.exoticSenses || [];
-        if (abilities.length === 0) return;
-        
-        const tooltip = document.createElement('div');
-        tooltip.className = 'exotic-senses-tooltip';
-        tooltip.innerHTML = `
-          <strong>Exotic Senses:</strong>
-          <ul>
-            ${abilities.map(a => `<li><strong>${a.name}</strong>${a.tags ? ` · &lt;${a.tags}&gt;` : ''}<br><small>${a.description}</small></li>`).join('')}
-          </ul>
-        `;
-        document.body.appendChild(tooltip);
-        
-        const rect = e.target.getBoundingClientRect();
-        tooltip.style.position = 'absolute';
-        tooltip.style.left = `${rect.left}px`;
-        tooltip.style.top = `${rect.bottom + 5}px`;
-        
-        e.target._tooltip = tooltip;
+    this._setupExoticSensesTooltip(html);
+
+    // Item control handlers
+    html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._onUnifiedItemDelete(ev);
       });
-      
-      exoticSensesIcon.addEventListener('mouseleave', (e) => {
-        if (e.target._tooltip) {
-          e.target._tooltip.remove();
-          delete e.target._tooltip;
-        }
+    });
+
+    html.querySelectorAll('.item-control.item-edit').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        this._onItemEdit(ev);
       });
-    }
-
-  // DIAGNOSTIC: Check what elements match our selectors
-  const deleteElements = html.querySelectorAll('.item-control.item-delete, .item-control.item-remove');
-  const shortRestElements = html.querySelectorAll('.short-rest-btn');
-  const extendedRestElements = html.querySelectorAll('.extended-rest-btn');
-  
-  console.log('🔍 Z-Wolf Epic | Delete selector matched:', deleteElements.length, 'elements');
-  deleteElements.forEach(el => {
-    console.log('  - Delete element classes:', el.className);
-  });
-  
-  console.log('🔍 Z-Wolf Epic | Short rest selector matched:', shortRestElements.length, 'elements');
-  shortRestElements.forEach(el => {
-    console.log('  - Short rest element classes:', el.className);
-  });
-  
-  console.log('🔍 Z-Wolf Epic | Extended rest selector matched:', extendedRestElements.length, 'elements');
-  extendedRestElements.forEach(el => {
-    console.log('  - Extended rest element classes:', el.className);
-  });
-
-  // Item control handlers
-  html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
-    el.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      console.log('🔴 DELETE HANDLER TRIGGERED');
-      this._onUnifiedItemDelete(ev);
     });
-  });
 
-  // Rest Button Handlers
-  html.querySelectorAll('.short-rest-btn').forEach(el => {
-    el.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      console.log('🟢 SHORT REST HANDLER TRIGGERED');
-      this._onShortRest(ev);
+    // Rest button handlers
+    html.querySelectorAll('.short-rest-btn').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._onShortRest(ev);
+      });
     });
-  });
 
-  html.querySelectorAll('.extended-rest-btn').forEach(el => {
-    el.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      console.log('🟢 EXTENDED REST HANDLER TRIGGERED');
-      this._onExtendedRest(ev);
+    html.querySelectorAll('.extended-rest-btn').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        this._onExtendedRest(ev);
+      });
     });
-  });
-
-    // // Item control handlers
-    // html.querySelectorAll('.item-control.item-delete, .item-control.item-remove').forEach(el => {
-    //   el.addEventListener('click', this._onUnifiedItemDelete.bind(this));
-    // });
-    // html.querySelectorAll('.item-control.item-edit').forEach(el => {
-    //   el.addEventListener('click', this._onItemEdit.bind(this));
-    // });
-
-    // // Rest Button Handlers
-    // html.querySelectorAll('.short-rest-btn').forEach(el => {
-    //   el.addEventListener('click', (ev) => {
-    //     ev.preventDefault();
-    //     this._onShortRest(ev);
-    //   });
-    // });
-
-    // html.querySelectorAll('.extended-rest-btn').forEach(el => {
-    //   el.addEventListener('click', (ev) => {
-    //     ev.preventDefault();
-    //     this._onExtendedRest(ev);
-    //   });
-    // });
 
     // Equipment placement change handler
     html.querySelectorAll('.equipment-placement-select').forEach(el => {
-      el.addEventListener('change', (ev) => {
-        this._onEquipmentPlacementChange(ev);
-      });
+      el.addEventListener('change', (ev) => this._onEquipmentPlacementChange(ev));
     });
 
-    // Disable controls for locked items (except equipment)
+    // Apply item lock states
     this._applyItemLockStates(html);
   }
 
@@ -198,7 +116,6 @@ export class SheetEventHandlers {
     
     const progressionName = progression.charAt(0).toUpperCase() + progression.slice(1);
     const flavor = `${progressionName} Progression Roll`;
-    
     const netBoosts = ZWolfDice.getNetBoosts();
     
     await ZWolfDice.roll({
@@ -212,34 +129,19 @@ export class SheetEventHandlers {
   async _onStatRoll(event) {
     event.preventDefault();
     const element = event.currentTarget;
-    
-    console.log("Z-Wolf | Element HTML:", element.outerHTML);
-    console.log("Z-Wolf | All datasets:", element.dataset);
-    
     const statKey = element.dataset.stat;
-    const statType = element.dataset.type;
     const progression = element.dataset.progression;
-    // ... rest of method
-    
-    console.log("Z-Wolf | _onStatRoll - statKey:", statKey);
-    console.log("Z-Wolf | _onStatRoll - statType:", statType);
-    console.log("Z-Wolf | _onStatRoll - progression:", progression);
     
     // Get progression bonuses
     const level = this.actor.system.level ?? 0;
-    const progressionOnlyLevel = this._getProgressionOnlyLevel();
-    const bonuses = this._calculateProgressionBonuses(level, progressionOnlyLevel);
+    const progressionOnlyLevel = this.calculator._getProgressionOnlyLevel(this.actor);
+    const bonuses = this.calculator._calculateProgressionBonuses(level, progressionOnlyLevel);
     const modifier = bonuses[progression];
-    
-    console.log("Z-Wolf | _onStatRoll - bonuses:", bonuses);
-    console.log("Z-Wolf | _onStatRoll - modifier for", progression, ":", modifier);
     
     // Create flavor text
     const statNameEl = element.querySelector('.stat-name');
     const statName = statNameEl ? statNameEl.textContent : statKey;
     const flavor = `${statName} (${progression.charAt(0).toUpperCase() + progression.slice(1)})`;
-    
-    console.log("Z-Wolf | _onStatRoll - flavor:", flavor);
     
     const netBoosts = ZWolfDice.getNetBoosts();
     
@@ -323,131 +225,18 @@ export class SheetEventHandlers {
     }
     
     if (updatePath && newProgression) {
-      // Save scroll position of the configure tab
-      const scrollableTab = this.sheet.element.querySelector('div.tab.configure');
-      const scrollTop = scrollableTab?.scrollTop || 0;
-      
-      console.log('Z-Wolf Epic | Saved scroll position:', scrollTop);
-      
-      // Update the actor
       await this.actor.update({ [updatePath]: newProgression });
-      console.log(`Z-Wolf Epic | Updated ${statKey} (${statType}) to ${newProgression}`);
-      
-      // Re-render
       await this.sheet.render(false);
-      
-      // Restore scroll position
-      requestAnimationFrame(() => {
-        const newScrollableTab = this.sheet.element.querySelector('div.tab.configure');
-        if (newScrollableTab) {
-          newScrollableTab.scrollTop = scrollTop;
-          console.log('Z-Wolf Epic | Restored scroll position:', scrollTop);
-        }
-      });
+      // SheetStateManager will handle scroll restoration
     }
-  }
-
-  /**
-   * Update the build points display and progression values without full re-render
-   */
-  _updateBuildPointsDisplay() {
-    console.log("Z-Wolf Epic | _updateBuildPointsDisplay called");
-    
-    const html = this.sheet.element;
-    const calculator = new ActorDataCalculator(this.actor);
-    
-    // Get level and progression data
-    const level = this.actor.system.level ?? 0;
-    const progressionOnlyLevel = calculator._getProgressionOnlyLevel(this.actor);
-    
-    console.log("Z-Wolf Epic | Level:", level, "Progression Only:", progressionOnlyLevel);
-    
-    // Calculate values
-    const buildPoints = calculator._calculateTotalBP(
-      this.actor.system,
-      this.actor.items.get(this.actor.system.ancestryId)?.toObject(),
-      this.actor.items.get(this.actor.system.fundamentId)?.toObject()
-    );
-    const progressionBonuses = calculator._calculateProgressionBonuses(level, progressionOnlyLevel);
-    
-    console.log("Z-Wolf Epic | Build Points:", buildPoints);
-    console.log("Z-Wolf Epic | Progression Bonuses:", progressionBonuses);
-    
-    // Update the BP total display
-    const bpTotalEl = html.querySelector('.bp-total');
-    console.log("Z-Wolf Epic | BP Total Element:", bpTotalEl);
-    
-    if (bpTotalEl) {
-      bpTotalEl.textContent = `${buildPoints.total} / ${buildPoints.max} BP`;
-      
-      // Update classes for visual feedback
-      bpTotalEl.classList.remove('negative', 'over-max', 'at-max');
-      if (buildPoints.total < 0) {
-        bpTotalEl.classList.add('negative');
-      } else if (buildPoints.total > buildPoints.max) {
-        bpTotalEl.classList.add('over-max');
-      } else if (buildPoints.total === buildPoints.max) {
-        bpTotalEl.classList.add('at-max');
-      }
-    }
-    
-    // Update the breakdown
-    const breakdownEl = html.querySelector('.bp-breakdown');
-    console.log("Z-Wolf Epic | BP Breakdown Element:", breakdownEl);
-    
-    if (breakdownEl) {
-      breakdownEl.innerHTML = `
-        <span class="bp-breakdown-item">Attributes: ${buildPoints.attributes} BP</span>
-        <span class="bp-breakdown-divider">•</span>
-        <span class="bp-breakdown-item">Skills: ${buildPoints.skills} BP</span>
-      `;
-    }
-    
-    // Update progression values in sidebar for all attributes and skills
-    const statRollables = html.querySelectorAll('.stat-rollable');
-    console.log("Z-Wolf Epic | Found stat-rollable elements:", statRollables.length);
-    
-    statRollables.forEach(rollableEl => {
-      const statKey = rollableEl.dataset.stat;
-      const statType = rollableEl.dataset.type;
-      
-      if (statKey && statType) {
-        let progression;
-        if (statType === 'attribute') {
-          progression = this.actor.system.attributes[statKey]?.progression || 'moderate';
-        } else if (statType === 'skill') {
-          progression = this.actor.system.skills[statKey]?.progression || 'mediocre';
-        }
-        
-        if (progression && progressionBonuses[progression] !== undefined) {
-          const statItem = rollableEl.closest('.stat-item');
-          const valueEl = statItem?.querySelector('.stat-value');
-          if (valueEl) {
-            const bonus = progressionBonuses[progression];
-            const newText = bonus >= 0 ? `+${bonus}` : `${bonus}`;
-            console.log(`Z-Wolf Epic | Updating ${statKey} (${statType}) to ${newText}`);
-            valueEl.textContent = newText;
-          }
-        }
-      }
-    });
-    
-    console.log("Z-Wolf Epic | _updateBuildPointsDisplay completed");
   }
 
   async _onLevelChange(event) {
     event.preventDefault();
-    const element = event.currentTarget;
-    const newLevel = parseInt(element.value) || 0;
-    
-    console.log("Z-Wolf Epic | _onLevelChange triggered. New level:", newLevel);
-    
-    // Clamp level between 0 and 20
+    const newLevel = parseInt(event.currentTarget.value) || 0;
     const clampedLevel = Math.max(0, Math.min(20, newLevel));
     
     await this.actor.update({ 'system.level': clampedLevel });
-    
-    console.log("Z-Wolf Epic | Actor updated. Re-rendering sheet...");
     this.sheet.render(false);
   }
 
@@ -486,8 +275,6 @@ export class SheetEventHandlers {
       ui.notifications.error('Could not find item to delete');
       return;
     }
-    
-    console.log(`Z-Wolf Epic | Unified delete triggered for: ${item.name} (${item.type})`);
     
     // Determine what type of deletion this is
     const isFoundationItem = this._isFoundationItem(item);
@@ -538,7 +325,6 @@ export class SheetEventHandlers {
       
       // Force re-render if the item affected calculated values
       if (hadSpecialProperties || isFoundationItem) {
-        console.log(`Z-Wolf Epic | Item ${item.name} affected calculated values, forcing re-render`);
         setTimeout(() => {
           this.sheet.render(false);
         }, 50);
@@ -557,24 +343,10 @@ export class SheetEventHandlers {
   async _onBuildPointsLockToggle(event) {
     event.preventDefault();
     
-    const scrollableTab = this.sheet.element.querySelector('div.tab.configure');
-    const scrollTop = scrollableTab?.scrollTop || 0;
-    
-    console.log('Lock toggle - saved scroll:', scrollTop);
-    
-    this._scrollToRestore = scrollTop;
-    
     const currentLockState = this.actor.system.buildPointsLocked || false;
-    const newLockState = !currentLockState;
+    await this.actor.update({ 'system.buildPointsLocked': !currentLockState });
     
-    console.log('Lock toggle - about to update, calling stack:');
-    console.trace();
-    
-    await this.actor.update({ 'system.buildPointsLocked': newLockState });
-    
-    console.log('Lock toggle - update complete');
-    
-    const message = newLockState ? "Build Points locked" : "Build Points unlocked";
+    const message = !currentLockState ? "Build Points locked" : "Build Points unlocked";
     ui.notifications.info(message);
   }
 
@@ -606,8 +378,6 @@ export class SheetEventHandlers {
       return;
     }
     
-    console.log(`Z-Wolf Epic | Changing ${item.name} placement to: ${newPlacement}`);
-    
     try {
       await item.update({ 'system.placement': newPlacement });
       
@@ -629,7 +399,7 @@ export class SheetEventHandlers {
   }
 
   // =================================
-  // UTILITY METHODS
+  // UI STATE METHODS
   // =================================
 
   /**
@@ -696,6 +466,40 @@ export class SheetEventHandlers {
     });
   }
 
+  _setupExoticSensesTooltip(html) {
+    const exoticSensesIcon = html.querySelector('.exotic-senses-icon');
+    if (!exoticSensesIcon) return;
+    
+    exoticSensesIcon.addEventListener('mouseenter', (e) => {
+      const abilities = this.sheet._preparedContext?.abilityCategories?.exoticSenses || [];
+      if (abilities.length === 0) return;
+      
+      const tooltip = document.createElement('div');
+      tooltip.className = 'exotic-senses-tooltip';
+      tooltip.innerHTML = `
+        <strong>Exotic Senses:</strong>
+        <ul>
+          ${abilities.map(a => `<li><strong>${a.name}</strong>${a.tags ? ` · <${a.tags}>` : ''}<br><small>${a.description}</small></li>`).join('')}
+        </ul>
+      `;
+      document.body.appendChild(tooltip);
+      
+      const rect = e.target.getBoundingClientRect();
+      tooltip.style.position = 'absolute';
+      tooltip.style.left = `${rect.left}px`;
+      tooltip.style.top = `${rect.bottom + 5}px`;
+      
+      e.target._tooltip = tooltip;
+    });
+    
+    exoticSensesIcon.addEventListener('mouseleave', (e) => {
+      if (e.target._tooltip) {
+        e.target._tooltip.remove();
+        delete e.target._tooltip;
+      }
+    });
+  }
+
   // =================================
   // HELPER METHODS
   // =================================
@@ -710,8 +514,6 @@ export class SheetEventHandlers {
   }
 
   async _handleFoundationItemDeletion(item) {
-    console.log(`Z-Wolf Epic | Handling foundation item deletion: ${item.name}`);
-    
     // Clear the reference in actor data first
     const updateData = {};
     if (item.type === 'ancestry') {
@@ -722,14 +524,12 @@ export class SheetEventHandlers {
     
     if (Object.keys(updateData).length > 0) {
       await this.actor.update(updateData);
-      console.log(`Z-Wolf Epic | Cleared foundation reference for ${item.type}`);
     }
     
     await item.delete();
   }
 
   async _handleRegularItemDeletion(item) {
-    console.log(`Z-Wolf Epic | Handling regular item deletion: ${item.name}`);
     await item.delete();
   }
 
@@ -745,7 +545,6 @@ export class SheetEventHandlers {
     
     if (!validSizes.includes(currentSize)) {
       const newSize = validSizes[0];
-      console.log(`Z-Wolf Epic | Invalid size "${currentSize}" for ancestry, changing to "${newSize}"`);
       
       await this.actor.update({ 'system.size': newSize });
       
@@ -755,31 +554,6 @@ export class SheetEventHandlers {
     }
     
     return false;
-  }
-
-  _getProgressionOnlyLevel() {
-    if (this.actor.items) {
-      const hasProgressionItem = this.actor.items.some(item => 
-        item.name === "Progression Enhancement"
-      );
-      
-      if (hasProgressionItem) {
-        return 1;
-      }
-    }
-    
-    return 0;
-  }
-
-  _calculateProgressionBonuses(level, progressionOnlyLevel) {
-    const totalLevel = level + progressionOnlyLevel;
-    
-    return {
-      mediocre: Math.floor(0.6 * totalLevel - 0.3),
-      moderate: Math.floor(0.8 * totalLevel),
-      specialty: Math.floor(1 * totalLevel),
-      awesome: Math.floor(1.2 * totalLevel + 0.8001)
-    };
   }
 
   _getPlacementDisplayName(placement) {
