@@ -30,7 +30,7 @@ import { registerTokenHooks } from "./hooks/token.mjs";
 import { registerItemHooks } from "./hooks/item.mjs";
 import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
 import { registerMacroHooks } from "./hooks/macros.mjs";
-import { registerConditionLogger } from "./module/hooks/condition-logger.mjs";
+import { registerConditionLogger } from "./hooks/condition-logger.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -149,7 +149,7 @@ function configureStatusEffects() {
   CONFIG.specialStatusEffects = {
     DEFEATED: "dead",
     INVISIBLE: "invisible",
-    BLIND: "",
+    BLIND: "blinded",
     BURROW: "",
     HOVER: "",
     FLY: ""

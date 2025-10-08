@@ -2,7 +2,7 @@
  * Z-Wolf Epic Vision Radius Display
  * 
  * Shows visual rings around controlled tokens indicating their vision ranges:
- * - Blue ring for nightsight (dim light vision)
+ * - Blue ring for nightsight (dim light vision) - only if greater than darkvision
  * - Red ring for darkvision (darkness vision) if greater than default
  */
 
@@ -76,8 +76,8 @@ function drawVisionRings(token) {
   const centerY = (token.document.height * canvas.grid.size) / 2;
   const pixelsPerMeter = canvas.dimensions.distancePixels;
   
-  // Draw nightsight ring (blue)
-  if (nightsight > 0) {
+  // Draw nightsight ring (blue) - only if greater than darkvision
+  if (nightsight > darkvision && nightsight > 0) {
     drawVisionRing(graphics, centerX, centerY, nightsight * pixelsPerMeter, {
       color: 0x4a7bc8,
       label: `Nightsight ${nightsight}m`,

@@ -55,7 +55,7 @@ export const DEFAULT_ITEMS = {
         1: {
             name: "Generic Swift Activities",
             type: "swiftAction",
-            description: "<p>Cleave, Declare Attack Aspect, Demoralize, Escape, Hustle, Interact, Recall Knowledge, Recover, Stand, Step, Stride</p>"
+            description: "<p>Cleave, Declare Attack Aspect (Brutal), Declare Attack Aspect (Precise), Demoralize, Escape, Hustle, Interact, Recall Knowledge, Recover, Stand, Step, Stride</p>"
         },
         2: {
             name: "Generic Reaction Activities",

@@ -89,8 +89,8 @@ ZWOLF.damageTypes = {
     icon: "icons/skills/melee/sword-damaged-broken-grey.webp",
     color: "#8B4513"
   },
-  "fire": {
-    label: "ZWOLF.DamageFire",
+  "heat": {
+    label: "ZWOLF.DamageHeat",
     icon: "icons/magic/fire/flame-burning-campfire.webp",
     color: "#ff4500"
   },
@@ -235,6 +235,16 @@ ZWOLF.conditions = {
     label: "ZWOLF.ConditionQuickened",
     icon: "icons/svg/clockwork.svg", // or "icons/magic/time/hourglass-tilted.webp"
     description: "ZWOLF.ConditionQuickenedDesc"
+  },
+  "blinded": {
+    label: "ZWOLF.ConditionBlinded",
+    icon: "icons/svg/blind.svg",
+    description: "ZWOLF.ConditionBlindedDesc"
+  },
+  "concentrating": {
+    label: "ZWOLF.ConditionConcentrating",
+    icon: "icons/magic/symbols/question-stone-yellow.webp",
+    description: "ZWOLF.ConditionConcentratingDesc"
   }
 };
 

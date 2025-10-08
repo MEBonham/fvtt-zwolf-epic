@@ -299,7 +299,70 @@
     
     "CopyOfWorldItem": "Copy of world Item: {name}",
     "PushToActors": "Push to Actors",
-    "PushToActorsTooltip": "Update all Actor copies of this Item"
+    "PushToActorsTooltip": "Update all Actor copies of this Item",
+
+    "ConditionProne": "Prone",
+    "ConditionProneDesc": "The character is lying on the ground and must spend movement to stand up.",
+    
+    "ConditionDazed": "Dazed",
+    "ConditionDazedDesc": "The character is disoriented and has difficulty acting effectively.",
+    
+    "ConditionStunned": "Stunned",
+    "ConditionStunnedDesc": "The character is unable to act or react to threats.",
+    
+    "ConditionBruised": "Bruised",
+    "ConditionBruisedDesc": "The character has taken minor injury and may suffer penalties.",
+    
+    "ConditionWounded": "Wounded",
+    "ConditionWoundedDesc": "The character has taken significant injury and suffers penalties.",
+    
+    "ConditionDying": "Dying",
+    "ConditionDyingDesc": "The character is at death's door and will die without stabilization.",
+    
+    "ConditionDropped": "Dropped",
+    "ConditionDroppedDesc": "The character has fallen unconscious.",
+    
+    "ConditionDead": "Dead",
+    "ConditionDeadDesc": "The character has died.",
+    
+    "ConditionSuffused": "Suffused",
+    "ConditionSuffusedDesc": "The character is infused with magical energy.",
+    
+    "ConditionOffGuard": "Off-Guard",
+    "ConditionOffGuardDesc": "The character's defenses are compromised and they are easier to hit.",
+    
+    "ConditionParalyzed": "Paralyzed",
+    "ConditionParalyzedDesc": "The character cannot move or take physical actions.",
+    
+    "ConditionMomentum": "Momentum",
+    "ConditionMomentumDesc": "The character has built up momentum and gains bonuses to actions.",
+    
+    "ConditionGrabbed": "Grabbed",
+    "ConditionGrabbedDesc": "The character is being held by another creature and has restricted movement.",
+    
+    "ConditionHelpless": "Helpless",
+    "ConditionHelplessDesc": "The character is unable to defend themselves effectively.",
+    
+    "ConditionShaken": "Shaken",
+    "ConditionShakenDesc": "The character is frightened and suffers penalties from fear.",
+    
+    "ConditionBattered": "Battered",
+    "ConditionBatteredDesc": "The character has taken repeated punishment and is weakened.",
+    
+    "ConditionImmobilized": "Immobilized",
+    "ConditionImmobilizedDesc": "The character cannot move from their current position.",
+    
+    "ConditionInvisible": "Invisible",
+    "ConditionInvisibleDesc": "The character cannot be seen by normal vision.",
+    
+    "ConditionQuickened": "Quickened",
+    "ConditionQuickenedDesc": "The character can act with increased speed.",
+    
+    "ConditionBlinded": "Blinded",
+    "ConditionBlindedDesc": "The character cannot see and suffers severe penalties to visual actions.",
+    
+    "ConditionConcentrating": "Concentrating",
+    "ConditionConcentratingDesc": "The character is maintaining focus on a spell or ability that requires concentration."
   },
   "ZWOLF_DICE": {
     "QuickRoll": "Quick roll with current boosts",
