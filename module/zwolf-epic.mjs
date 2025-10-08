@@ -1,226 +1,249 @@
 /**
  * Z-Wolf Epic Game System
- * A heroic fantasy system for Foundry VTT
+ * Main initialization file for Foundry VTT v13
  */
 
-// Import document classes.
+// Import document classes
 import { ZWolfActor } from "./documents/Actor.mjs";
 import { ZWolfItem } from "./documents/Item.mjs";
-// Import sheet classes.
-import { ZWolfActorSheet } from "./sheets/actor-sheet.mjs";
-import { ZWolfItemSheet } from "./sheets/item-sheet.mjs";
-// Import helper/utility classes and constants.
+import ZWolfTokenDocument from "./documents/Token.mjs";
+
+// Import data models
+import * as actorDataModels from "./data/actor-base.mjs";
+import * as itemDataModels from "./data/item-base.mjs";
+
+// Import sheet classes
+import ZWolfActorSheet from "./sheets/actor-sheet.mjs";
+import ZWolfItemSheet from "./sheets/item-sheet.mjs";
+
+// Import helpers and utilities
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
-import { ZWolfDice } from "./helpers/dice.mjs";
-import { ZWolfVision } from "./helpers/vision.mjs";
+import { ZWolfDice } from './dice/dice-system.mjs';
+import { ZWolfVisionSystem } from "./helpers/vision-detection-only.mjs";
+import { ZWolfVisionRadiusDisplay } from "./helpers/vision-radius-display.mjs";
+import { registerItemContextMenuOption } from "./helpers/item-sync.mjs";
+
+// Import hook modules
+import { registerCombatHooks } from "./hooks/combat.mjs";
+import { registerTokenHooks } from "./hooks/token.mjs";
+import { registerItemHooks } from "./hooks/item.mjs";
+import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
+import { registerMacroHooks } from "./hooks/macros.mjs";
+import { registerConditionLogger } from "./hooks/condition-logger.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
 /* -------------------------------------------- */
 
 Hooks.once('init', async function() {
+  console.log('Z-Wolf Epic | Initializing system');
 
-  // Add utility classes to the global game object so that they're more easily
-  // accessible in global contexts.
+  // Add utility classes to global game object
   game.zwolf = {
     ZWolfActor,
     ZWolfItem,
-    rollDice: ZWolfDice.roll,
-    vision: ZWolfVision
+    vision: ZWolfVisionSystem,
+    visionDisplay: ZWolfVisionRadiusDisplay,
+    roll: ZWolfDice.roll.bind(ZWolfDice)
   };
 
-  // Also expose ZWolfDice globally for easier access
-  window.ZWolfDice = ZWolfDice;
-
-  // Add custom constants for configuration.
+  // Add custom constants
   CONFIG.ZWOLF = ZWOLF;
 
-  // Initialize the custom vision system
-  ZWolfVision.initialize();
+  // Configure documents
+  configureDocuments();
+  
+  // Configure status effects
+  configureStatusEffects();
+  
+  // Configure canvas and grid
+  configureCanvas();
+  
+  // Configure combat
+  configureCombat();
+  
+  // Register sheets
+  registerSheets();
+  
+  // Initialize dice system
+  ZWolfDice.initialize(); 
+  
+  // Initialize vision systems
+  ZWolfVisionSystem.initialize();
+  ZWolfVisionRadiusDisplay.initialize();
+  
+  // Register all Handlebars helpers
+  registerHandlebarsHelpers();
+  
+  // Register hook modules
+  registerTokenHooks();
+  registerCombatHooks();
+  registerItemHooks();
+  registerConditionLogger();
+  
+  // Register item sync context menu
+  registerItemContextMenuOption();
+  
+  // Preload templates
+  await preloadHandlebarsTemplates();
+  
+  console.log('Z-Wolf Epic | System initialized');
+});
 
-  /**
-   * Set an initiative formula for the system
-   * @type {String}
-   */
+/* -------------------------------------------- */
+/*  Configuration Functions                     */
+/* -------------------------------------------- */
+
+/**
+ * Configure document classes and data models
+ */
+function configureDocuments() {
+  // Set custom document classes
+  CONFIG.Actor.documentClass = ZWolfActor;
+  CONFIG.Item.documentClass = ZWolfItem;
+  CONFIG.Token.documentClass = ZWolfTokenDocument;
+  
+  // Register Actor data models
+  CONFIG.Actor.dataModels = {
+    pc: actorDataModels.PCData,
+    npc: actorDataModels.NPCData,
+    eidolon: actorDataModels.EidolonData,
+    mook: actorDataModels.MookData,
+    spawn: actorDataModels.SpawnData
+  };
+  
+  // Register Item data models
+  CONFIG.Item.dataModels = {
+    ancestry: itemDataModels.AncestryData,
+    fundament: itemDataModels.FundamentData,
+    equipment: itemDataModels.EquipmentData,
+    knack: itemDataModels.KnackData,
+    track: itemDataModels.TrackData,
+    talent: itemDataModels.TalentData,
+    universal: itemDataModels.UniversalData
+  };
+
+  // Register actor type labels
+  CONFIG.Actor.typeLabels = {
+    pc: "Player Character",
+    npc: "Non-Player Character",
+    eidolon: "Eidolon",
+    mook: "Mook",
+    spawn: "Spawn"
+  };
+}
+
+/**
+ * Configure custom status effects
+ */
+function configureStatusEffects() {
+  CONFIG.statusEffects = Object.entries(ZWOLF.conditions).map(([id, condition]) => ({
+    id: id,
+    name: condition.label,
+    icon: condition.icon,
+    description: condition.description,
+    statuses: [id]
+  }));
+
+  CONFIG.specialStatusEffects = {
+    DEFEATED: "dead",
+    INVISIBLE: "invisible",
+    BLIND: "blinded",
+    BURROW: "",
+    HOVER: "",
+    FLY: ""
+  };
+}
+
+/**
+ * Configure canvas and grid settings
+ */
+function configureCanvas() {
+  CONFIG.Canvas.gridPrecision = 2;
+  CONFIG.Canvas.rulerUnits = "m";
+  
+  // Set default scene to gridless
+  Hooks.on("preCreateScene", (document, data, options, userId) => {
+    if (!data.grid) data.grid = {};
+    if (data.grid.type === undefined) {
+      data.grid.type = CONST.GRID_TYPES.GRIDLESS;
+    }
+  });
+}
+
+/**
+ * Configure combat system
+ */
+function configureCombat() {
   CONFIG.Combat.initiative = {
     formula: "1d12 + @attributes.agility.value",
     decimals: 2
   };
 
-  // Configure gridless gameplay
-  CONFIG.Canvas.gridPrecision = 2; // Allow decimals in distance measurement
-  CONFIG.Canvas.rulerUnits = "m"; // Use meters for measurement
-
-  // Define custom Document classes
-  CONFIG.Actor.documentClass = ZWolfActor;
-  CONFIG.Item.documentClass = ZWolfItem;
-
-  // Register actor types with proper labels
-  CONFIG.Actor.typeLabels = {
-    character: "Player Character",
-    npc: "Non-Player Character",
-    eidolon: "Eidolon",
-    spawn: "Spawn"
+  // Override initiative rolling to use Z-Wolf dice
+  Combat.prototype.rollInitiative = async function(ids, {formula=null, updateTurn=true, messageOptions={}} = {}) {
+    ids = typeof ids === "string" ? [ids] : ids;
+    const updates = [];
+    
+    for (let id of ids) {
+      const combatant = this.combatants.get(id);
+      if (!combatant?.actor) continue;
+      
+      const agilityMod = combatant.actor.system.attributes?.agility?.value || 0;
+      const rollResult = await ZWolfDice.roll({
+        netBoosts: 0,
+        modifier: agilityMod,
+        flavor: `Initiative Roll - ${combatant.name}`
+      });
+      
+      updates.push({
+        _id: id,
+        initiative: rollResult.finalResult
+      });
+    }
+    
+    if (updates.length) {
+      await this.updateEmbeddedDocuments("Combatant", updates);
+    }
+    
+    if (updateTurn && this.combatant?.initiative === null) {
+      await this.nextTurn();
+    }
+    
+    return this;
   };
+}
 
-  // Register sheet application classes
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("zwolf-epic", ZWolfActorSheet, {
-    types: ["pc", "npc", "eidolon", "spawn"],
+/**
+ * Register sheet applications
+ */
+function registerSheets() {
+  // Unregister core sheets
+  foundry.documents.collections.Actors.unregisterSheet("core", foundry.appv1.sheets.ActorSheet);
+  foundry.documents.collections.Items.unregisterSheet("core", foundry.applications.sheets.ItemSheetV2);
+  
+  // Register Z-Wolf sheets
+  foundry.documents.collections.Actors.registerSheet("zwolf-epic", ZWolfActorSheet, {
+    types: ["pc", "npc", "eidolon", "mook", "spawn"],
     makeDefault: true,
     label: "Z-Wolf Epic Character Sheet"
   });
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
-    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent"],
-    makeDefault: true
+  
+  foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
+    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
+    makeDefault: true,
+    label: "Z-Wolf Epic Item Sheet"
   });
-
-  // Preload Handlebars templates.
-  return preloadHandlebarsTemplates();
-});
-
-/* -------------------------------------------- */
-/*  Handlebars Helpers                          */
-/* -------------------------------------------- */
-
-// If you need to add Handlebars helpers, here are a few useful examples:
-Handlebars.registerHelper('concat', function() {
-  var outStr = '';
-  for (var arg in arguments) {
-    if (typeof arguments[arg] != 'object') {
-      outStr += arguments[arg];
-    }
-  }
-  return outStr;
-});
-
-Handlebars.registerHelper('selected', function(option, value) {
-  return (option === value) ? 'selected' : '';
-});
-
-Handlebars.registerHelper('checked', function(value) {
-  return value ? 'checked' : '';
-});
-
-Handlebars.registerHelper('toLowerCase', function(str) {
-  return str.toLowerCase();
-});
-
-Handlebars.registerHelper('join', function(array, separator) {
-  if (!array) return '';
-  if (!Array.isArray(array)) return String(array);
-  
-  separator = separator || ', ';
-  
-  // Clean up corrupted array elements
-  const cleanArray = array
-    .filter(item => item !== null && item !== undefined)
-    .map(item => {
-      const str = String(item);
-      // If we find [object Object] corruption, try to extract meaningful parts
-      if (str.includes('[object Object]')) {
-        // Split on [object Object] and take valid parts
-        const parts = str.split('[object Object]').filter(part => part.trim().length > 0);
-        return parts.join(', ');
-      }
-      return str;
-    })
-    .filter(str => str.length > 0);
-    
-  return cleanArray.join(separator);
-});
-
-Handlebars.registerHelper('eq', function(a, b) {
-  return a === b;
-});
-
-Handlebars.registerHelper('includes', function(array, value) {
-  if (!array || !Array.isArray(array)) return false;
-  return array.includes(value);
-});
-
-Handlebars.registerHelper('add', function(a, b) {
-  return parseInt(a) + parseInt(b);
-});
-
-Handlebars.registerHelper('json', function(obj) {
-  return JSON.stringify(obj);
-});
-
-Handlebars.registerHelper('math', function(lvalue, operator, rvalue) {
-  lvalue = parseFloat(lvalue);
-  rvalue = parseFloat(rvalue);
-  
-  return {
-    '+': lvalue + rvalue,
-    '-': lvalue - rvalue,
-    '*': lvalue * rvalue,
-    '/': lvalue / rvalue,
-    '%': lvalue % rvalue
-  }[operator];
-});
+}
 
 /* -------------------------------------------- */
 /*  Ready Hook                                  */
 /* -------------------------------------------- */
 
 Hooks.once("ready", async function() {
-  // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
-  Hooks.on("hotbarDrop", (bar, data, slot) => createItemMacro(data, slot));
+  console.log('Z-Wolf Epic | System ready');
+  
+  // Register macro hooks
+  registerMacroHooks();
 });
-
-/* -------------------------------------------- */
-/*  Hotbar Macros                              */
-/* -------------------------------------------- */
-
-/**
- * Create a Macro from an Item drop.
- * Get an existing item macro if one exists, otherwise create a new one.
- * @param {Object} data     The dropped data
- * @param {number} slot     The hotbar slot to use
- * @returns {Promise}
- */
-async function createItemMacro(data, slot) {
-  if (data.type !== "Item") return;
-  if (!("data" in data)) return ui.notifications.warn("You can only create macro buttons for owned Items");
-  const item = data.data;
-
-  // Create the macro command
-  const command = `game.zwolf.rollItemMacro("${item.name}");`;
-  let macro = game.macros.find(m => (m.name === item.name) && (m.command === command));
-  if (!macro) {
-    macro = await Macro.create({
-      name: item.name,
-      type: "script",
-      img: item.img,
-      command: command,
-      flags: { "zwolf-epic.itemMacro": true }
-    });
-  }
-  game.user.assignHotbarMacro(macro, slot);
-  return false;
-}
-
-/**
- * Create a Macro from an Item drop.
- * Get an existing item macro if one exists, otherwise create a new one.
- * @param {string} itemName
- * @return {Promise}
- */
-function rollItemMacro(itemName) {
-  const speaker = ChatMessage.getSpeaker();
-  let actor;
-  if (speaker.token) actor = game.actors.tokens[speaker.token];
-  if (!actor) actor = game.actors.get(speaker.actor);
-  const item = actor ? actor.items.find(i => i.name === itemName) : null;
-  if (!item) return ui.notifications.warn(`Your controlled Actor does not have an item named ${itemName}`);
-
-  // Trigger the item roll
-  return item.roll();
-}
-
-// Add the rollItemMacro function to the game.zwolf object
-game.zwolf = game.zwolf || {};
-game.zwolf.rollItemMacro = rollItemMacro;

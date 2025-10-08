@@ -11,12 +11,29 @@
   "authors": [{
     "name": "M. Everett Bonham",
     "email": "zaninar.games@gmail.com",
-    "discord": "yourdiscord"
+    "discord": "https://discord.gg/qU83g3F2qY"
   }],
   "esmodules": ["module/zwolf-epic.mjs"],
-  "styles": ["css/zwolf-epic.css"],
+  "styles": [
+    "styles/variables.css",
+    "styles/misc-styles.css",
+    "styles/actor-sheets.css",
+    "styles/item-sheets.css"
+  ],
   "scripts": [],
   "packs": [],
+  "relationships": {
+    "requires": [
+      {
+        "id": "lib-wrapper",
+        "type": "module",
+        "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json",
+        "compatibility": {
+          "verified": "1.13.4.0"
+        }
+      }
+    ]
+  },
   "languages": [
     {
       "lang": "en",
@@ -24,10 +41,12 @@
       "path": "lang/en.json"
     }
   ],
-  "gridDistance": 1,
-  "gridUnits": "m",
-  "primaryTokenAttribute": "vitality",
-  "secondaryTokenAttribute": "power",
+  "grid": {
+    "distance": 1,
+    "units": "m"
+  },
+  "primaryTokenAttribute": "vitalityPoints",
+  "secondaryTokenAttribute": null,
   "url": "https://github.com/MEBonham/fvtt-zwolf-epic",
   "manifest": "https://raw.githubusercontent.com/MEBonham/fvtt-zwolf-epic/main/system.json",
   "download": "https://github.com/MEBonham/fvtt-zwolf-epic/archive/main.zip",

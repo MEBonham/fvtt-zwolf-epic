@@ -1,0 +1,36 @@
+{{!-- templates/item/parts/item-formulae.hbs (fundament-specific) --}}
+{{#if (eq itemType "fundament")}}
+<div class="tab" data-group="primary" data-tab="formulae">
+  <div class="formulae-section">
+    <h3>{{localize 'ZWOLF.VitalityFunction'}}</h3>
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.VitalityFormula'}}</label>
+      <select name="system.vitalityFunction">
+        <option value="standard" {{#if (or (eq system.vitalityFunction "standard") (not system.vitalityFunction))}}selected{{/if}}>
+          {{localize 'ZWOLF.VitalityStandard'}}
+        </option>
+        <option value="hardy" {{#if (eq system.vitalityFunction "hardy")}}selected{{/if}}>
+          {{localize 'ZWOLF.VitalityHardy'}}
+        </option>
+      </select>
+      <p class="notes">{{localize 'ZWOLF.VitalityFunctionHint'}}</p>
+    </div>
+
+    <h3>{{localize 'ZWOLF.CoastFunction'}}</h3>
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.CoastFormula'}}</label>
+      <select name="system.coastFunction">
+        <option value="standard" {{#if (or (eq system.coastFunction "standard") (not system.coastFunction))}}selected{{/if}}>
+          {{localize 'ZWOLF.CoastStandard'}}
+        </option>
+        <option value="cunning" {{#if (eq system.coastFunction "cunning")}}selected{{/if}}>
+          {{localize 'ZWOLF.CoastCunning'}}
+        </option>
+      </select>
+      <p class="notes">{{localize 'ZWOLF.CoastFunctionHint'}}</p>
+    </div>
+  </div>
+</div>
+{{else}}
+<div class="hidden-part" style="display: none;"></div>
+{{/if}}

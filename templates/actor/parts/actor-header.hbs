@@ -1,0 +1,208 @@
+{{!-- templates/actor/parts/actor-header.hbs --}}
+<section class="sheet-header-wrapper {{#if isMook}}mook-header{{/if}}{{#if isSpawn}}spawn-header{{/if}}" 
+         data-part-id="header">
+  <header class="sheet-header">
+    <img class="profile-img" 
+         src="{{document.img}}" 
+         data-action="editImage" 
+         title="{{document.name}}" />
+    
+    <div class="header-fields">
+      <h1 class="charname">
+        <input name="name" 
+               type="text" 
+               value="{{document.name}}" 
+               placeholder="{{localize (getActorNamePlaceholder document.type)}}" />
+      </h1>
+      
+      <div class="header-line-2">
+        <div class="header-field level-field">
+          <label>{{localize "ZWOLF.Level"}}</label>
+          <input type="number" 
+                 name="system.level" 
+                 value="{{document.system.level}}" 
+                 min="0" 
+                 max="20" />
+        </div>
+        
+        <div class="header-field size-field">
+          <label>{{localize "ZWOLF.Size"}}</label>
+          {{#if isCharacter}}
+            <select name="system.size" value="{{document.system.size}}">
+              {{#if ancestry.system.sizeOptions.length}}
+                {{#each ancestry.system.sizeOptions as |size|}}
+                  <option value="{{size}}" {{#if (eq ../document.system.size size)}}selected{{/if}}>
+                    {{localize (getSizeLabel size)}}
+                  </option>
+                {{/each}}
+              {{else}}
+                <option value="medium" {{#if (eq document.system.size "medium")}}selected{{/if}}>
+                  {{localize "ZWOLF.Medium"}}
+                </option>
+              {{/if}}
+            </select>
+            {{#if ancestry}}
+              <div class="size-source" title="{{localize 'ZWOLF.SizeOptionsFrom' name=ancestry.name}}">
+                <i class="fas fa-info-circle"></i>
+              </div>
+            {{/if}}
+          {{else if (or isMook isSpawn)}}
+            <select name="system.size" value="{{document.system.size}}">
+              {{#if baseCreature.system.size}}
+                <option value="{{baseCreature.system.size}}" selected>
+                  {{localize (getSizeLabel baseCreature.system.size)}} ({{localize "ZWOLF.FromBase"}})
+                </option>
+              {{else}}
+                {{#each (getCommonSizes) as |size|}}
+                  <option value="{{size}}" {{#if (eq ../../document.system.size size)}}selected{{/if}}>
+                    {{localize (getSizeLabel size)}}
+                  </option>
+                {{/each}}
+              {{/if}}
+            </select>
+          {{/if}}
+          
+          {{!-- Show effective size if different --}}
+          {{#if (ne document.system.size document.system.effectiveSize)}}
+            <div class="effective-size-display" 
+                 title="{{localize 'ZWOLF.EffectiveSize'}}">
+              <i class="fas fa-arrow-right"></i>
+              <span class="effective-size">{{localize (getSizeLabel document.system.effectiveSize)}}</span>
+            </div>
+          {{/if}}
+        </div>
+        
+        <div class="header-field tags-field">
+          <label>{{localize "ZWOLF.Tags"}}</label>
+          <div class="tags-display">{{characterTags}}</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Header Resources -->
+  <div class="header-resources {{#if isMook}}mook-resources{{/if}}{{#if isSpawn}}spawn-resources{{/if}}">
+    {{#if (or isMook isSpawn)}}
+      {{> base-creature-selector}}
+    {{/if}}
+    
+    {{#unless isSpawn}}
+      {{> resource-display 
+          label="VP"
+          resourceClass="vp-resource"
+          valueField="system.vitalityPoints.value"
+          value=document.system.vitalityPoints.value
+          max=calculatedValues.maxVitality
+          editable=true}}
+      
+      {{> resource-display 
+          label="SP"
+          resourceClass="sp-resource"
+          valueField="system.staminaPoints.value"
+          value=document.system.staminaPoints.value
+          max=calculatedValues.maxStamina
+          editable=true}}
+    {{/unless}}
+    
+    {{#if (eq document.type "pc")}}
+      {{> resource-display 
+          label="KP"
+          resourceClass="kp-resource"
+          valueField="system.karmaPoints.value"
+          value=document.system.karmaPoints.value
+          max=document.system.karmaPoints.max
+          editable=true}}
+    {{/if}}
+    
+    <div class="resource cn-resource">
+      <label>{{localize "ZWOLF.CN"}}</label>
+      <div class="resource-value-single">
+        <span class="calculated-value">{{calculatedValues.coastNumber}}</span>
+      </div>
+    </div>
+    
+    {{#unless sideEffects.speedProgression}}
+      <div class="resource speed-resource">
+        <label>{{localize "ZWOLF.Speed"}}</label>
+        <div class="resource-value-single">
+          <div class="speed-with-roll">
+            <span class="static-value">+0</span>
+            <i class="fas fa-dice-d12 speed-roll-die" 
+               data-action="rollSpeed"
+               data-modifier="0" 
+               data-flavor="{{localize 'ZWOLF.SpeedCheck'}}"
+               title="{{localize 'ZWOLF.RollSpeedCheck'}}"></i>
+          </div>
+        </div>
+      </div>
+    {{/unless}}
+
+    {{#if isCharacter}}
+      <div class="resource rest-buttons-resource">
+        <div class="rest-button-stack">
+          <button type="button" 
+                  class="rest-button short-rest-btn" 
+                  data-action="shortRest" 
+                  title="{{localize 'ZWOLF.ShortRestTooltip'}}">
+            <i class="fas fa-moon"></i>
+            <span class="rest-label">{{localize "ZWOLF.ShortRest"}}</span>
+          </button>
+          <button type="button" 
+                  class="rest-button extended-rest-btn" 
+                  data-action="extendedRest" 
+                  title="{{localize 'ZWOLF.ExtendedRestTooltip'}}">
+            <i class="fas fa-bed"></i>
+            <span class="rest-label">{{localize "ZWOLF.ExtendedRest"}}</span>
+          </button>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Target Numbers -->
+  <div class="header-tns {{#if isMook}}mook-tns{{/if}}{{#if isSpawn}}spawn-tns{{/if}}">
+    {{#if isCharacter}}
+      <div class="tn-group tn-group-primary">
+        {{> tn-display label="ZWOLF.ToughnessTN" value=tns.toughness}}
+        {{> tn-display label="ZWOLF.DestinyTN" value=tns.destiny}}
+      </div>
+      
+      <div class="tn-divider"></div>
+      
+      <div class="tn-group tn-group-secondary">
+        {{> tn-display label="ZWOLF.ImprovisedTN" value=tns.improvised}}
+        {{> tn-display label="ZWOLF.HealingTN" value=tns.healing}}
+        {{> tn-display label="ZWOLF.ChallengeTN" value=tns.challenge}}
+      </div>
+      
+    {{else if isMook}}
+      <div class="tn-group tn-group-mook">
+        {{> tn-display 
+            label="ZWOLF.ToughnessDestinyTN" 
+            value=tns.combined 
+            tnClass="tn-combined"}}
+      </div>
+      
+    {{else if isSpawn}}
+      <div class="tn-group tn-group-primary">
+        {{> tn-display label="ZWOLF.ToughnessTN" value=tns.toughness}}
+        {{> tn-display label="ZWOLF.DestinyTN" value=tns.destiny}}
+      </div>
+      
+      <div class="tn-divider"></div>
+      
+      <div class="tn-group tn-group-secondary">
+        {{> tn-display label="ZWOLF.ImprovisedTN" value=tns.improvised}}
+        {{> tn-display label="ZWOLF.HealingTN" value=tns.healing}}
+        {{> tn-display label="ZWOLF.ChallengeTN" value=tns.challenge}}
+      </div>
+    {{/if}}
+    
+    {{#if abilityCategories.exoticSenses.length}}
+      <div class="exotic-senses-icon" 
+           title="{{#each abilityCategories.exoticSenses}}{{name}}{{#if tags}} · {{tags}}{{/if}}{{#unless @last}}, {{/unless}}{{/each}}">
+        <i class="fas fa-eye"></i>
+      </div>
+    {{/if}}
+  </div>
+</section>

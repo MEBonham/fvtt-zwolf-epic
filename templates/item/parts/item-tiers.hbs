@@ -1,0 +1,29 @@
+{{!-- templates/item/parts/item-tiers.hbs --}}
+<div class="tab tiers-container" data-group="primary" data-tab="tiers">
+  <div class="track-tiers">
+    <h3>{{localize 'ZWOLF.TrackTiers'}}</h3>
+    <p class="notes">{{localize 'ZWOLF.TrackTiersHint'}}</p>
+    
+    <div class="tiers-accordion">
+      {{#each (range 1 6) as |tierNumber|}}
+        {{#with (lookup ../system.tiers (concat "tier" tierNumber)) as |tierData|}}
+          <details class="tier-accordion-section" data-tier="{{tierNumber}}">
+            <summary class="tier-accordion-header">
+              <i class="fas fa-chevron-right accordion-icon"></i>
+              <span class="tier-title">{{localize 'ZWOLF.Tier'}} {{tierNumber}}</span>
+              <span class="tier-talent-preview">{{{tierData.enrichedTalentMenu}}}</span>
+            </summary>
+            
+            <div class="tier-accordion-content">
+              {{> tier-template 
+                  tierData=tierData 
+                  tierNumber=tierNumber 
+                  owner=../../owner 
+                  editable=../../editable}}
+            </div>
+          </details>
+        {{/with}}
+      {{/each}}
+    </div>
+  </div>
+</div>

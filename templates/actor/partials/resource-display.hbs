@@ -1,0 +1,24 @@
+{{!-- templates/actor/partials/resource-display.hbs --}}
+{{!-- 
+  Reusable resource display
+  
+  Parameters:
+  - label: Resource label (e.g., "VP", "SP")
+  - resourceClass: CSS class for resource type
+  - valueField: Field name for current value
+  - value: Current value
+  - max: Maximum value
+  - editable: Boolean if value is editable
+--}}
+<div class="resource {{resourceClass}}">
+  <label>{{label}}</label>
+  <div class="resource-values">
+    {{#if editable}}
+      <input type="number" name="{{valueField}}" value="{{value}}" />
+    {{else}}
+      <span class="current-value">{{value}}</span>
+    {{/if}}
+    <span class="sep">/</span>
+    <span class="max-value">{{max}}</span>
+  </div>
+</div>

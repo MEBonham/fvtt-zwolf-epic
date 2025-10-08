@@ -1,0 +1,39 @@
+{{!-- templates/actor/partials/foundation-slot.hbs --}}
+{{!-- 
+  Foundation item slot (ancestry/fundament)
+  
+  Parameters:
+  - label: Label for the slot
+  - itemType: "ancestry" or "fundament"
+  - item: Item data (if slot is filled)
+--}}
+<div class="foundation-item {{itemType}}-slot">
+  <label class="foundation-label">{{localize label}}</label>
+  <div class="foundation-drop-zone drop-zone" 
+       data-item-type="{{itemType}}" 
+       data-slot="{{itemType}}" 
+       title="{{localize (concat 'ZWOLF.Drag' (capitalize itemType) 'Here')}}">
+    
+    {{#if item}}
+      <div class="slotted-item" data-item-id="{{item._id}}">
+        <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
+        <div class="item-info">
+          <div class="item-name">{{item.name}}</div>
+        </div>
+        <div class="item-controls">
+          <a class="item-control" data-action="editItem" title="{{localize 'ZWOLF.Edit'}} {{item.name}}">
+            <i class="fas fa-edit"></i>
+          </a>
+          <a class="item-control" data-action="deleteItem" title="{{localize 'ZWOLF.Remove'}} {{item.name}}">
+            <i class="fas fa-times"></i>
+          </a>
+        </div>
+      </div>
+    {{else}}
+      <div class="drop-prompt">
+        <i class="fas fa-user-circle"></i>
+        <span>{{localize (concat 'ZWOLF.Drag' (capitalize itemType) 'Here')}}</span>
+      </div>
+    {{/if}}
+  </div>
+</div>

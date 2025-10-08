@@ -1,0 +1,62 @@
+{{!-- templates/item/partials/ability-item.hbs --}}
+<div class="ability-item" data-ability-index="{{index}}">
+  <div class="ability-header">
+    <input type="text" 
+           name="{{nameTarget}}" 
+           value="{{ability.name}}" 
+           placeholder="{{localize 'ZWOLF.AbilityName'}}"
+           {{#unless editable}}disabled{{/unless}} />
+    
+    <select name="{{typeTarget}}" {{#unless editable}}disabled{{/unless}}>
+      {{#each (getAbilityTypes) as |abilityType|}}
+        <option value="{{abilityType.value}}" 
+                {{#if (eq abilityType.value ../ability.type)}}selected{{/if}}>
+          {{localize abilityType.label}}
+        </option>
+      {{/each}}
+    </select>
+
+    {{#if editable}}
+    <a class="ability-control delete-ability" 
+       data-action="{{deleteAction}}" 
+       data-ability-index="{{index}}"
+       {{#if tierNumber}}data-tier="{{tierNumber}}"{{/if}}
+       title="{{localize 'ZWOLF.DeleteAbility'}}">
+      <i class="fas fa-trash"></i>
+      <span>{{localize 'ZWOLF.Delete'}}</span>
+    </a>
+    {{/if}}
+  </div>
+
+  <div class="ability-tags">
+    <label>{{localize 'ZWOLF.Tags'}}:</label>
+    <input type="text" 
+           name="{{tagsTarget}}" 
+           value="{{ability.tags}}" 
+           placeholder="{{localize 'ZWOLF.TagsCommaSeparated'}}"
+           {{#unless editable}}disabled{{/unless}} />
+  </div>
+
+  <div class="ability-description">
+    <label>{{localize 'ZWOLF.Description'}}:</label>
+    
+    {{#if editable}}
+      <div class="form-group editor">
+        {{editor ability.description 
+                target=descriptionTarget 
+                button=true 
+                owner=owner 
+                editable=editable 
+                engine="prosemirror"}}
+      </div>
+    {{else}}
+      <div class="editor-content">
+        {{#if ability.description}}
+          {{{ability.description}}}
+        {{else}}
+          <em>{{localize 'ZWOLF.NoDescription'}}</em>
+        {{/if}}
+      </div>
+    {{/if}}
+  </div>
+</div>

@@ -1,0 +1,47 @@
+{{!-- templates/actor/parts/actor-sidebar.hbs --}}
+<aside class="progressions-sidebar {{#if isMook}}mook-sidebar{{/if}}" data-part-id="sidebar">
+  <div class="progressions-container">
+    {{#each progressions as |progression progressionKey|}}
+      {{!-- Mooks only show poor/good, others show all --}}
+      {{#unless (and ../isMook (not (or (eq progressionKey "poor") (eq progressionKey "good"))))}}
+        <div class="progression-group {{progressionKey}} collapsed" data-progression="{{progressionKey}}">
+          <div class="progression-header" 
+               data-action="toggleProgression" 
+               data-progression="{{progressionKey}}">
+            <span class="progression-name">
+              <i class="fas fa-dice-d12 progression-die" 
+                 data-action="rollProgression"
+                 data-progression="{{progressionKey}}" 
+                 data-bonus="{{progression.bonus}}"
+                 title="{{localize 'ZWOLF.Roll'}} {{progression.name}} ({{formatBonus progression.bonus}})"></i>
+              <i class="fas fa-chevron-down"></i>
+              {{progression.name}}
+            </span>
+            <span class="progression-bonus">{{formatBonus progression.bonus}}</span>
+          </div>
+          <div class="progression-content">
+            <div class="progression-stats">
+              {{#if progression.stats.length}}
+                {{#each progression.stats as |stat|}}
+                  <div class="stat-item">
+                    <div class="stat-rollable" 
+                         data-action="rollStat" 
+                         data-stat="{{stat.key}}" 
+                         data-type="{{stat.type}}" 
+                         data-progression="{{../progressionKey}}">
+                      <span class="stat-icon {{stat.type}}"></span>
+                      <span class="stat-name">{{stat.name}}</span>
+                    </div>
+                    <span class="stat-value">{{formatBonus stat.value}}</span>
+                  </div>
+                {{/each}}
+              {{else}}
+                <div class="stat-placeholder">{{localize "ZWOLF.NoStatsAssigned"}}</div>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      {{/unless}}
+    {{/each}}
+  </div>
+</aside>

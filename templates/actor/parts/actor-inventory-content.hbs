@@ -1,0 +1,72 @@
+{{!-- templates/actor/parts/actor-inventory-content.hbs --}}
+<div class="tab inventory {{#if (eq currentTab 'inventory')}}active{{/if}}" 
+     data-group="primary" 
+     data-tab="inventory" 
+     data-part-id="tab-inventory">
+  <div class="inventory-container">
+    
+    <!-- Inventory Summary -->
+    <div class="inventory-summary">
+      <div class="bulk-section">
+        <label class="summary-label">{{localize "ZWOLF.TotalBulk"}}:</label>
+        <span class="bulk-display">
+          {{inventoryTotals.bulk}} / {{inventoryTotals.maxBulk}}
+        </span>
+      </div>
+      
+      <div class="wealth-section">
+        <label class="summary-label">{{localize "ZWOLF.Wealth"}}:</label>
+        <div class="wealth-input-group">
+          <input type="number" name="system.wealth" value="{{system.wealth}}" min="0" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Equipment Categories -->
+    <div class="inventory-categories">
+      {{#each (getEquipmentCategories) as |category|}}
+        {{#with (lookup ../equipment category.key) as |categoryItems|}}
+          {{#if categoryItems.length}}
+            <div class="equipment-category">
+              <h4 class="category-header">
+                <i class="fas {{category.icon}}"></i>
+                {{localize category.label}}
+              </h4>
+              <div class="equipment-list">
+                {{#each categoryItems as |item|}}
+                  {{> equipment-item item=item}}
+                {{/each}}
+              </div>
+            </div>
+          {{/if}}
+        {{/with}}
+      {{/each}}
+
+      <!-- No Equipment Message -->
+      {{#unless (hasAnyEquipment equipment)}}
+        <div class="no-equipment-message">
+          <p>
+            <i class="fas fa-info-circle"></i>
+            {{localize "ZWOLF.NoEquipment"}}
+          </p>
+        </div>
+      {{/unless}}
+    </div>
+
+    <!-- Equipment Drop Zone -->
+    <div class="equipment-drop-section">
+      <h4>
+        <i class="fas fa-plus-circle"></i>
+        {{localize "ZWOLF.AddEquipment"}}
+      </h4>
+      <div class="equipment-drop-zone drop-zone" 
+           title="{{localize 'ZWOLF.DragEquipmentHere'}}">
+        <div class="drop-prompt">
+          <i class="fas fa-backpack"></i>
+          <span>{{localize "ZWOLF.DragEquipmentHere"}}</span>
+          <div class="drop-hint">{{localize "ZWOLF.EquipmentDropHint"}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

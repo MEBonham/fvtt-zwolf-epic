@@ -1,0 +1,36 @@
+{{!-- templates/actor/partials/progression-slider.hbs --}}
+{{!-- 
+  Progression slider for attributes/skills
+  
+  Parameters:
+  - label: Display label
+  - statKey: Stat key (e.g., "agility")
+  - statType: "attribute" or "skill"
+  - progression: Current progression value
+  - showAwesomeWarning: Boolean to show warning for Awesome progression
+  - isAlternateRow: Boolean for alternate row styling
+--}}
+<div class="config-row {{#if isAlternateRow}}config-row-alt{{/if}}">
+  <label class="stat-label">
+    {{#if showAwesomeWarning}}
+      <i class="fas fa-exclamation-triangle awesome-warning" 
+         title="{{localize 'ZWOLF.AwesomeProgressionWarning'}}"></i>
+    {{/if}}
+    {{label}}
+  </label>
+  <div class="progression-slider-container">
+    <input type="range" 
+           class="progression-slider" 
+           min="1" 
+           max="4" 
+           value="{{getProgressionValue progression}}"
+           data-stat="{{statKey}}" 
+           data-type="{{statType}}" />
+    <div class="slider-labels">
+      <span class="slider-label">{{localize 'ZWOLF.Med'}}</span>
+      <span class="slider-label">{{localize 'ZWOLF.Mod'}}</span>
+      <span class="slider-label">{{localize 'ZWOLF.Spec'}}</span>
+      <span class="slider-label">{{localize 'ZWOLF.Awe'}}</span>
+    </div>
+  </div>
+</div>

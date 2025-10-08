@@ -1,0 +1,102 @@
+{{!-- templates/item/parts/item-effects.hbs --}}
+<section class="tab effects" data-tab="effects">
+  <div class="effects-container">
+    
+    {{!--
+    <!-- Active Effects (Foundry's built-in system) -->
+    <div class="active-effects-section">
+      <h3><i class="fas fa-magic"></i> {{localize 'EFFECT.ActiveEffects'}}</h3>
+      <div class="effects-list">
+        {{#each item.effects}}
+        <div class="effect-item" data-effect-id="{{this.id}}">
+          <div class="effect-image">
+            <img src="{{this.icon}}" alt="{{this.name}}" width="24" height="24">
+          </div>
+          <div class="effect-name">
+            <span class="effect-title">{{this.name}}</span>
+            {{#if this.disabled}}
+            <span class="effect-status disabled">{{localize 'EFFECT.Disabled'}}</span>
+            {{else}}
+            <span class="effect-status enabled">{{localize 'EFFECT.Enabled'}}</span>
+            {{/if}}
+          </div>
+          <div class="effect-controls">
+            <a class="effect-control" data-action="edit" title="{{localize 'EFFECT.Edit'}}">
+              <i class="fas fa-edit"></i>
+            </a>
+            <a class="effect-control" data-action="toggle" title="{{localize 'EFFECT.Toggle'}}">
+              {{#if this.disabled}}
+              <i class="fas fa-eye"></i>
+              {{else}}
+              <i class="fas fa-eye-slash"></i>
+              {{/if}}
+            </a>
+            <a class="effect-control" data-action="delete" title="{{localize 'EFFECT.Delete'}}">
+              <i class="fas fa-trash"></i>
+            </a>
+          </div>
+        </div>
+        {{/each}}
+        
+        {{#unless item.effects}}
+        <div class="no-effects">
+          <p class="notes">{{localize 'ZWOLF.NoActiveEffects'}}</p>
+        </div>
+        {{/unless}}
+      </div>
+      
+      {{#if editable}}
+      <div class="effect-actions">
+        <button type="button" class="add-effect" data-action="create-effect">
+          <i class="fas fa-plus"></i> {{localize 'EFFECT.Create'}}
+        </button>
+      </div>
+      {{/if}}
+    </div>
+    --}}
+    
+    <!-- Side Effects Section -->
+    <div class="side-effects-section">
+      <h3><i class="fas fa-cogs"></i> {{localize 'ZWOLF.SideEffects'}}</h3>
+      <p class="section-description">{{localize 'ZWOLF.SideEffectsDescription'}}</p>
+      
+      <!-- Use the side-effects-form partial -->
+      {{> "systems/zwolf-epic/templates/item/partials/side-effects-form.hbs" 
+          pathPrefix="system.sideEffects" 
+          sideEffects=system.sideEffects
+          itemType=itemType
+          config=config}}
+    </div>
+    
+    <!-- Item-specific effect notes -->
+    {{#if (or (eq itemType "talent") (eq itemType "track"))}}
+    <div class="effect-notes-section">
+      <h4><i class="fas fa-info-circle"></i> {{localize 'ZWOLF.EffectNotes'}}</h4>
+      {{#if (eq itemType "talent")}}
+      <p class="notes">{{localize 'ZWOLF.TalentEffectNotes'}}</p>
+      {{/if}}
+      {{#if (eq itemType "track")}}
+      <p class="notes">{{localize 'ZWOLF.TrackEffectNotes'}}</p>
+      {{/if}}
+    </div>
+    {{/if}}
+    
+    {{#if (eq itemType "equipment")}}
+    <div class="equipment-effect-notes">
+      <h4><i class="fas fa-hammer"></i> {{localize 'ZWOLF.EquipmentEffects'}}</h4>
+      <p class="notes">{{localize 'ZWOLF.EquipmentEffectNotes'}}</p>
+      
+      {{#if system.equipped}}
+      <div class="equipped-status active">
+        <i class="fas fa-check-circle"></i> {{localize 'ZWOLF.EquippedActive'}}
+      </div>
+      {{else}}
+      <div class="equipped-status inactive">
+        <i class="fas fa-times-circle"></i> {{localize 'ZWOLF.EquippedInactive'}}
+      </div>
+      {{/if}}
+    </div>
+    {{/if}}
+    
+  </div>
+</section>
