@@ -30,6 +30,7 @@ import { registerTokenHooks } from "./hooks/token.mjs";
 import { registerItemHooks } from "./hooks/item.mjs";
 import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
 import { registerMacroHooks } from "./hooks/macros.mjs";
+import { registerConditionLogger } from "./module/hooks/condition-logger.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -79,6 +80,7 @@ Hooks.once('init', async function() {
   registerTokenHooks();
   registerCombatHooks();
   registerItemHooks();
+  registerConditionLogger();
   
   // Register item sync context menu
   registerItemContextMenuOption();

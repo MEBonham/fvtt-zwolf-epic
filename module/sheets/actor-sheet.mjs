@@ -387,7 +387,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     const progression = target.dataset.progression;
     const bonus = parseInt(target.dataset.bonus) || 0;
     
-    const { ZWolfDice } = await import("../dice/dice.mjs");
+    const { ZWolfDice } = await import("../dice/dice-system.mjs");
     const progressionName = progression.charAt(0).toUpperCase() + progression.slice(1);
     
     await ZWolfDice.roll({
@@ -401,7 +401,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     const stat = target.dataset.stat;
     const type = target.dataset.type;
     
-    const { ZWolfDice } = await import("../dice/dice.mjs");
+    const { ZWolfDice } = await import("../dice/dice-system.mjs");
     
     // Handle speed specially
     if (type === 'speed' || stat === 'speed') {
@@ -426,7 +426,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     const modifier = parseInt(target.dataset.modifier) || 0;
     const flavor = target.dataset.flavor || "Speed Check";
     
-    const { ZWolfDice } = await import("../dice/dice.mjs");
+    const { ZWolfDice } = await import("../dice/dice-system.mjs");
     await ZWolfDice.roll({ 
       modifier, 
       flavor, 
