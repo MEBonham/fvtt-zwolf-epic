@@ -31,6 +31,7 @@ import { registerItemHooks } from "./hooks/item.mjs";
 import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
 import { registerMacroHooks } from "./hooks/macros.mjs";
 import { registerConditionLogger } from "./hooks/condition-logger.mjs";
+import { registerActorDirectoryHook } from "./hooks/ui.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -81,6 +82,7 @@ Hooks.once('init', async function() {
   registerCombatHooks();
   registerItemHooks();
   registerConditionLogger();
+  registerActorDirectoryHook();
   
   // Register item sync context menu
   registerItemContextMenuOption();

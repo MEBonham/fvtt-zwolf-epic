@@ -226,7 +226,7 @@ export class ActorDataCalculator {
         case 'spawn':
           // Spawns require base creature to have "Swarmer" track
           return creature.items.some(item => 
-            item.type === 'track' && item.name === 'Swarmer'
+            item.type === 'track' && item.name.slice(0, 7) === 'Swarmer'
           );
           
         case 'mook':
@@ -702,6 +702,22 @@ export class ActorDataCalculator {
     const talentItems = this.actor.items.filter(item => item.type === 'talent');
     talentItems.forEach((talent) => {
       totalKnacks += talent.system?.knacksProvided || 0;
+    });
+    
+    // From track tiers
+    const characterLevel = this.actor.system.level || 0;
+    const trackItems = this.actor.items.filter(item => item.type === 'track');
+    
+    trackItems.forEach(track => {
+      const trackSlotIndex = this._getTrackSlotIndex(track);
+      const unlockedTiers = TrackUtils.getUnlockedTiers(trackSlotIndex, characterLevel);
+      
+      unlockedTiers.forEach(tierNumber => {
+        const tierData = track.system.tiers?.[`tier${tierNumber}`];
+        if (tierData?.sideEffects?.knacksProvided) {
+          totalKnacks += parseInt(tierData.sideEffects.knacksProvided) || 0;
+        }
+      });
     });
     
     return totalKnacks;

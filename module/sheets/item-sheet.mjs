@@ -176,6 +176,7 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
         abilitiesArray.push({
           ...ability,
           index: index,
+          deleteAction: 'delete-ability', // ← Add this
           enrichedDescription: enrichedDescription,
           nameTarget: `system.grantedAbilities.${index}.name`,
           typeTarget: `system.grantedAbilities.${index}.type`,
@@ -221,6 +222,7 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
           tierAbilitiesArray.push({
             ...ability,
             index: index,
+            deleteAction: 'delete-tier-ability', // ← Add this
             enrichedDescription: enrichedDescription,
             nameTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.name`,
             typeTarget: `system.tiers.tier${tierNumber}.grantedAbilities.${index}.type`,
@@ -390,6 +392,10 @@ _prepareTagStrings(context, itemData) {
   // ========================================
 
   _attachPartListeners(partId, htmlElement, options) {
+    console.log("=== ATTACH PART LISTENERS ===");
+    console.log("Part ID:", partId);
+    console.log("Is Editable:", this.isEditable);
+    
     super._attachPartListeners(partId, htmlElement, options);
     
     if (!this.isEditable) return;
@@ -443,23 +449,26 @@ _prepareTagStrings(context, itemData) {
    * @private
    */
   _attachAbilityListeners(html) {
-    // Add ability button
-    html.querySelectorAll('[data-action="add-ability"]').forEach(btn => {
-      btn.addEventListener('click', async (event) => {
+    // Use event delegation - attach to the abilities container itself
+    html.addEventListener('click', async (event) => {
+      const addButton = event.target.closest('[data-action="add-ability"]');
+      if (addButton) {
         event.preventDefault();
+        console.log("Add ability clicked");
         await this.document.addGrantedAbility();
-      });
-    });
+        return;
+      }
 
-    // Delete ability buttons
-    html.querySelectorAll('[data-action="delete-ability"]').forEach(btn => {
-      btn.addEventListener('click', async (event) => {
+      const deleteButton = event.target.closest('[data-action="delete-ability"]');
+      if (deleteButton) {
         event.preventDefault();
-        const index = parseInt(event.currentTarget.dataset.abilityIndex);
+        console.log("Delete ability clicked!");
+        const index = parseInt(deleteButton.dataset.abilityIndex);
+        console.log("Ability index:", index);
         if (!isNaN(index)) {
           await this.document.removeGrantedAbility(index);
         }
-      });
+      }
     });
   }
 

@@ -91,14 +91,14 @@ export class ZWolfItem extends Item {
     const nextIndex = indices.length > 0 ? Math.max(...indices) + 1 : 0;
     
     // Create new ability with item name as default
-    abilities[nextIndex] = {
+    const newAbility = {
       name: this.name,
       tags: "",
       type: "passive",
       description: ""
     };
     
-    await this.update({ "system.grantedAbilities": abilities });
+    await this.update({ [`system.grantedAbilities.${nextIndex}`]: newAbility });
   }
 
   /**
@@ -107,9 +107,8 @@ export class ZWolfItem extends Item {
    * @returns {Promise<void>}
    */
   async removeGrantedAbility(index) {
-    const abilities = foundry.utils.deepClone(this.system.grantedAbilities || {});
-    delete abilities[index];
-    await this.update({ "system.grantedAbilities": abilities });
+    const deletePath = `system.grantedAbilities.-=${index}`;
+    await this.update({ [deletePath]: null });
   }
 
   /**

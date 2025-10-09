@@ -24,18 +24,6 @@ export function registerTokenHooks() {
   Hooks.on("preUpdateToken", (document, changes, options, userId) => {
     filterDetectionModes(document, changes, options);
   });
-
-  // Clean up turn indicators when combat ends
-  Hooks.on("deleteCombat", (combat, options, userId) => {
-    cleanupTurnIndicators();
-  });
-
-  // Clean up turn indicators when combat is updated (like when ending)
-  Hooks.on("updateCombat", (combat, changed, options, userId) => {
-    if (changed.active === false) {
-      cleanupTurnIndicators();
-    }
-  });
 }
 
 /**
@@ -134,28 +122,4 @@ function filterDetectionModes(document, changes, options) {
       m.id !== 'basicSight' && m.id !== 'lightPerception'
     );
   }
-}
-
-/**
- * Clean up turn indicator animations from all tokens
- */
-function cleanupTurnIndicators() {
-  console.log("Z-Wolf Epic | Cleaning up turn indicators");
-  
-  if (!canvas.tokens) {
-    console.warn("Z-Wolf Epic | Canvas tokens not available");
-    return;
-  }
-  
-  canvas.tokens.placeables.forEach(token => {
-    // Clear all effects
-    if (token.effects) {
-      token.effects.removeChildren();
-    }
-    
-    // Force refresh
-    token.refresh();
-  });
-  
-  console.log("Z-Wolf Epic | Turn indicators cleaned");
 }
