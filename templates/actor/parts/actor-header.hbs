@@ -82,11 +82,11 @@
 
   <!-- Header Resources -->
   <div class="header-resources {{#if isMook}}mook-resources{{/if}}{{#if isSpawn}}spawn-resources{{/if}}">
-    {{#if (or isMook isSpawn)}}
+    {{#if (or isMook isSpawn (eq document.type "eidolon"))}}
       {{> base-creature-selector}}
     {{/if}}
     
-    {{#unless isSpawn}}
+    {{#if (and (not isSpawn) (ne document.type "eidolon"))}}
       {{> resource-display 
           label="VP"
           resourceClass="vp-resource"
@@ -102,7 +102,7 @@
           value=document.system.staminaPoints.value
           max=calculatedValues.maxStamina
           editable=true}}
-    {{/unless}}
+    {{/if}}
     
     {{#if (eq document.type "pc")}}
       {{> resource-display 

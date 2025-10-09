@@ -21,25 +21,27 @@
         </div>
       </div>
 
-      <!-- Languages Section -->
-      <details class="languages-section">
-        <summary class="languages-header">
-          <span class="languages-title">{{localize "ZWOLF.Languages"}}</span>
-          <span class="language-count">({{localize "ZWOLF.Max"}}: {{languageLimit}})</span>
-        </summary>
-        <div class="languages-content">
-          <div class="form-group">
-            <div class="form-fields">
-              {{editor system.languages 
-                      target="system.languages" 
-                      button=true 
-                      owner=owner 
-                      editable=editable 
-                      height=120}}
+      <!-- Languages Section (not for eidolons) -->
+      {{#unless isEidolon}}
+        <details class="languages-section">
+          <summary class="languages-header">
+            <span class="languages-title">{{localize "ZWOLF.Languages"}}</span>
+            <span class="language-count">({{localize "ZWOLF.Max"}}: {{languageLimit}})</span>
+          </summary>
+          <div class="languages-content">
+            <div class="form-group">
+              <div class="form-fields">
+                {{editor system.languages 
+                        target="system.languages" 
+                        button=true 
+                        owner=owner 
+                        editable=editable 
+                        height=120}}
+              </div>
             </div>
           </div>
-        </div>
-      </details>
+        </details>
+      {{/unless}}
 
       <!-- Journey Abilities -->
       {{> ability-category 

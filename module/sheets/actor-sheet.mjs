@@ -118,6 +118,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     
     // Add actor type flags
     sheetData.isCharacter = ['pc', 'npc', 'eidolon'].includes(this.document.type);
+    sheetData.isEidolon = this.document.type === 'eidolon';
     sheetData.isMook = this.document.type === 'mook';
     sheetData.isSpawn = this.document.type === 'spawn';
     

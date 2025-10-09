@@ -19,10 +19,12 @@
                   itemType="ancestry"
                   item=ancestry}}
 
-              {{> foundation-slot 
-                  label="ZWOLF.Fundament"
-                  itemType="fundament"
-                  item=fundament}}
+              {{#unless isEidolon}}
+                {{> foundation-slot 
+                    label="ZWOLF.Fundament"
+                    itemType="fundament"
+                    item=fundament}}
+              {{/unless}}
             </div>
           </div>
 
@@ -42,7 +44,24 @@
                   <span class="bp-breakdown-item">
                     {{localize "ZWOLF.Skills"}}: {{buildPoints.skills}} BP
                   </span>
+                  {{#if (and isEidolon (gt buildPoints.skillExcessPenalty 0))}}
+                    <span class="bp-breakdown-divider">•</span>
+                    <span class="bp-breakdown-item bp-penalty" title="{{localize 'ZWOLF.SkillExcessPenaltyTooltip'}}">
+                      {{localize "ZWOLF.SkillExcess"}}: +{{buildPoints.skillExcessPenalty}} BP
+                    </span>
+                  {{/if}}
                 </div>
+                {{#if isEidolon}}
+                  <div class="bp-source-breakdown">
+                    <span class="bp-source-item" title="{{localize 'ZWOLF.FromOwnAncestry'}}">
+                      <i class="fas fa-user"></i> {{buildPoints.fromAncestry}} BP
+                    </span>
+                    <span class="bp-breakdown-divider">+</span>
+                    <span class="bp-source-item" title="{{localize 'ZWOLF.FromBaseCreatureUnused'}}">
+                      <i class="fas fa-link"></i> {{buildPoints.fromBaseUnused}} BP
+                    </span>
+                  </div>
+                {{/if}}
               </div>
               
               <div class="build-points-controls">
@@ -104,6 +123,11 @@
             <h4>
               <i class="fas fa-star"></i>
               {{localize "ZWOLF.Knacks"}}
+              {{#if isEidolon}}
+                <span class="section-hint">
+                  ({{localize "ZWOLF.FromAncestryAndBasePlaceholders"}})
+                </span>
+              {{/if}}
             </h4>
             
             {{#if knackSlots.length}}
@@ -133,6 +157,11 @@
             <h4>
               <i class="fas fa-road"></i>
               {{localize "ZWOLF.Tracks"}}
+              {{#if isEidolon}}
+                <span class="section-hint">
+                  ({{localize "ZWOLF.OnlyBasePlaceholderPositions"}})
+                </span>
+              {{/if}}
             </h4>
             
             {{#if trackSlots.length}}
@@ -152,7 +181,13 @@
             {{else}}
               <div class="no-slots-message">
                 <i class="fas fa-info-circle"></i>
-                <span>{{localize "ZWOLF.NoTrackSlots" level=system.level}}</span>
+                <span>
+                  {{#if isEidolon}}
+                    {{localize "ZWOLF.NoEidolonTrackSlots"}}
+                  {{else}}
+                    {{localize "ZWOLF.NoTrackSlots" level=system.level}}
+                  {{/if}}
+                </span>
               </div>
             {{/if}}
           </div>
@@ -162,13 +197,18 @@
             <h4>
               <i class="fas fa-gem"></i>
               {{localize "ZWOLF.Talents"}}
+              {{#if isEidolon}}
+                <span class="section-hint">
+                  ({{localize "ZWOLF.BasedOnEnabledTracks"}})
+                </span>
+              {{/if}}
             </h4>
             
             {{#if talentSlots.length}}
               <div class="talents-grid">
                 {{#each talentSlots as |slot|}}
                   {{> item-slot 
-                      slotLabel=(concat (localize "ZWOLF.Talent") " " slot.talentNumber)
+                      slotLabel=(concat (localize "ZWOLF.Talent") " " (math slot.index "+" 1))
                       slotClass="talent-slot"
                       dropZoneClass="talent-drop-zone"
                       itemType="talent"
@@ -185,7 +225,13 @@
             {{else}}
               <div class="no-slots-message">
                 <i class="fas fa-info-circle"></i>
-                <span>{{localize "ZWOLF.NoTalentSlots" level=system.level}}</span>
+                <span>
+                  {{#if isEidolon}}
+                    {{localize "ZWOLF.NoEidolonTalentSlots"}}
+                  {{else}}
+                    {{localize "ZWOLF.NoTalentSlots" level=system.level}}
+                  {{/if}}
+                </span>
               </div>
             {{/if}}
           </div>

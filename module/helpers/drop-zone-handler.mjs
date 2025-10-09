@@ -95,6 +95,12 @@ export class DropZoneHandler {
           return;
         }
         
+        // Eidolons can't have fundaments
+        if (this.actor.type === 'eidolon' && expectedType === 'fundament') {
+          ui.notifications.warn("Eidolons cannot have a Fundament.");
+          return;
+        }
+        
         console.log(`Z-Wolf Epic | Dropping ${item.name} (${expectedType}) into ${slot} slot`);
         
         // STEP 1: Remove ALL existing items of this type first
@@ -215,7 +221,6 @@ export class DropZoneHandler {
         
         // Check slot capacity
         const currentItems = this.actor.items.filter(i => i.type === expectedType);
-        const maxSlots = this._getMaxSlotsForType(expectedType);
         
         let existingItem = null;
         
@@ -223,13 +228,24 @@ export class DropZoneHandler {
           // For talents and tracks, check if there's already an item in this specific slot
           existingItem = currentItems.find(i => i.getFlag('zwolf-epic', 'slotIndex') === slotIndex);
           
-          // Validate slot index is within bounds
-          if (slotIndex >= maxSlots) {
-            ui.notifications.warn(`Invalid ${expectedType} slot ${slotIndex + 1}. Maximum slots: ${maxSlots}.`);
-            return;
+          // Special validation for eidolon tracks
+          if (this.actor.type === 'eidolon' && expectedType === 'track') {
+            const validSlots = this._getEidolonValidTrackSlots();
+            if (!validSlots.includes(slotIndex)) {
+              ui.notifications.warn(`Eidolons can only use track slots where their base creature has an (Eidolon Placeholder) track.`);
+              return;
+            }
+          } else {
+            // Normal validation for non-eidolon actors
+            const maxSlots = this._getMaxSlotsForType(expectedType);
+            if (slotIndex >= maxSlots) {
+              ui.notifications.warn(`Invalid ${expectedType} slot ${slotIndex + 1}. Maximum slots: ${maxSlots}.`);
+              return;
+            }
           }
         } else {
           // For knacks, use sequential logic
+          const maxSlots = this._getMaxSlotsForType(expectedType);
           existingItem = currentItems[slotIndex];
           
           if (currentItems.length >= maxSlots && !existingItem) {
@@ -372,6 +388,9 @@ export class DropZoneHandler {
       case 'knack':
         return this._calculateTotalKnacksProvided();
       case 'track':
+        if (this.actor.type === 'eidolon') {
+          return this._getEidolonValidTrackSlots().length;
+        }
         return Math.min(4, this.actor.system.level || 0);
       case 'talent':
         return this.actor.system.level || 0;
@@ -391,23 +410,91 @@ export class DropZoneHandler {
       }
     }
     
-    // Get knacks from fundament
-    if (this.actor.system.fundamentId) {
+    // Get knacks from fundament (not for eidolons)
+    if (this.actor.type !== 'eidolon' && this.actor.system.fundamentId) {
       const fundamentItem = this.actor.items.get(this.actor.system.fundamentId);
       if (fundamentItem && fundamentItem.system && fundamentItem.system.knacksProvided) {
         totalKnacks += fundamentItem.system.knacksProvided;
       }
     }
     
+    // For eidolons, add knacks from base creature's placeholders
+    if (this.actor.type === 'eidolon' && this.actor.system.baseCreatureId) {
+      const baseCreature = game.actors.get(this.actor.system.baseCreatureId);
+      if (baseCreature) {
+        const placeholderKnacks = baseCreature.items.filter(item => 
+          item.type === 'knack' && item.name === '(Eidolon Placeholder)'
+        ).length;
+        totalKnacks += placeholderKnacks;
+        console.log(`Z-Wolf Epic | Eidolon gets ${placeholderKnacks} knack slots from base creature placeholders`);
+      }
+    }
+    
     // Get knacks from all talent items
     const talentItems = this.actor.items.filter(item => item.type === 'talent');
-    talentItems.forEach((talent, index) => {
+    talentItems.forEach((talent) => {
       if (talent.system && talent.system.knacksProvided) {
         totalKnacks += talent.system.knacksProvided;
       }
     });
     
+    // Get knacks from track tiers
+    const characterLevel = this.actor.system.level || 0;
+    const trackItems = this.actor.items.filter(item => item.type === 'track');
+    
+    trackItems.forEach(track => {
+      // Get track slot index
+      const trackSlotIndex = track.getFlag('zwolf-epic', 'slotIndex');
+      const fallbackIndex = trackItems.findIndex(t => t.id === track.id);
+      const slotIndex = trackSlotIndex !== undefined ? trackSlotIndex : fallbackIndex;
+      
+      // Calculate unlocked tiers
+      const unlockedTiers = [];
+      for (let tier = 1; tier <= 5; tier++) {
+        const tierLevel = slotIndex + 1 + ((tier - 1) * 4);
+        if (characterLevel >= tierLevel) {
+          unlockedTiers.push(tier);
+        }
+      }
+      
+      // Add knacks from each unlocked tier
+      unlockedTiers.forEach(tierNumber => {
+        const tierData = track.system.tiers?.[`tier${tierNumber}`];
+        if (tierData?.sideEffects?.knacksProvided) {
+          totalKnacks += parseInt(tierData.sideEffects.knacksProvided) || 0;
+        }
+      });
+    });
+    
     return totalKnacks;
+  }
+
+  /**
+   * Get valid track slot indices for eidolons
+   * @returns {Array<number>} Array of valid slot indices
+   * @private
+   */
+  _getEidolonValidTrackSlots() {
+    if (this.actor.type !== 'eidolon' || !this.actor.system.baseCreatureId) {
+      return [];
+    }
+    
+    const baseCreature = game.actors.get(this.actor.system.baseCreatureId);
+    if (!baseCreature) return [];
+    
+    const placeholderTracks = baseCreature.items.filter(item => 
+      item.type === 'track' && item.name === '(Eidolon Placeholder)'
+    );
+    
+    const validSlots = [];
+    placeholderTracks.forEach(track => {
+      const slotIndex = track.getFlag('zwolf-epic', 'slotIndex');
+      if (slotIndex !== undefined) {
+        validSlots.push(slotIndex);
+      }
+    });
+    
+    return validSlots;
   }
 
   async _validateActorSize() {
