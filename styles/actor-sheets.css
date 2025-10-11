@@ -1541,3 +1541,20 @@
 .attunement-stars i {
   filter: drop-shadow(0 0 2px rgba(74, 158, 255, 0.5));
 }
+
+/* Attunement Stars - Inactive State */
+.attunement-stars.inactive {
+  color: #666;
+  opacity: 0.5;
+}
+
+.attunement-stars.inactive i {
+  filter: none;
+}
+
+.ability-source {
+  color: var(--z-wolf-text-muted);
+  font-size: 0.85em;
+  font-weight: normal;
+  font-style: italic;
+}

@@ -1,7 +1,7 @@
 {{!-- templates/actor/partials/attunement-slot.hbs --}}
 <div class="attunement-slot {{#if isOverextended}}overextended{{/if}}">
   <label class="slot-label">
-    {{localize "ZWOLF.AttunementSlot"}} {{slotIndex}}
+    {{localize "ZWOLF.AttunementSlot"}} {{slotIndex}} ({{localize "ZWOLF.Tier"}} {{tier}})
     {{#if isOverextended}}
       <span class="overextended-badge">
         <i class="fas fa-exclamation-triangle"></i>
@@ -13,7 +13,8 @@
   <div class="attunement-drop-zone drop-zone {{#if isOverextended}}overextended-zone{{/if}}" 
        data-item-type="attunement" 
        data-slot="attunement-{{slotIndex}}"
-       title="{{#if isOverextended}}{{localize 'ZWOLF.OverextendedSlotTooltip'}}{{else}}{{localize 'ZWOLF.DragAttunementHere'}}{{/if}}">
+       data-slot-tier="{{tier}}"
+       title="{{#if isOverextended}}{{localize 'ZWOLF.OverextendedSlotTooltip'}}{{else}}{{localize 'ZWOLF.DragAttunementHere'}} (Max Tier {{tier}}){{/if}}">
     
     {{#if item}}
       <div class="slotted-attunement slotted-item" data-item-id="{{item._id}}">
@@ -44,6 +45,7 @@
       <div class="drop-prompt">
         <i class="fas fa-gem"></i>
         <span>{{localize "ZWOLF.DragAttunementHere"}}</span>
+        <div class="tier-capacity">Max Tier {{tier}}</div>
         {{#if isOverextended}}
           <div class="overextended-warning">
             <i class="fas fa-exclamation-triangle"></i>

@@ -13,6 +13,7 @@ export class DropZoneHandler {
    * Bind all drop zone event listeners
    */
   bindDropZones(html) {
+    
     // Foundation Drop Zone Handlers
     html.querySelectorAll('.foundation-drop-zone').forEach(el => {
       el.addEventListener('dragover', this._onDragOver.bind(this));
@@ -24,6 +25,14 @@ export class DropZoneHandler {
     html.querySelectorAll('.knack-drop-zone, .track-drop-zone, .talent-drop-zone').forEach(el => {
       el.addEventListener('dragover', this._onSlotDragOver.bind(this));
       el.addEventListener('drop', this._onSlotDrop.bind(this));
+      el.addEventListener('dragleave', this._onDragLeave.bind(this));
+    });
+    
+    // Attunement Drop Zone Handlers (specific slots)
+    const attunementZones = html.querySelectorAll('.attunement-drop-zone');
+    attunementZones.forEach(el => {
+      el.addEventListener('dragover', this._onAttunementDragOver.bind(this));
+      el.addEventListener('drop', this._onAttunementSlotDrop.bind(this));
       el.addEventListener('dragleave', this._onDragLeave.bind(this));
     });
     
@@ -343,7 +352,13 @@ export class DropZoneHandler {
           return;
         }
         
-        // CHANGE THIS: Accept both equipment and commodity
+        // Handle attunement items separately
+        if (item.type === 'attunement') {
+          await this._handleAttunementDrop(item);
+          return;
+        }
+        
+        // Accept both equipment and commodity
         if (!['equipment', 'commodity'].includes(item.type)) {
           ui.notifications.warn("Only equipment and commodity items can be added to inventory.");
           return;
@@ -377,6 +392,181 @@ export class DropZoneHandler {
         this.sheet._processingCustomDrop = false;
       }, 100);
     }
+  }
+
+  // =================================
+  // ATTUNEMENT DROP HANDLER
+  // =================================
+
+  _onAttunementDragOver(event) {
+    event.preventDefault();
+    const dropZone = event.currentTarget;
+    
+    try {
+      const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
+      
+      if (data.type === 'Item') {
+        dropZone.classList.remove('invalid-drop');
+        dropZone.classList.add('drag-over');
+      }
+    } catch (err) {
+      console.log("Z-Wolf Epic | Attunement drag over error (this is normal):", err);
+      dropZone.classList.add('invalid-drop');
+    }
+  }
+
+  async _onAttunementSlotDrop(event) {
+    console.log("Z-Wolf Epic | _onAttunementSlotDrop called");
+    this.sheet._processingCustomDrop = true;
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Capture scroll position BEFORE any operations
+    if (this.sheet.stateManager) {
+      this.sheet.stateManager.captureState();
+    }
+    
+    try {
+      const dropZone = event.currentTarget;
+      dropZone.classList.remove('drag-over', 'invalid-drop');
+      
+      try {
+        const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
+        console.log("Z-Wolf Epic | Drag data:", data);
+        
+        if (data.type !== 'Item') return;
+        
+        const item = await fromUuid(data.uuid);
+        if (!item) {
+          ui.notifications.error("Could not find the dropped item.");
+          return;
+        }
+        
+        console.log(`Z-Wolf Epic | Dropped item: ${item.name}, type: ${item.type}`);
+        
+        if (item.type !== 'attunement') {
+          ui.notifications.warn("This slot only accepts attunement items.");
+          return;
+        }
+        
+        // Parse slot index from data-slot attribute (e.g., "attunement-1" -> 0)
+        const slot = dropZone.dataset.slot;
+        const slotIndex = parseInt(slot.split('-')[1]) - 1; // Convert to 0-based index
+        
+        const itemTier = item.system?.tier || 1;
+        
+        // Calculate this slot's maximum tier based on slot position
+        const level = this.actor.system.level || 1;
+        const totalSlots = Math.floor((level + 3) / 4);
+        
+        // Validate slot index
+        if (slotIndex < 0 || slotIndex >= totalSlots) {
+          ui.notifications.warn(`Invalid attunement slot.`);
+          return;
+        }
+        
+        // Each slot has a tier equal to its position (1-based)
+        // Slot 0 = Tier 1, Slot 1 = Tier 2, Slot 2 = Tier 3, Slot 3 = Tier 4, etc.
+        const slotMaxTier = slotIndex + 1;
+        
+        // Validate tier compatibility
+        if (itemTier > slotMaxTier) {
+          ui.notifications.warn(`This Tier ${itemTier} attunement requires a slot with Tier ${itemTier}+ capacity. This slot only supports up to Tier ${slotMaxTier}.`);
+          return;
+        }
+        
+        // Get existing attunements - find by slotIndex flag, not array position
+        const existingAttunements = this.actor.items.filter(i => i.type === 'attunement');
+        const existingInSlot = existingAttunements.find(i => i.getFlag('zwolf-epic', 'slotIndex') === slotIndex);
+        
+        // Create or get the item on the actor if it's not already owned
+        let actorItem;
+        if (item.actor?.id !== this.actor.id) {
+          const itemData = item.toObject();
+          const createdItems = await this.actor.createEmbeddedDocuments("Item", [itemData]);
+          actorItem = createdItems[0];
+        } else {
+          actorItem = item;
+        }
+        
+        // Handle replacement if needed
+        if (existingInSlot && existingInSlot.id !== actorItem.id) {
+          await existingInSlot.delete();
+          ui.notifications.info(`Replaced ${existingInSlot.name} with ${item.name} in slot ${slotIndex + 1}.`);
+        } else if (!existingInSlot) {
+          ui.notifications.info(`${item.name} (Tier ${itemTier}) has been added to attunement slot ${slotIndex + 1}.`);
+        }
+        
+        // Store the slot index on the attunement item (like we do for talents/tracks)
+        await actorItem.setFlag('zwolf-epic', 'slotIndex', slotIndex);
+        console.log(`Z-Wolf Epic | Set attunement ${item.name} to slot index ${slotIndex}`);
+        
+        // Final render with preserved scroll
+        await this.sheet.render(false);
+        
+      } catch (err) {
+        console.error("Z-Wolf Epic | Attunement slot drop error:", err);
+        ui.notifications.error("Failed to assign the attunement to this slot.");
+      }
+    } finally {
+      setTimeout(() => {
+        this.sheet._processingCustomDrop = false;
+      }, 100);
+    }
+  }
+
+  async _handleAttunementDrop(item) {
+    const itemTier = item.system?.tier || 1;
+    
+    // Calculate available attunement slots
+    const level = this.actor.system.level || 1;
+    const totalSlots = Math.floor((level + 3) / 4);
+    
+    // Get existing attunements
+    const existingAttunements = this.actor.items.filter(i => i.type === 'attunement');
+    
+    // Calculate slot tiers
+    const slots = [];
+    for (let i = 0; i < totalSlots; i++) {
+      let maxTier = 1;
+      if (level >= 17) maxTier = 4;
+      else if (level >= 13) maxTier = 3;
+      else if (level >= 9) maxTier = 2;
+      else if (level >= 5) maxTier = 1;
+      
+      slots.push({
+        index: i,
+        maxTier: maxTier,
+        occupied: existingAttunements[i] || null
+      });
+    }
+    
+    // Find first available slot that can accommodate this tier
+    const availableSlot = slots.find(slot => 
+      slot.maxTier >= itemTier && !slot.occupied
+    );
+    
+    if (!availableSlot) {
+      ui.notifications.warn(`No available attunement slot can accommodate a Tier ${itemTier} attunement. You need a slot with Tier ${itemTier}+ capacity.`);
+      return;
+    }
+    
+    console.log(`Z-Wolf Epic | Dropping Tier ${itemTier} attunement into slot ${availableSlot.index + 1} (max tier: ${availableSlot.maxTier})`);
+    
+    // Create or get the item on the actor if it's not already owned
+    let actorItem;
+    if (item.actor?.id !== this.actor.id) {
+      const itemData = item.toObject();
+      const createdItems = await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      actorItem = createdItems[0];
+    } else {
+      actorItem = item;
+    }
+    
+    ui.notifications.info(`${item.name} (Tier ${itemTier}) has been added to attunement slot ${availableSlot.index + 1}.`);
+    
+    // Final render with preserved scroll
+    await this.sheet.render(false);
   }
 
   // =================================

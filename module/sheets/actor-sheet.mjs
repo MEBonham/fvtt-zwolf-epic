@@ -162,9 +162,10 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     // Initialize drop zones (not for spawns)
     if (this.document.type !== "spawn") {
       const dropHandler = new DropZoneHandler(this);
+      
       dropHandler.bindDropZones(this.element);
     }
-    
+      
     // Apply lock state for character types
     if (['pc', 'npc', 'eidolon'].includes(this.document.type)) {
       const isLocked = this.document.system.buildPointsLocked || false;
@@ -246,34 +247,34 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   // ========================================
 
   /** @override */
-  async _onDropItem(event, data) {
-    // Don't process if custom drop zone is handling it
-    if (this._processingCustomDrop) return false;
-    
-    // Check if dropped on a special zone
-    const dropTarget = event.target.closest(
-      '.foundation-drop-zone, .knack-drop-zone, .track-drop-zone, .talent-drop-zone, .equipment-drop-zone'
-    );
-    if (dropTarget) return false;
-    
-    // Standard drop handling
-    const result = await super._onDropItem(event, data);
-    const item = await fromUuid(data.uuid);
-    
-    if (item) {
-      // Lock non-equipment items
-      if (item.type !== 'equipment') {
-        await item.setFlag('zwolf-epic', 'locked', true);
+    async _onDropItem(event, data) {
+      // Don't process if custom drop zone is handling it
+      if (this._processingCustomDrop) return false;
+      
+      // Check if dropped on a special zone
+      const dropTarget = event.target.closest(
+        '.foundation-drop-zone, .knack-drop-zone, .track-drop-zone, .talent-drop-zone, .equipment-drop-zone, .attunement-drop-zone'
+      );
+      if (dropTarget) return false;
+      
+      // Standard drop handling
+      const result = await super._onDropItem(event, data);
+      const item = await fromUuid(data.uuid);
+      
+      if (item) {
+        // Lock non-equipment items
+        if (item.type !== 'equipment') {
+          await item.setFlag('zwolf-epic', 'locked', true);
+        }
+        
+        // Re-render for progression items
+        if (item.name === ZWolfActorSheet.PROGRESSION_ITEM_NAME) {
+          this.render(false);
+        }
       }
       
-      // Re-render for progression items
-      if (item.name === ZWolfActorSheet.PROGRESSION_ITEM_NAME) {
-        this.render(false);
-      }
+      return result;
     }
-    
-    return result;
-  }
 
   // ========================================
   // TAB MANAGEMENT

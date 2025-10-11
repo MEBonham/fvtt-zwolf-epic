@@ -686,25 +686,33 @@ export class ActorDataCalculator {
       checkAllSideEffects(fundament.name, fundament.system.sideEffects);
     }
     
-    // Check all other items
-    if (allItems) {
-      const characterLevel = this.actor.system.level || 0;
+  // Check all other items
+  if (allItems) {
+    const characterLevel = this.actor.system.level || 0;
+    
+    allItems.forEach(item => {
+      if (item.type === 'ancestry' || item.type === 'fundament') return;
       
-      allItems.forEach(item => {
-        if (item.type === 'ancestry' || item.type === 'fundament') return;
-        
-        // Skip equipment not in required placement
-        if (item.type === 'equipment' && !this._isEquipmentActive(item)) return;
-        
-        // Handle track items with tier-based side effects
-        if (item.type === 'track') {
-          this._processTrackSideEffects(item, characterLevel, checkAllSideEffects);
-        } else {
-          // Regular item side effects
+      // Skip equipment not in required placement
+      if (item.type === 'equipment' && !this._isEquipmentActive(item)) return;
+      
+      // Handle attunement items - only active if linked equipment is properly placed
+      if (item.type === 'attunement') {
+        if (this._isAttunementActive(item)) {
           checkAllSideEffects(item.name, item.system?.sideEffects);
         }
-      });
-    }
+        return;
+      }
+      
+      // Handle track items with tier-based side effects
+      if (item.type === 'track') {
+        this._processTrackSideEffects(item, characterLevel, checkAllSideEffects);
+      } else {
+        // Regular item side effects
+        checkAllSideEffects(item.name, item.system?.sideEffects);
+      }
+    });
+  }
     
     // Build final side effects object
     return {
@@ -883,6 +891,9 @@ export class ActorDataCalculator {
       // Skip equipment not in required placement
       if (item.type === 'equipment' && !this._isEquipmentActive(item)) return;
       
+      // Skip attunements if linked equipment isn't properly placed
+      if (item.type === 'attunement' && !this._isAttunementActive(item)) return;
+      
       // Handle track items separately
       if (item.type === 'track') {
         this._processTrackAbilities(item, categories);
@@ -913,6 +924,16 @@ export class ActorDataCalculator {
     
     const abilitiesArray = Array.isArray(abilities) ? abilities : Object.values(abilities);
     
+    // For attunements with appliesTo, use the equipment name as the ability name
+    let abilityNameOverride = null;
+    if (item.type === 'attunement' && item.system.appliesTo) {
+      const linkedEquipment = this.actor.items.get(item.system.appliesTo);
+      if (linkedEquipment) {
+        abilityNameOverride = linkedEquipment.name;
+        console.log(`Z-Wolf Epic | Using equipment name "${abilityNameOverride}" for attunement abilities`);
+      }
+    }
+    
     abilitiesArray.forEach((ability) => {
       if (!ability?.name || !ability?.type) return;
       
@@ -923,10 +944,10 @@ export class ActorDataCalculator {
       }
       
       categories[categoryKey].push({
-        name: ability.name,
+        name: abilityNameOverride || ability.name,  // Use equipment name if available
         tags: ability.tags || '',
         description: ability.description || 'No description provided.',
-        itemName: item.name,
+        itemName: item.name,  // Keep original for reference
         itemId: item.id,
         isVirtual: item.flags?.['zwolf-epic']?.isVirtual || false
       });
@@ -1350,7 +1371,10 @@ export class ActorDataCalculator {
       not_carried: []
     };
 
-    const equipmentItems = this.actor.items.filter(item => ['equipment', 'commodity'].includes(item.type));
+    // Include BOTH equipment and commodity items
+    const equipmentItems = this.actor.items.filter(item => 
+      item.type === 'equipment' || item.type === 'commodity'
+    );
     
     // Get all attunement items to check for equipment enhancements
     const attunements = this.actor.items.filter(item => item.type === 'attunement');
@@ -1358,17 +1382,25 @@ export class ActorDataCalculator {
     equipmentItems.forEach(item => {
       const itemData = item.toObject();
       const placement = itemData.system.placement || 'not_carried';
+      
+      // Equipment items have requiredPlacement, commodities don't
       const requiredPlacement = itemData.system.requiredPlacement || '';
       
       itemData.placementValid = !requiredPlacement || requiredPlacement === '' || requiredPlacement === placement;
       itemData.requiredPlacement = requiredPlacement;
       
-      // Check for attunements that apply to this equipment
-      const applicableAttunements = attunements.filter(att => att.system.appliesTo === item.id);
-      if (applicableAttunements.length > 0) {
-        // Find highest tier
-        const highestTier = Math.max(...applicableAttunements.map(att => att.system.tier || 1));
-        itemData.attunementTier = highestTier;
+      // Check for attunements that apply to this equipment (only for equipment type, not commodities)
+      if (item.type === 'equipment') {
+        const applicableAttunements = attunements.filter(att => att.system.appliesTo === item.id);
+        if (applicableAttunements.length > 0) {
+          // Find highest tier
+          const highestTier = Math.max(...applicableAttunements.map(att => att.system.tier || 1));
+          itemData.attunementTier = highestTier;
+          
+          // Check if attunements are active (equipment in correct placement)
+          const isEquipmentActive = this._isEquipmentActive(item);
+          itemData.attunementActive = isEquipmentActive;
+        }
       }
       
       if (equipment[placement]) {
@@ -1459,21 +1491,19 @@ export class ActorDataCalculator {
     
     for (let i = 0; i < totalSlots; i++) {
       const isOverextended = (i === totalSlots - 1); // Last slot is overextended
-      const attunement = attunements[i] || null;
+      
+      // Find attunement assigned to this slot by slotIndex flag
+      const attunement = attunements.find(a => a.getFlag('zwolf-epic', 'slotIndex') === i) || null;
       
       if (isOverextended) hasOverextended = true;
       
-      // Calculate maximum tier based on level
-      let maxTier = 1;
-      if (level >= 17) maxTier = 4;
-      else if (level >= 13) maxTier = 3;
-      else if (level >= 9) maxTier = 2;
-      else if (level >= 5) maxTier = 1;
+      // Each slot's tier equals its position (1-based)
+      const slotTier = i + 1;
       
       const slotData = {
         item: attunement ? attunement.toObject() : null,
         isOverextended: isOverextended,
-        tier: maxTier
+        tier: slotTier
       };
       
       // If attunement has appliesTo, find the equipment item
@@ -1536,6 +1566,37 @@ export class ActorDataCalculator {
       : [];
     
     return tags.includes(tagToFind.toLowerCase());
+  }
+
+  /**
+   * Check if an attunement item is active (linked equipment in correct placement)
+   * @private
+   */
+  _isAttunementActive(attunementItem) {
+    if (attunementItem.type !== 'attunement') return false;
+    
+    const appliesTo = attunementItem.system.appliesTo;
+    
+    // If no appliesTo specified, attunement is always active
+    if (!appliesTo || appliesTo === '') return true;
+    
+    // Find the linked equipment item
+    const linkedEquipment = this.actor.items.get(appliesTo);
+    
+    // If equipment doesn't exist, attunement is inactive
+    if (!linkedEquipment || linkedEquipment.type !== 'equipment') {
+      console.warn(`Z-Wolf Epic | Attunement "${attunementItem.name}" references non-existent equipment: ${appliesTo}`);
+      return false;
+    }
+    
+    // Check if the linked equipment is in correct placement
+    const isActive = this._isEquipmentActive(linkedEquipment);
+    
+    if (!isActive) {
+      console.log(`Z-Wolf Epic | Attunement "${attunementItem.name}" inactive - linked equipment "${linkedEquipment.name}" not in required placement`);
+    }
+    
+    return isActive;
   }
 }
 
