@@ -79,7 +79,17 @@
     }
   },
   "Item": {
-    "types": ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
+    "types": [
+      "ancestry",
+      "fundament",
+      "equipment",
+      "knack",
+      "track",
+      "talent",
+      "attunement",
+      "commodity",
+      "universal"
+    ],
     "templates": {
       "base": {
         "description": "",
@@ -126,7 +136,21 @@
       "requiredPlacement": "",
       "price": 0,
       "bulk": 0,
-      "structure": 10
+      "structure": 10,
+      "attunements": {
+        "tier1": {
+          "description": ""
+        },
+        "tier2": {
+          "description": ""
+        },
+        "tier3": {
+          "description": ""
+        },
+        "tier4": {
+          "description": ""
+        }
+      }
     },
     "knack": {
       "templates": ["base", "sideEffectsCapable", "tagged"]
@@ -219,6 +243,19 @@
     "talent": {
       "templates": ["base", "sideEffectsCapable", "tagged"],
       "knacksProvided": 0
+    },
+    "attunement": {
+      "templates": ["base", "sideEffectsCapable", "tagged"],
+      "tier": 1,
+      "appliesTo": ""
+    },
+    "commodity": {
+      "templates": ["base"],
+      "commodityType": "sundries",
+      "tags": "",
+      "placement": "stowed",
+      "bulk": 1,
+      "price": 0
     }
   }
 }

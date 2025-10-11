@@ -787,7 +787,7 @@ div#sidebar-content > section {
 
 .zwolf-initiative-launcher .window-content {
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .zwolf-init-launcher-content {

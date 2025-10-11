@@ -123,6 +123,8 @@ function configureDocuments() {
     knack: itemDataModels.KnackData,
     track: itemDataModels.TrackData,
     talent: itemDataModels.TalentData,
+    attunement: itemDataModels.AttunementData,
+    commodity: itemDataModels.CommodityData,
     universal: itemDataModels.UniversalData
   };
 
@@ -233,7 +235,7 @@ function registerSheets() {
   });
   
   foundry.documents.collections.Items.registerSheet("zwolf-epic", ZWolfItemSheet, {
-    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent", "universal"],
+    types: ["ancestry", "fundament", "equipment", "knack", "track", "talent", "attunement", "commodity", "universal"],
     makeDefault: true,
     label: "Z-Wolf Epic Item Sheet"
   });

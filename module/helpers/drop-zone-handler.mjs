@@ -331,7 +331,7 @@ export class DropZoneHandler {
     try {
       const dropZone = event.currentTarget;
       dropZone.classList.remove('drag-over', 'invalid-drop');
-      
+  
       try {
         const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
         
@@ -343,9 +343,9 @@ export class DropZoneHandler {
           return;
         }
         
-        // Only accept equipment items
-        if (item.type !== 'equipment') {
-          ui.notifications.warn("Only equipment items can be added to inventory.");
+        // CHANGE THIS: Accept both equipment and commodity
+        if (!['equipment', 'commodity'].includes(item.type)) {
+          ui.notifications.warn("Only equipment and commodity items can be added to inventory.");
           return;
         }
         

@@ -1,0 +1,28 @@
+{{!-- templates/item/parts/item-attunements.hbs --}}
+<div class="tab attunements" data-group="primary" data-tab="attunements">
+  <p class="hint">Define magical abilities that unlock as characters attune to this item (Tier 1 at Level 5, Tier 2 at Level 9, Tier 3 at Level 13, Tier 4 at Level 17).</p>
+  
+  {{#each system.attunements as |tier tierKey|}}
+    <details class="attunement-tier" data-tier="{{tierKey}}" open>
+      <summary class="tier-header">
+        <h3>{{localize (concat "ZWOLF.Tier" (substring tierKey 4))}} Attunement
+          <span class="tier-level">
+            (Level {{#if (eq tierKey "tier1")}}5{{else if (eq tierKey "tier2")}}9{{else if (eq tierKey "tier3")}}13{{else}}17{{/if}})
+          </span>
+        </h3>
+      </summary>
+      
+      <div class="tier-content">
+        <div class="form-group editor">
+          <label>{{localize "ZWOLF.AttunementDescription"}}</label>
+          {{editor tier.description 
+            target=(concat "system.attunements." tierKey ".description")
+            button=true 
+            editable=../editable 
+            engine="prosemirror"
+          }}
+        </div>
+      </div>
+    </details>
+  {{/each}}
+</div>

@@ -11,12 +11,23 @@
   {{else if (eq itemType "track")}}
     <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
     <a class="item" data-tab="tiers">{{localize 'ZWOLF.Tiers'}}</a>
+  {{else if (eq itemType "equipment")}}
+    <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
+    {{#if system.grantedAbilities}}
+      <a class="item" data-tab="abilities">{{localize 'ZWOLF.GrantedAbilities'}}</a>
+    {{/if}}
+    {{#if isGM}}
+      <a class="item" data-tab="attunements">{{localize 'ZWOLF.Attunements'}}</a>
+    {{/if}}
+    <a class="item" data-tab="effects">{{localize 'ZWOLF.Effects'}}</a>
+  {{else if (eq itemType "commodity")}}
+    <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
   {{else}}
     <a class="item" data-tab="basics">{{localize 'ZWOLF.Basics'}}</a>
     {{#if system.grantedAbilities}}
       <a class="item" data-tab="abilities">{{localize 'ZWOLF.GrantedAbilities'}}</a>
     {{/if}}
-    {{#if (or (eq itemType "knack") (eq itemType "talent") (eq itemType "ancestry") (eq itemType "equipment"))}}
+    {{#if (or (eq itemType "knack") (eq itemType "talent") (eq itemType "ancestry") (eq itemType "attunement"))}}
       <a class="item" data-tab="effects">{{localize 'ZWOLF.Effects'}}</a>
     {{/if}}
   {{/if}}

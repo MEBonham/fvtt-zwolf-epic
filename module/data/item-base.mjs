@@ -94,7 +94,21 @@ class EquipmentData extends foundry.abstract.TypeDataModel {
       requiredPlacement: new fields.StringField({ required: false, blank: true, initial: "" }),
       price: new fields.NumberField({ required: true, nullable: false, initial: 0, min: 0 }),
       bulk: new fields.NumberField({ required: true, nullable: false, initial: 0, min: 0 }),
-      structure: new fields.NumberField({ required: true, nullable: false, initial: 10, integer: true, min: 0 })
+      structure: new fields.NumberField({ required: true, nullable: false, initial: 10, integer: true, min: 0 }),
+      attunements: new fields.SchemaField({
+        tier1: new fields.SchemaField({
+          description: new fields.HTMLField({ required: false, blank: true, initial: "" })
+        }),
+        tier2: new fields.SchemaField({
+          description: new fields.HTMLField({ required: false, blank: true, initial: "" })
+        }),
+        tier3: new fields.SchemaField({
+          description: new fields.HTMLField({ required: false, blank: true, initial: "" })
+        }),
+        tier4: new fields.SchemaField({
+          description: new fields.HTMLField({ required: false, blank: true, initial: "" })
+        })
+      })
     };
   }
 }
@@ -194,6 +208,49 @@ class UniversalData extends foundry.abstract.TypeDataModel {
   }
 }
 
+/**
+ * Attunement Item DataModel
+ */
+class AttunementData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      ...SideEffectsCapableTemplate.defineSchema(),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      characterTags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      required: new fields.HTMLField({ required: false, blank: true, initial: "" }),
+      tier: new fields.NumberField({ required: true, nullable: false, initial: 1, integer: true, min: 1, max: 4 }),
+      appliesTo: new fields.StringField({ required: false, blank: true, initial: "" })
+    };
+  }
+}
+
+/**
+ * Commodity Item DataModel
+ */
+class CommodityData extends foundry.abstract.TypeDataModel {
+  static defineSchema() {
+    const fields = foundry.data.fields;
+    return {
+      ...BaseItemTemplate.defineSchema(),
+      commodityType: new fields.StringField({ 
+        required: true, 
+        initial: "sundries",
+        choices: ["sundries", "ritualComponents"]
+      }),
+      tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+      placement: new fields.StringField({ 
+        required: true, 
+        initial: "stowed",
+        choices: ["stowed", "wielded", "worn", "readily_available", "not_carried"]
+      }),
+      bulk: new fields.NumberField({ required: true, nullable: false, initial: 1, min: 0 }),
+      price: new fields.NumberField({ required: true, nullable: false, initial: 0, min: 0 })
+    };
+  }
+}
+
 // Export all DataModels
 export {
   BaseItemTemplate,
@@ -204,5 +261,7 @@ export {
   KnackData,
   TrackData,
   TalentData,
-  UniversalData
+  UniversalData,
+  AttunementData,
+  CommodityData
 };

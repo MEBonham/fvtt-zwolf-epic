@@ -108,6 +108,11 @@ export class ActorDataCalculator {
     context.languageLimit = this._calculateLanguageLimit();
     context.equipment = this._prepareEquipment();
     context.inventoryTotals = this._calculateInventoryTotals(context.equipment);
+
+    // Prepare attunement slots (GM only)
+    if (game.user.isGM && ['pc', 'npc', 'eidolon'].includes(this.actor.type)) {
+      this._prepareAttunementSlots(context);
+    }
     
     // Ensure required flags
     context.system.buildPointsLocked = context.system.buildPointsLocked || false;
@@ -1345,7 +1350,10 @@ export class ActorDataCalculator {
       not_carried: []
     };
 
-    const equipmentItems = this.actor.items.filter(item => item.type === 'equipment');
+    const equipmentItems = this.actor.items.filter(item => ['equipment', 'commodity'].includes(item.type));
+    
+    // Get all attunement items to check for equipment enhancements
+    const attunements = this.actor.items.filter(item => item.type === 'attunement');
 
     equipmentItems.forEach(item => {
       const itemData = item.toObject();
@@ -1354,6 +1362,14 @@ export class ActorDataCalculator {
       
       itemData.placementValid = !requiredPlacement || requiredPlacement === '' || requiredPlacement === placement;
       itemData.requiredPlacement = requiredPlacement;
+      
+      // Check for attunements that apply to this equipment
+      const applicableAttunements = attunements.filter(att => att.system.appliesTo === item.id);
+      if (applicableAttunements.length > 0) {
+        // Find highest tier
+        const highestTier = Math.max(...applicableAttunements.map(att => att.system.tier || 1));
+        itemData.attunementTier = highestTier;
+      }
       
       if (equipment[placement]) {
         equipment[placement].push(itemData);
@@ -1424,6 +1440,58 @@ export class ActorDataCalculator {
       weight: totalWeight,
       bulk: totalBulk,
       maxBulk: Math.max(1, maxBulk)
+    };
+  }
+
+  /**
+   * Prepare attunement slots for GM
+   * @private
+   */
+  _prepareAttunementSlots(context) {
+    const level = this.actor.system.level || 1;
+    const totalSlots = Math.floor((level + 3) / 4);
+    
+    // Get attunement items
+    const attunements = this.actor.items.filter(i => i.type === 'attunement');
+    
+    const slots = [];
+    let hasOverextended = false;
+    
+    for (let i = 0; i < totalSlots; i++) {
+      const isOverextended = (i === totalSlots - 1); // Last slot is overextended
+      const attunement = attunements[i] || null;
+      
+      if (isOverextended) hasOverextended = true;
+      
+      // Calculate maximum tier based on level
+      let maxTier = 1;
+      if (level >= 17) maxTier = 4;
+      else if (level >= 13) maxTier = 3;
+      else if (level >= 9) maxTier = 2;
+      else if (level >= 5) maxTier = 1;
+      
+      const slotData = {
+        item: attunement ? attunement.toObject() : null,
+        isOverextended: isOverextended,
+        tier: maxTier
+      };
+      
+      // If attunement has appliesTo, find the equipment item
+      if (attunement && attunement.system.appliesTo) {
+        const appliedEquipment = this.actor.items.get(attunement.system.appliesTo);
+        if (appliedEquipment) {
+          slotData.item.appliedEquipment = appliedEquipment.toObject();
+        }
+      }
+      
+      slots.push(slotData);
+    }
+    
+    context.attunementSlots = {
+      slots: slots,
+      total: totalSlots,
+      filled: attunements.length,
+      hasOverextended: hasOverextended
     };
   }
 

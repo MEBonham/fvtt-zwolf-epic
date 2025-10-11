@@ -362,7 +362,29 @@
     "ConditionBlindedDesc": "The character cannot see and suffers severe penalties to visual actions.",
     
     "ConditionConcentrating": "Concentrating",
-    "ConditionConcentratingDesc": "The character is maintaining focus on a spell or ability that requires concentration."
+    "ConditionConcentratingDesc": "The character is maintaining focus on a spell or ability that requires concentration.",
+
+    "Attunements": "Attunements",
+    "AttunementDescription": "Attunement Description",
+    "Tier1": "Tier 1",
+    "Tier2": "Tier 2",
+    "Tier3": "Tier 3",
+    "Tier4": "Tier 4",
+    "AttunementTierHint": "The attunement tier (Tier 1 = Level 5, Tier 2 = Level 9, Tier 3 = Level 13, Tier 4 = Level 17)",
+    "AppliesTo": "Applies To",
+    "SelectEquipment": "— Select Equipment —",
+    "AppliesToHint": "Select which equipment item this attunement enhances",
+    "AppliesToPlaceholder": "Equipment name or type",
+    "AppliesToTextHint": "Specify which equipment this attunement applies to (e.g., 'Flaming Sword' or 'any sword')",
+    "AttunementTagsHint": "Tags for categorizing this attunement (comma-separated)",
+    "AttunementRequiredHint": "Prerequisites for using this attunement tier",
+    "Slots": "Slots",
+    "AttunementSlot": "Attunement Slot",
+    "Overextended": "Overextended",
+    "DragAttunementHere": "Drag Attunement Here",
+    "OverextendedSlotTooltip": "Using this slot causes long-term Shaken",
+    "OverextendedSlotWarning": "Using this slot causes long-term Shaken",
+    "OverextendedAttunementWarning": "Warning: The overextended attunement slot (last slot) causes the character to be Shaken as long as it is used."
   },
   "ZWOLF_DICE": {
     "QuickRoll": "Quick roll with current boosts",

@@ -325,7 +325,7 @@ export class ZWolfActor extends Actor {
       }
       
       // Equipment placement filtering
-      if (item.type === 'equipment') {
+      if (['commodity', 'equipment'].includes(item.type)) {
         const requiredPlacement = item.system.requiredPlacement;
         const currentPlacement = item.system.placement;
         

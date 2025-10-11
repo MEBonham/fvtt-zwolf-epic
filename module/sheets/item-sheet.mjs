@@ -43,7 +43,8 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     abilities: { template: "systems/zwolf-epic/templates/item/parts/item-abilities.hbs" },
     formulae: { template: "systems/zwolf-epic/templates/item/parts/item-formulae.hbs" },
     effects: { template: "systems/zwolf-epic/templates/item/parts/item-effects.hbs" },
-    tiers: { template: "systems/zwolf-epic/templates/item/parts/item-tiers.hbs" }
+    tiers: { template: "systems/zwolf-epic/templates/item/parts/item-tiers.hbs" },
+    attunements: { template: "systems/zwolf-epic/templates/item/parts/item-attunements.hbs" }
   };
 
   get title() {
@@ -63,14 +64,20 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     Object.assign(context, {
       editable: this.isEditable,
       owner: this.document.isOwner,
+      isGM: game.user.isGM,
       system: itemData.system,
       flags: itemData.flags,
       config: CONFIG.ZWOLF,
       item: this.document,
       itemType: this.document.type,
       isLocked: this.document.actor && this.document.getFlag('zwolf-epic', 'locked'),
-      isEquipment: this.document.type === 'equipment'
+      isEquipment: ['commodity', 'equipment'].includes(this.document.type)
     });
+
+    // If this is an attunement on an actor, provide list of equipment
+    if (this.document.type === 'attunement' && this.document.actor) {
+      context.actorEquipment = this.document.actor.items.filter(i => i.type === 'equipment');
+    }
 
     // Only enrich description once (not in type-specific methods)
     context.enrichedDescription = await HtmlEnricher.enrichContent(
@@ -82,10 +89,7 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
     // Only prepare data for type-specific if needed
     await this._prepareTypeSpecificData(context, itemData);
     
-    // REMOVE THIS - summary data is prepared in type-specific methods
-    // await this._prepareSummaryData(context, itemData);
-  
-    // Prepare tag strings for form inputs ← ADD THIS
+    // Prepare tag strings for form inputs
     this._prepareTagStrings(context, itemData);
 
     return context;
@@ -285,7 +289,16 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
    * @private
    */
   async _prepareEquipmentData(context, itemData) {
-    // Equipment-specific logic if needed
+    // Enrich attunement descriptions (GM only)
+    if (game.user.isGM && itemData.system.attunements) {
+      for (const [tierKey, tierData] of Object.entries(itemData.system.attunements)) {
+        tierData.enrichedDescription = await HtmlEnricher.enrichContent(
+          tierData.description || "",
+          this.document,
+          `${tierKey} attunement`
+        );
+      }
+    }
   }
 
   /**
@@ -319,6 +332,11 @@ _prepareTagStrings(context, itemData) {
       partsToRender.push('formulae', 'abilities');
     } else if (itemType === 'track') {
       partsToRender.push('tiers');
+    } else if (itemType === 'equipment') {
+      if (game.user.isGM) {
+        partsToRender.push('attunements');
+      }
+      partsToRender.push('abilities');
     } else {
       partsToRender.push('abilities');
     }

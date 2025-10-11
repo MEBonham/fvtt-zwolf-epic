@@ -451,10 +451,13 @@ async _onLevelChange(event) {
   _applyItemLockStates(html) {
     html.querySelectorAll('.item').forEach(element => {
       const itemId = element.dataset.itemId;
-      const item = this.actor.items.get(itemId);
+      if (!itemId) return; // Skip if no itemId
       
-      const isLocked = item?.getFlag('zwolf-epic', 'locked');
-      const isEquipment = item?.type === 'equipment';
+      const item = this.actor.items.get(itemId);
+      if (!item) return; // Skip if item doesn't exist
+      
+      const isLocked = item.getFlag('zwolf-epic', 'locked');
+      const isEquipment = ['commodity', 'equipment'].includes(item.type);
       
       if (isLocked && !isEquipment) {
         element.querySelectorAll('input, select, textarea, button').forEach(control => {

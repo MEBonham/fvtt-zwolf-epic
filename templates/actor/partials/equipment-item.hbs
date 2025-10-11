@@ -10,7 +10,16 @@
   <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
   
   <div class="item-info">
-    <div class="item-name">{{item.name}}</div>
+    <div class="item-name">
+      {{item.name}}
+      {{#if item.attunementTier}}
+        <span class="attunement-stars" title="{{localize 'ZWOLF.AttunementTier'}} {{item.attunementTier}}">
+          {{#each (range 1 (add item.attunementTier 1)) as |star|}}
+            <i class="fas fa-star"></i>
+          {{/each}}
+        </span>
+      {{/if}}
+    </div>
     <div class="item-details">
       {{#if item.system.bulk}}Bulk: {{item.system.bulk}}{{/if}}
       {{#if item.system.value}} • Value: {{item.system.value}}{{/if}}

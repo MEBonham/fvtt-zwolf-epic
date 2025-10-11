@@ -68,5 +68,33 @@
         </div>
       </div>
     </div>
+
+    <!-- Attunements Section (GM Only) -->
+    {{#if isGM}}
+      <div class="attunements-section">
+        <h3 class="section-header">
+          <i class="fas fa-magic"></i>
+          {{localize "ZWOLF.Attunements"}}
+          <span class="attunement-info">({{attunementSlots.filled}}/{{attunementSlots.total}} {{localize "ZWOLF.Slots"}})</span>
+        </h3>
+        
+        <div class="attunement-slots">
+          {{#each attunementSlots.slots as |slot index|}}
+            {{> attunement-slot 
+                slotIndex=(add index 1)
+                item=slot.item
+                isOverextended=slot.isOverextended
+                tier=slot.tier}}
+          {{/each}}
+        </div>
+        
+        {{#if attunementSlots.hasOverextended}}
+          <div class="attunement-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{localize "ZWOLF.OverextendedAttunementWarning"}}
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
   </div>
 </div>

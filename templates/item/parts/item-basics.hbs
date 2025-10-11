@@ -174,6 +174,78 @@
           editable=editable}}
     </div>
 
+    {{!-- ========== COMMODITY ========== --}}
+    {{else if (eq itemType "commodity")}}
+      <div class="commodity-basics">
+        <!-- Commodity Type -->
+        {{> form-field 
+            label="ZWOLF.CommodityType" 
+            type="select" 
+            name="system.commodityType" 
+            value=system.commodityType 
+            options=(array 
+              (hash value="sundries" label="ZWOLF.Sundries")
+              (hash value="ritualComponents" label="ZWOLF.RitualComponents"))
+            notes="ZWOLF.CommodityTypeHint"}}
+
+        {{> form-field 
+            label="ZWOLF.Tags" 
+            type="text" 
+            name="system.tags" 
+            value=tagsString 
+            placeholder="ZWOLF.TagsPlaceholder"
+            notes="ZWOLF.TagsHint"}}
+
+        <!-- Physical Properties -->
+        <div class="form-group">
+          <div class="form-fields">
+            {{> form-field 
+                label="ZWOLF.Price" 
+                type="number" 
+                name="system.price" 
+                value=system.price 
+                min=0 
+                step=0.01
+                stacked=true
+                notes="ZWOLF.CommodityPriceHint"}}
+
+            {{> form-field 
+                label="ZWOLF.Bulk" 
+                type="number" 
+                name="system.bulk" 
+                value=system.bulk 
+                min=0 
+                step=0.1
+                stacked=true
+                notes="ZWOLF.CommodityBulkHint"}}
+          </div>
+        </div>
+
+        <!-- Placement -->
+        {{> form-field 
+            label="ZWOLF.Placement" 
+            type="select" 
+            name="system.placement" 
+            value=system.placement 
+            disabled=(not item.actor)
+            options=(array 
+              (hash value="stowed" label="ZWOLF.Stowed")
+              (hash value="wielded" label="ZWOLF.Wielded")
+              (hash value="worn" label="ZWOLF.Worn")
+              (hash value="readily_available" label="ZWOLF.ReadilyAvailable")
+              (hash value="not_carried" label="ZWOLF.NotCarried"))
+            notes=(ternary item.actor "ZWOLF.PlacementHint" "ZWOLF.PlacementDisabledHint")}}
+
+        <!-- Description -->
+        {{> form-field 
+            label="ZWOLF.Description" 
+            type="editor" 
+            name="system.description" 
+            value=system.description 
+            owner=owner 
+            editable=editable}}
+      </div>
+
   {{!-- ========== TALENT ========== --}}
   {{else if (eq itemType "talent")}}
     <div class="talent-basics">
@@ -305,6 +377,72 @@
           editable=editable
           notes="ZWOLF.TrackRequiredHint"}}
     </div>
+
+    {{!-- ========== ATTUNEMENT ========== --}}
+    {{else if (eq itemType "attunement")}}
+      <div class="attunement-basics">
+        {{> form-field 
+            label="ZWOLF.Tier" 
+            type="select" 
+            name="system.tier" 
+            value=system.tier 
+            options=(array 
+              (hash value=1 label="ZWOLF.Tier1")
+              (hash value=2 label="ZWOLF.Tier2")
+              (hash value=3 label="ZWOLF.Tier3")
+              (hash value=4 label="ZWOLF.Tier4"))
+            notes="ZWOLF.AttunementTierHint"}}
+
+        {{#if item.actor}}
+          <!-- Equipment Selection Dropdown (only when on an actor) -->
+          <div class="form-group">
+            <label>{{localize 'ZWOLF.AppliesTo'}}</label>
+            <select name="system.appliesTo" data-dtype="String">
+              <option value="">{{localize 'ZWOLF.SelectEquipment'}}</option>
+              {{#each actorEquipment as |equip|}}
+                <option value="{{equip.id}}" {{selected equip.id ../system.appliesTo}}>
+                  {{equip.name}}
+                </option>
+              {{/each}}
+            </select>
+            <p class="notes">{{localize 'ZWOLF.AppliesToHint'}}</p>
+          </div>
+        {{else}}
+          <!-- Text field when not on an actor -->
+          {{> form-field 
+              label="ZWOLF.AppliesTo" 
+              type="text" 
+              name="system.appliesTo" 
+              value=system.appliesTo 
+              placeholder="ZWOLF.AppliesToPlaceholder"
+              notes="ZWOLF.AppliesToTextHint"}}
+        {{/if}}
+
+        {{> form-field 
+            label="ZWOLF.Tags" 
+            type="text" 
+            name="system.tags" 
+            value=tagsString 
+            placeholder="ZWOLF.TagsPlaceholder"
+            notes="ZWOLF.AttunementTagsHint"}}
+
+        {{> form-field 
+            label="ZWOLF.CharacterTags" 
+            type="text" 
+            name="system.characterTags" 
+            value=characterTagsString 
+            placeholder="ZWOLF.CharacterTagsPlaceholder"
+            notes="ZWOLF.CharacterTagsHint"}}
+
+        {{> form-field 
+            label="ZWOLF.Required" 
+            type="editor" 
+            name="system.required" 
+            value=system.required 
+            owner=owner 
+            editable=editable
+            notes="ZWOLF.AttunementRequiredHint"}}
+      </div>
 
   {{!-- ========== DEFAULT ========== --}}
   {{else}}

@@ -121,6 +121,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     sheetData.isEidolon = this.document.type === 'eidolon';
     sheetData.isMook = this.document.type === 'mook';
     sheetData.isSpawn = this.document.type === 'spawn';
+    sheetData.isGM = game.user.isGM;
     
     // Ensure tabGroups.primary has a value
     if (!this.tabGroups.primary) {
@@ -318,12 +319,15 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
   // ========================================
 
   /**
-   * Set up hooks for item deletion
+   * Set up hooks for item deletion and updates
    * @private
    */
   _setupCleanupHooks() {
     if (this._itemDeleteHook) {
       Hooks.off('deleteItem', this._itemDeleteHook);
+    }
+    if (this._itemUpdateHook) {
+      Hooks.off('updateItem', this._itemUpdateHook);
     }
 
     this._itemDeleteHook = Hooks.on('deleteItem', (item, options, userId) => {
@@ -339,6 +343,32 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
         this.render(false);
       }
     });
+
+    // Add update hook for equipment and commodities
+    this._itemUpdateHook = Hooks.on('updateItem', (item, changes, options, userId) => {
+      if (item.actor?.id !== this.document.id || userId !== game.user.id) return;
+      
+      // Re-render for equipment/commodity changes that affect inventory totals
+      if (['equipment', 'commodity'].includes(item.type)) {
+        const affectsInventory = changes.system?.placement || 
+                                changes.system?.bulk !== undefined || 
+                                changes.system?.price !== undefined;
+        
+        if (affectsInventory && this.rendered) {
+          this.render(false);
+        }
+      }
+      
+      // Re-render for items with special properties
+      const hasSpecialChanges = 
+        changes.system?.grantedAbilities ||
+        changes.system?.knacksProvided !== undefined ||
+        changes.system?.sideEffects;
+      
+      if (hasSpecialChanges && this.rendered) {
+        this.render(false);
+      }
+    });
   }
 
   /**
@@ -349,6 +379,10 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     if (this._itemDeleteHook) {
       Hooks.off('deleteItem', this._itemDeleteHook);
       this._itemDeleteHook = null;
+    }
+    if (this._itemUpdateHook) {
+      Hooks.off('updateItem', this._itemUpdateHook);
+      this._itemUpdateHook = null;
     }
   }
 

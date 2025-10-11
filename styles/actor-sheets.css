@@ -993,7 +993,8 @@
 .foundation-drop-zone,
 .knack-drop-zone,
 .track-drop-zone,
-.talent-drop-zone {
+.talent-drop-zone,
+.attunement-drop-zone {
   background: rgba(0, 0, 0, 0.3);
   border: 2px dashed var(--z-wolf-border);
   border-radius: 6px;
@@ -1023,7 +1024,8 @@
 .foundation-drop-zone:hover,
 .knack-drop-zone:hover,
 .track-drop-zone:hover,
-.talent-drop-zone:hover {
+.talent-drop-zone:hover,
+.attunement-drop-zone:hover {
   border-color: var(--z-wolf-primary-light);
   background: rgba(44, 90, 160, 0.1);
 }
@@ -1412,4 +1414,130 @@
   .zwolf-epic.sheet.actor .sheet-body {
     flex-direction: column;
   }
+}
+
+/* ===================
+   Attunements Section
+   =================== */
+
+.attunements-section {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--z-wolf-border);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.attunements-section .section-header {
+  color: var(--z-wolf-accent);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--z-wolf-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1em;
+}
+
+.attunements-section .attunement-info {
+  font-size: 0.9em;
+  color: var(--z-wolf-text-muted);
+  font-weight: normal;
+  margin-left: auto;
+}
+
+.attunement-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.attunement-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Overextended slot styling */
+.attunement-slot.overextended {
+  background: rgba(255, 193, 7, 0.15);
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 2px solid var(--z-wolf-warning);
+}
+
+.attunement-slot .slot-label {
+  font-weight: 600;
+  color: var(--z-wolf-accent);
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.overextended-badge {
+  color: var(--z-wolf-warning);
+  font-weight: bold;
+  font-size: 0.85em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255, 193, 7, 0.2);
+  border-radius: 3px;
+}
+
+/* Overextended drop zone warning colors */
+.attunement-drop-zone.overextended-zone {
+  border-color: var(--z-wolf-warning);
+  background: rgba(255, 193, 7, 0.08);
+}
+
+.attunement-drop-zone.overextended-zone:hover {
+  background: rgba(255, 193, 7, 0.15);
+}
+
+.overextended-warning {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 193, 7, 0.2);
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.85em;
+  color: var(--z-wolf-warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.attunement-warning {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: rgba(255, 193, 7, 0.15);
+  border-left: 4px solid var(--z-wolf-warning);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--z-wolf-warning);
+  font-size: 0.9em;
+}
+
+.attunement-warning i {
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
+
+/* Attunement Stars on Equipment */
+.attunement-stars {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  color: #4a9eff;
+  font-size: 0.75em;
+  gap: 0.1rem;
+}
+
+.attunement-stars i {
+  filter: drop-shadow(0 0 2px rgba(74, 158, 255, 0.5));
 }

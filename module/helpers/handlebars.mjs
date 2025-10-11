@@ -14,6 +14,14 @@ export function registerHandlebarsHelpers() {
     return args.join('');
   });
 
+  Handlebars.registerHelper('substring', function(str, start, end) {
+    if (!str || typeof str !== 'string') return '';
+    if (end === undefined) {
+      return str.substring(start);
+    }
+    return str.substring(start, end);
+  });
+
   Handlebars.registerHelper('toLowerCase', function(str) {
     return str.toLowerCase();
   });
