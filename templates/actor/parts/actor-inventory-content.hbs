@@ -17,7 +17,13 @@
       <div class="wealth-section">
         <label class="summary-label">{{localize "ZWOLF.Wealth"}}:</label>
         <div class="wealth-input-group">
+          <button type="button" class="wealth-loss-button" data-action="loseWealth" title="{{localize 'ZWOLF.LoseWealth'}}">
+            <i class="fas fa-minus"></i>
+          </button>
           <input type="number" name="system.wealth" value="{{system.wealth}}" min="0" />
+          <button type="button" class="wealth-gain-button" data-action="gainWealth" title="{{localize 'ZWOLF.GainWealth'}}">
+            <i class="fas fa-plus"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -53,18 +59,31 @@
       {{/unless}}
     </div>
 
-    <!-- Equipment Drop Zone -->
+    <!-- Equipment Drop Zone - Split into Add and Buy -->
     <div class="equipment-drop-section">
       <h4>
         <i class="fas fa-plus-circle"></i>
         {{localize "ZWOLF.AddEquipment"}}
       </h4>
-      <div class="equipment-drop-zone drop-zone" 
-           title="{{localize 'ZWOLF.DragEquipmentHere'}}">
-        <div class="drop-prompt">
-          <i class="fas fa-backpack"></i>
-          <span>{{localize "ZWOLF.DragEquipmentHere"}}</span>
-          <div class="drop-hint">{{localize "ZWOLF.EquipmentDropHint"}}</div>
+      <div class="equipment-drop-zones">
+        <!-- Left: Free Add -->
+        <div class="equipment-drop-zone drop-zone" 
+             title="{{localize 'ZWOLF.DragEquipmentHere'}}">
+          <div class="drop-prompt">
+            <i class="fas fa-backpack"></i>
+            <span>{{localize "ZWOLF.DragEquipmentHere"}}</span>
+            <div class="drop-hint">{{localize "ZWOLF.EquipmentDropHint"}}</div>
+          </div>
+        </div>
+        
+        <!-- Right: Buy with Wealth -->
+        <div class="equipment-buy-zone drop-zone" 
+             title="{{localize 'ZWOLF.BuyEquipmentHere'}}">
+          <div class="drop-prompt">
+            <i class="fas fa-coins"></i>
+            <span>{{localize "ZWOLF.BuyEquipmentHere"}}</span>
+            <div class="drop-hint">{{localize "ZWOLF.BuyEquipmentHint"}}</div>
+          </div>
         </div>
       </div>
     </div>

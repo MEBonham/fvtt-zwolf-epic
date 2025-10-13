@@ -56,7 +56,7 @@
     },
     "pc": {
       "templates": ["base", "character", "attributesAndSkills"],
-      "wealth": 10,
+      "wealth": 13,
       "karmaPoints": {
         "value": 1,
         "min": 0,

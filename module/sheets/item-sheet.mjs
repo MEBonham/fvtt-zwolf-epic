@@ -302,20 +302,20 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
   }
 
   /**
- * Prepare tag strings for display in form inputs
- * @private
- */
-_prepareTagStrings(context, itemData) {
-  // For items with tags field
-  if (itemData.system.tags !== undefined) {
-    context.tagsString = itemData.system.tags || "";
+   * Prepare tag strings for display in form inputs
+   * @private
+   */
+  _prepareTagStrings(context, itemData) {
+    // For items with tags field
+    if (itemData.system.tags !== undefined) {
+      context.tagsString = itemData.system.tags || "";
+    }
+    
+    // For items with characterTags field
+    if (itemData.system.characterTags !== undefined) {
+      context.characterTagsString = itemData.system.characterTags || "";
+    }
   }
-  
-  // For items with characterTags field
-  if (itemData.system.characterTags !== undefined) {
-    context.characterTagsString = itemData.system.characterTags || "";
-  }
-}
 
   // ========================================
   // RENDERING
@@ -326,8 +326,17 @@ _prepareTagStrings(context, itemData) {
     
     // Determine which parts to render based on item type
     const itemType = this.document.type;
-    const partsToRender = ['header', 'tabs', 'summary', 'basics', 'effects'];
+    const partsToRender = ['header', 'tabs'];
     
+    // Summary tab - exclude for attunement items
+    if (itemType !== 'attunement') {
+      partsToRender.push('summary');
+    }
+    
+    // Basics tab - always included
+    partsToRender.push('basics', 'effects');
+    
+    // Type-specific parts
     if (itemType === 'fundament') {
       partsToRender.push('formulae', 'abilities');
     } else if (itemType === 'track') {
@@ -338,6 +347,7 @@ _prepareTagStrings(context, itemData) {
       }
       partsToRender.push('abilities');
     } else {
+      // For all other types including attunement
       partsToRender.push('abilities');
     }
     
@@ -353,6 +363,11 @@ _prepareTagStrings(context, itemData) {
     this.element.addEventListener('input', () => {
       this.stateManager.captureState();
     }, { capture: true });
+    
+    // Set default active tab for attunement items
+    if (this.document.type === 'attunement' && this._activeTab === 'summary') {
+      this._activeTab = 'basics';
+    }
     
     // Activate the correct tab FIRST
     this._activateTab();

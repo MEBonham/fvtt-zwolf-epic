@@ -36,10 +36,17 @@ export class DropZoneHandler {
       el.addEventListener('dragleave', this._onDragLeave.bind(this));
     });
     
-    // Equipment Drop Zone Handlers
+    // Equipment Drop Zone Handlers (free add)
     html.querySelectorAll('.equipment-drop-zone').forEach(el => {
       el.addEventListener('dragover', this._onEquipmentDragOver.bind(this));
       el.addEventListener('drop', this._onEquipmentDrop.bind(this));
+      el.addEventListener('dragleave', this._onDragLeave.bind(this));
+    });
+    
+    // Equipment Buy Zone Handlers (purchase with wealth)
+    html.querySelectorAll('.equipment-buy-zone').forEach(el => {
+      el.addEventListener('dragover', this._onEquipmentBuyDragOver.bind(this));
+      el.addEventListener('drop', this._onEquipmentBuyDrop.bind(this));
       el.addEventListener('dragleave', this._onDragLeave.bind(this));
     });
   }
@@ -386,6 +393,80 @@ export class DropZoneHandler {
       } catch (err) {
         console.error("Z-Wolf Epic | Equipment drop error:", err);
         ui.notifications.error("Failed to add the item to inventory.");
+      }
+    } finally {
+      setTimeout(() => {
+        this.sheet._processingCustomDrop = false;
+      }, 100);
+    }
+  }
+
+  // =================================
+  // EQUIPMENT BUY HANDLERS
+  // =================================
+
+  _onEquipmentBuyDragOver(event) {
+    event.preventDefault();
+    const dropZone = event.currentTarget;
+    
+    try {
+      const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
+      
+      if (data.type === 'Item') {
+        dropZone.classList.remove('invalid-drop');
+        dropZone.classList.add('drag-over');
+      }
+    } catch (err) {
+      console.log("Z-Wolf Epic | Equipment buy drag over error (this is normal):", err);
+      dropZone.classList.add('invalid-drop');
+    }
+  }
+
+  async _onEquipmentBuyDrop(event) {
+    this.sheet._processingCustomDrop = true;
+    event.preventDefault();
+    event.stopPropagation();
+    
+    // Capture scroll position BEFORE any operations
+    if (this.sheet.stateManager) {
+      this.sheet.stateManager.captureState();
+    }
+    
+    try {
+      const dropZone = event.currentTarget;
+      dropZone.classList.remove('drag-over', 'invalid-drop');
+  
+      try {
+        const data = TextEditorImpl.getDragEventData(event.originalEvent || event);
+        
+        if (data.type !== 'Item') return;
+        
+        const item = await fromUuid(data.uuid);
+        if (!item) {
+          ui.notifications.error("Could not find the dropped item.");
+          return;
+        }
+        
+        // Accept both equipment and commodity
+        if (!['equipment', 'commodity'].includes(item.type)) {
+          ui.notifications.warn("Only equipment and commodity items can be purchased.");
+          return;
+        }
+        
+        console.log(`Z-Wolf Epic | Attempting to purchase equipment: ${item.name}`);
+        
+        // Import the wealth system and attempt purchase
+        const { ZWolfWealth } = await import("../dice/wealth-system.mjs");
+        const purchased = await ZWolfWealth.attemptPurchase(this.actor, item);
+        
+        // Only render if purchase was completed
+        if (purchased) {
+          await this.sheet.render(false);
+        }
+        
+      } catch (err) {
+        console.error("Z-Wolf Epic | Equipment buy drop error:", err);
+        ui.notifications.error("Failed to purchase the item.");
       }
     } finally {
       setTimeout(() => {

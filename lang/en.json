@@ -384,7 +384,12 @@
     "DragAttunementHere": "Drag Attunement Here",
     "OverextendedSlotTooltip": "Using this slot causes long-term Shaken",
     "OverextendedSlotWarning": "Using this slot causes long-term Shaken",
-    "OverextendedAttunementWarning": "Warning: The overextended attunement slot (last slot) causes the character to be Shaken as long as it is used."
+    "OverextendedAttunementWarning": "Warning: The overextended attunement slot (last slot) causes the character to be Shaken as long as it is used.",
+    
+    "BuyEquipmentHere": "Buy with Wealth",
+    "BuyEquipmentHint": "Roll Wealth dice to purchase",
+    "GainWealth": "Gain Wealth (treasure, gift, or sale)",
+    "LoseWealth": "Lose Wealth (gift, donation, or bribe)"
   },
   "ZWOLF_DICE": {
     "QuickRoll": "Quick roll with current boosts",

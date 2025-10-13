@@ -217,8 +217,8 @@ export class PCData extends foundry.abstract.TypeDataModel {
       wealth: new fields.NumberField({ 
         required: true, 
         nullable: false, 
-        initial: 10, 
-        min: 0 
+        initial: 13, 
+        min: 0
       }),
       karmaPoints: new fields.SchemaField({
         value: new fields.NumberField({ 

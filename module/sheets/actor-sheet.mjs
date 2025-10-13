@@ -35,7 +35,9 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
       editItem: ZWolfActorSheet._onEditItem,
       deleteItem: ZWolfActorSheet._onDeleteItem,
       viewBaseCreature: ZWolfActorSheet._onViewBaseCreature,
-      changeTab: ZWolfActorSheet._onChangeTab
+      changeTab: ZWolfActorSheet._onChangeTab,
+      gainWealth: ZWolfActorSheet._onGainWealth,
+      loseWealth: ZWolfActorSheet._onLoseWealth
     },
     window: {
       resizable: true,
@@ -559,5 +561,25 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
     const actorId = target.dataset.actorId;
     const actor = game.actors.get(actorId);
     if (actor) actor.sheet.render(true);
+  }
+
+  static async _onGainWealth(event, target) {
+    const { ZWolfWealth } = await import("../dice/wealth-system.mjs");
+    const gained = await ZWolfWealth.attemptGainWealth(this.document);
+    
+    // Re-render if wealth was gained
+    if (gained) {
+      this.render(false);
+    }
+  }
+
+  static async _onLoseWealth(event, target) {
+    const { ZWolfWealth } = await import("../dice/wealth-system.mjs");
+    const lost = await ZWolfWealth.attemptLoseWealth(this.document);
+    
+    // Re-render if wealth was lost
+    if (lost) {
+      this.render(false);
+    }
   }
 }
