@@ -2,7 +2,7 @@
   "id": "zwolf-epic",
   "title": "Z-Wolf Epic",
   "description": "The experience you always wanted, but the rules didn't cooperate with",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "compatibility": {
     "minimum": "13.0.0",
     "verified": "13",

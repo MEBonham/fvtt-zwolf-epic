@@ -4,35 +4,25 @@
     "templates": {
       "base": {
         "level": 3,
-        "vitalityPoints": {
-          "value": 12,
-          "min": 0,
-          "max": 12
-        },
         "languages": "",
         "liabilities": "",
         "notes": "",
         "size": "medium",
         "tags": "Humanoid",
         "nightsight": 1,
-        "darkvision": 0.2
+        "darkvision": 0.2,
+        "coastNumber": 4,
+        "speed": {
+          "progression": null
+        }
       },
       "character": {
         "ancestryId": null,
         "fundamentId": null,
-        "staminaPoints": {
-          "value": 4,
-          "min": 0,
-          "max": 4
-        },
-        "coastNumber": 4,
-        "speed": {
-          "progression": null
-        },
         "vitalityBoostCount": 0,
         "buildPointsLocked": false
       },
-      "attributesAndSkills": {
+      "partialCharacter": {
         "attributes": {
           "agility": { "progression": "moderate" },
           "fortitude": { "progression": "moderate" },
@@ -48,6 +38,16 @@
           "influence": { "progression": "mediocre" },
           "insight": { "progression": "mediocre" },
           "stealth": { "progression": "mediocre" }
+        },
+        "vitalityPoints": {
+          "value": 12,
+          "min": 0,
+          "max": 12
+        },
+        "staminaPoints": {
+          "value": 4,
+          "min": 0,
+          "max": 4
         }
       },
       "summoned": {
@@ -55,7 +55,7 @@
       }
     },
     "pc": {
-      "templates": ["base", "character", "attributesAndSkills"],
+      "templates": ["base", "character", "partialCharacter"],
       "wealth": 13,
       "karmaPoints": {
         "value": 1,
@@ -64,11 +64,21 @@
       }
     },
     "npc": {
-      "templates": ["base", "character", "attributesAndSkills"],
+      "templates": ["base", "character", "partialCharacter"],
+      "vitalityPoints": {
+        "value": 12,
+        "min": 0,
+        "max": 12
+      },
+      "staminaPoints": {
+        "value": 4,
+        "min": 0,
+        "max": 4
+      },
       "wealth": 0
     },
     "eidolon": {
-      "templates": ["base", "character", "summoned", "attributesAndSkills"],
+      "templates": ["base", "partialCharacter", "summoned"],
       "wealth": 0
     },
     "mook": {
