@@ -87,41 +87,17 @@ zwolf-epic/
 
 ## Common Patterns
 
-### Adding a New Item Type
-1. Add type to `template.json` under `Item.types`
-2. Create data model in `module/data-models/`
-3. Register in `zwolf-epic.mjs`
-4. Create template in `templates/item/`
-5. Add localization strings to `lang/en.json`
+### Creating User-Facing Strings
+Use `ZWOLF.` prefix for all localization keys.
 
-### Adding a New Actor Type
-1. Add type to `template.json` under `Actor.types`
-2. Create data model in `module/data-models/`
-3. Register in `zwolf-epic.mjs`
-4. Create template in `templates/actor/`
-5. Add localization strings to `lang/en.json`
-
-## Game-Specific Concepts
-
-[TODO: Add your game's unique mechanics here, e.g.:]
-- **Stats**: [List primary stats]
-- **Skills**: [How skills work]
-- **Combat**: [Combat system overview]
-- **Special Mechanics**: [Any unique systems]
-
-## Development Notes
-
-### Running/Testing
-- Load in FoundryVTT as a system
-- Use browser DevTools console for debugging
-- Check for errors in Foundry's developer mode (F12)
+When creating a new localization key, first see if lang/en.json already has a similar key that could be reused. If not, create a new key with the `ZWOLF.` prefix, with its English value.
 
 ### CSS
 - All custom properties in `styles/variables.css`
 - Use `--z-wolf-` prefixed variables for theming
 
 ### Known Issues / TODOs
-- [ ] Testing phase pending
+- [ ] 
 
 ## Do NOT
 

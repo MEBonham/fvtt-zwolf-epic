@@ -18,6 +18,18 @@ export function calculateProgressionBonuses(level, progressionOnlyLevel = 0) {
 }
 
 /**
+ * Calculate a target number (TN) for a given progression
+ * @param {string} progressionName - The progression tier ("mediocre", "moderate", "specialty", "awesome")
+ * @param {number} level - The character's base level
+ * @param {number} progressionOnlyLevel - Additional level from Progression Enhancement (typically 0 or 1)
+ * @returns {number} The target number (6 + progression bonus)
+ */
+export function calculateTn(progressionName, level, progressionOnlyLevel = 0) {
+    const bonuses = calculateProgressionBonuses(level, progressionOnlyLevel);
+    return 6 + bonuses[progressionName];
+}
+
+/**
  * Progression tier values for comparison
  */
 export const PROGRESSION_VALUES = {

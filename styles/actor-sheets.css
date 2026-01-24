@@ -115,6 +115,7 @@
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     font-size: 0.9em;
+    line-height: normal;
 }
 
 .header-field input[type="number"] {
@@ -125,23 +126,91 @@
     min-width: 100px;
 }
 
+.header-field.tags-field {
+    align-self: stretch;
+    flex-grow: 1;
+}
+
+.size-source {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9em;
+}
+
+.effective-size-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: var(--z-wolf-accent);
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #333;
+}
+
+.effective-size-display i {
+    font-size: 0.8em;
+    opacity: 0.7;
+}
+
 .tags-display {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     min-width: 150px;
+    height: 100%;
     font-size: 0.9em;
+    line-height: normal;
+    display: inline-flex;
+    align-items: center;
+    flex-grow: 1;
 }
 
 /* Header Resources Bar */
 .header-resources {
+    width: 100%;
     display: flex;
     gap: 1rem;
     padding: 0.75rem 1rem;
     background: rgba(0, 0, 0, 0.2);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     flex-wrap: wrap;
+}
+
+/* Rest Buttons */
+.resource.rest-buttons-resource {
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.rest-button-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rest-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.rest-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.rest-button i {
+    font-size: 1.1em;
 }
 
 .resource {
@@ -345,6 +414,7 @@
     padding: 0.5rem 1rem 0;
     background: #252525;
     border-bottom: 2px solid #3a3a3a;
+    border-top: none;
 }
 
 .sheet-tabs .item {
@@ -353,7 +423,7 @@
     border: 1px solid #3a3a3a;
     border-bottom: none;
     border-radius: 6px 6px 0 0;
-    padding: 0.5rem 1.2rem;
+    padding: 0 1.2rem;
     cursor: pointer;
     transition: all 0.2s ease;
     font-weight: 500;

@@ -1,6 +1,7 @@
 const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 import { SheetStateManager } from "../helpers/sheet-state-manager.mjs";
+import { calculateProgressionBonuses, calculateTn } from "../helpers/calculation-utils.mjs";
 
 /**
  * Actor sheet for Z-Wolf Epic actors.
@@ -103,40 +104,19 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         context.showInventory = context.isCharacter;
         context.showConfigure = !context.isSpawn;
 
-        // Mock progression data (temporary placeholder)
-        context.progressions = {
-            mediocre: {
-                name: "Mediocre",
-                bonus: -2,
-                stats: [
-                    { key: "str", type: "attribute", name: "Strength", value: -2 },
-                    { key: "perception", type: "skill", name: "Perception", value: -2 }
-                ]
-            },
-            moderate: {
-                name: "Moderate",
-                bonus: 0,
-                stats: [
-                    { key: "dex", type: "attribute", name: "Dexterity", value: 0 },
-                    { key: "athletics", type: "skill", name: "Athletics", value: 0 }
-                ]
-            },
-            specialty: {
-                name: "Specialty",
-                bonus: 2,
-                stats: [
-                    { key: "int", type: "attribute", name: "Intelligence", value: 2 },
-                    { key: "arcana", type: "skill", name: "Arcana", value: 2 }
-                ]
-            },
-            awesome: {
-                name: "Awesome",
-                bonus: 4,
-                stats: [
-                    { key: "wis", type: "attribute", name: "Wisdom", value: 4 },
-                    { key: "insight", type: "skill", name: "Insight", value: 4 }
-                ]
-            }
+        // Calculate progression bonuses
+        const level = context.system.level ?? 0;
+        const progressionOnlyLevel = this._getProgressionOnlyLevel();
+        const progressionBonuses = calculateProgressionBonuses(level, progressionOnlyLevel);
+
+        // Organize stats by progression
+        context.progressions = this._organizeByProgression(context.system, progressionBonuses);
+
+        // Calculate target numbers
+        context.tns = {
+            improvised: calculateTn("mediocre", level, progressionOnlyLevel),
+            healing: calculateTn("moderate", level, progressionOnlyLevel),
+            challenge: calculateTn("specialty", level, progressionOnlyLevel)
         };
 
         return context;
@@ -175,6 +155,96 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         }
 
         return tabs;
+    }
+
+    /**
+     * Get progression-only level from Progression Enhancement item
+     * @returns {number} 0 or 1
+     * @private
+     */
+    _getProgressionOnlyLevel() {
+        if (this.actor.items) {
+            return this.actor.items.some(item => item.name === "Progression Enhancement") ? 1 : 0;
+        }
+        return 0;
+    }
+
+    /**
+     * Organize attributes and skills by their progression tiers
+     * @param {Object} system - Actor system data
+     * @param {Object} bonuses - Progression bonuses
+     * @returns {Object} Organized progression data
+     * @private
+     */
+    _organizeByProgression(system, bonuses) {
+        const progressions = {
+            mediocre: { name: "Mediocre", bonus: bonuses.mediocre, stats: [] },
+            moderate: { name: "Moderate", bonus: bonuses.moderate, stats: [] },
+            specialty: { name: "Specialty", bonus: bonuses.specialty, stats: [] },
+            awesome: { name: "Awesome", bonus: bonuses.awesome, stats: [] }
+        };
+
+        // Ensure system data exists
+        system.attributes = system.attributes || this._getDefaultAttributes();
+        system.skills = system.skills || this._getDefaultSkills();
+
+        // Organize attributes
+        const attributes = ["agility", "fortitude", "perception", "willpower"];
+        attributes.forEach(attr => {
+            const progression = system.attributes[attr]?.progression || "moderate";
+            progressions[progression].stats.push({
+                name: attr.charAt(0).toUpperCase() + attr.slice(1),
+                type: "attribute",
+                key: attr,
+                value: bonuses[progression]
+            });
+        });
+
+        // Organize skills
+        const skills = ["acumen", "athletics", "brawn", "dexterity", "glibness", "influence", "insight", "stealth"];
+        skills.forEach(skill => {
+            const progression = system.skills[skill]?.progression || "mediocre";
+            progressions[progression].stats.push({
+                name: skill.charAt(0).toUpperCase() + skill.slice(1),
+                type: "skill",
+                key: skill,
+                value: bonuses[progression]
+            });
+        });
+
+        return progressions;
+    }
+
+    /**
+     * Get default attributes structure
+     * @returns {Object} Default attributes
+     * @private
+     */
+    _getDefaultAttributes() {
+        return {
+            agility: { value: 0, progression: "moderate" },
+            fortitude: { value: 0, progression: "moderate" },
+            perception: { value: 0, progression: "moderate" },
+            willpower: { value: 0, progression: "moderate" }
+        };
+    }
+
+    /**
+     * Get default skills structure
+     * @returns {Object} Default skills
+     * @private
+     */
+    _getDefaultSkills() {
+        return {
+            acumen: { value: 0, progression: "mediocre" },
+            athletics: { value: 0, progression: "mediocre" },
+            brawn: { value: 0, progression: "mediocre" },
+            dexterity: { value: 0, progression: "mediocre" },
+            glibness: { value: 0, progression: "mediocre" },
+            influence: { value: 0, progression: "mediocre" },
+            insight: { value: 0, progression: "mediocre" },
+            stealth: { value: 0, progression: "mediocre" }
+        };
     }
 
     /**
