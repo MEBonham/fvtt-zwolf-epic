@@ -1,0 +1,34 @@
+{
+    "id": "zwolf-epic",
+    "title": "Z-Wolf Epic",
+    "description": "An original Tabletop RPG rules system for FoundryVTT.",
+    "version": "0.1.0",
+    "compatibility": {
+        "minimum": "13",
+        "verified": "13"
+    },
+    "authors": [
+        {
+            "name": "Author Name"
+        }
+    ],
+    "esmodules": [
+        "module/zwolf-epic.mjs"
+    ],
+    "styles": [
+        "styles/variables.css",
+        "styles/zwolf-epic.css"
+    ],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ],
+    "primaryTokenAttribute": "health",
+    "secondaryTokenAttribute": null,
+    "url": "",
+    "manifest": "",
+    "download": ""
+}

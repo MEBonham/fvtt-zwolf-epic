@@ -1,0 +1,78 @@
+/* Z-Wolf Epic System Styles */
+
+.zwolf-epic.sheet {
+    font-family: var(--z-wolf-font-family);
+    font-size: var(--z-wolf-font-size-md);
+    color: var(--z-wolf-text);
+}
+
+/* Sheet Header */
+.zwolf-epic .sheet-header {
+    display: flex;
+    gap: var(--z-wolf-spacing-md);
+    padding: var(--z-wolf-spacing-md);
+    border-bottom: 1px solid var(--z-wolf-border);
+}
+
+.zwolf-epic .profile-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 2px solid var(--z-wolf-border);
+    border-radius: var(--z-wolf-border-radius);
+    cursor: pointer;
+}
+
+.zwolf-epic .header-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.zwolf-epic .charname input,
+.zwolf-epic .item-name input {
+    width: 100%;
+    font-size: var(--z-wolf-font-size-lg);
+    font-weight: bold;
+    border: none;
+    border-bottom: 1px solid var(--z-wolf-border);
+    background: transparent;
+}
+
+/* Sheet Body */
+.zwolf-epic .sheet-body {
+    padding: var(--z-wolf-spacing-md);
+}
+
+.zwolf-epic .resources,
+.zwolf-epic .item-properties {
+    display: flex;
+    gap: var(--z-wolf-spacing-md);
+    margin-bottom: var(--z-wolf-spacing-md);
+}
+
+.zwolf-epic .resource,
+.zwolf-epic .property {
+    display: flex;
+    align-items: center;
+    gap: var(--z-wolf-spacing-xs);
+}
+
+.zwolf-epic .resource input,
+.zwolf-epic .property input {
+    width: 50px;
+    text-align: center;
+}
+
+.zwolf-epic .biography,
+.zwolf-epic .description {
+    margin-top: var(--z-wolf-spacing-md);
+}
+
+.zwolf-epic .biography label,
+.zwolf-epic .description label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: var(--z-wolf-spacing-xs);
+}
