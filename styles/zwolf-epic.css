@@ -1,78 +1,30 @@
-/* Z-Wolf Epic System Styles */
+/* Z-Wolf Epic System - Global Styles */
 
+/* ===========================================
+   NOTE: Actor-specific styles are in actor-sheets.css
+   This file is for global overrides and shared patterns
+   =========================================== */
+
+/* Global sheet font settings (if using variables) */
 .zwolf-epic.sheet {
-    font-family: var(--z-wolf-font-family);
-    font-size: var(--z-wolf-font-size-md);
-    color: var(--z-wolf-text);
+    font-family: var(--z-wolf-font-family, "Signika", sans-serif);
+    font-size: var(--z-wolf-font-size-md, 14px);
+    color: var(--z-wolf-text, #d4d4d4);
 }
 
-/* Sheet Header */
-.zwolf-epic .sheet-header {
-    display: flex;
-    gap: var(--z-wolf-spacing-md);
-    padding: var(--z-wolf-spacing-md);
-    border-bottom: 1px solid var(--z-wolf-border);
+/* Common editor styles (used in biography, descriptions, etc.) */
+.zwolf-epic .editor-content {
+    min-height: 200px;
+    padding: 0.5rem;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    background: #1a1a1a;
 }
 
-.zwolf-epic .profile-img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border: 2px solid var(--z-wolf-border);
-    border-radius: var(--z-wolf-border-radius);
-    cursor: pointer;
+.zwolf-epic .editor-content p {
+    margin: 0 0 0.5rem 0;
 }
 
-.zwolf-epic .header-fields {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.zwolf-epic .charname input,
-.zwolf-epic .item-name input {
-    width: 100%;
-    font-size: var(--z-wolf-font-size-lg);
-    font-weight: bold;
-    border: none;
-    border-bottom: 1px solid var(--z-wolf-border);
-    background: transparent;
-}
-
-/* Sheet Body */
-.zwolf-epic .sheet-body {
-    padding: var(--z-wolf-spacing-md);
-}
-
-.zwolf-epic .resources,
-.zwolf-epic .item-properties {
-    display: flex;
-    gap: var(--z-wolf-spacing-md);
-    margin-bottom: var(--z-wolf-spacing-md);
-}
-
-.zwolf-epic .resource,
-.zwolf-epic .property {
-    display: flex;
-    align-items: center;
-    gap: var(--z-wolf-spacing-xs);
-}
-
-.zwolf-epic .resource input,
-.zwolf-epic .property input {
-    width: 50px;
-    text-align: center;
-}
-
-.zwolf-epic .biography,
-.zwolf-epic .description {
-    margin-top: var(--z-wolf-spacing-md);
-}
-
-.zwolf-epic .biography label,
-.zwolf-epic .description label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: var(--z-wolf-spacing-xs);
+.zwolf-epic .editor-content p:last-child {
+    margin-bottom: 0;
 }

@@ -1,15 +1,17 @@
 {
     "id": "zwolf-epic",
     "title": "Z-Wolf Epic",
-    "description": "An original Tabletop RPG rules system for FoundryVTT.",
-    "version": "0.1.0",
+    "description": "The experience you always wanted, but the rules didn't cooperate with",
+    "version": "0.1.4",
     "compatibility": {
         "minimum": "13",
         "verified": "13"
     },
     "authors": [
         {
-            "name": "Author Name"
+            "name": "M. Everett Bonham",
+            "email": "zaninar.games@gmail.com",
+            "discord": "https://discord.gg/qU83g3F2qY"
         }
     ],
     "esmodules": [
@@ -17,7 +19,8 @@
     ],
     "styles": [
         "styles/variables.css",
-        "styles/zwolf-epic.css"
+        "styles/zwolf-epic.css",
+        "styles/actor-sheets.css"
     ],
     "languages": [
         {
@@ -26,9 +29,13 @@
             "path": "lang/en.json"
         }
     ],
-    "primaryTokenAttribute": "health",
+    "grid": {
+        "distance": 1,
+        "units": "m"
+    },
+    "primaryTokenAttribute": "vitalityPoints",
     "secondaryTokenAttribute": null,
-    "url": "",
-    "manifest": "",
-    "download": ""
+    "url": "https://github.com/MEBonham/fvtt-zwolf-epic",
+    "manifest": "https://raw.githubusercontent.com/MEBonham/fvtt-zwolf-epic/main/system.json",
+    "download": "https://github.com/MEBonham/fvtt-zwolf-epic/archive/main.zip"
 }

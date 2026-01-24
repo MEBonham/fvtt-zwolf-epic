@@ -1,0 +1,256 @@
+{{!-- templates/actor/parts/actor-configure-content.hbs --}}
+<div class="tab configure {{#if (eq currentTab 'configure')}}active{{/if}}" 
+     data-group="primary" 
+     data-tab="configure" 
+     data-part-id="tab-configure">
+  {{#unless isSpawn}}
+    <div class="configure-content">
+      {{#if isCharacter}}
+        <h3>{{localize "ZWOLF.CharacterBuildConfiguration"}}</h3>
+
+        <div class="build-sections">
+
+          <!-- Character Foundation Section -->
+          <div class="build-category character-foundation">
+            <h4>{{localize "ZWOLF.CharacterFoundation"}}</h4>
+            <div class="foundation-row">
+              {{> foundation-slot 
+                  label="ZWOLF.Ancestry"
+                  itemType="ancestry"
+                  item=ancestry}}
+
+              {{#unless isEidolon}}
+                {{> foundation-slot 
+                    label="ZWOLF.Fundament"
+                    itemType="fundament"
+                    item=fundament}}
+              {{/unless}}
+            </div>
+          </div>
+
+          <!-- Progression Assignments Section -->
+          <div class="build-category progression-assignments">
+            <div class="build-points-header">
+              <div class="build-points-display">
+                <div class="bp-label">{{localize "ZWOLF.BuildPoints"}}</div>
+                <div class="bp-total {{getBPClass buildPoints}}">
+                  {{buildPoints.total}} / {{buildPoints.max}} BP
+                </div>
+                <div class="bp-breakdown">
+                  <span class="bp-breakdown-item">
+                    {{localize "ZWOLF.Attributes"}}: {{buildPoints.attributes}} BP
+                  </span>
+                  <span class="bp-breakdown-divider">•</span>
+                  <span class="bp-breakdown-item">
+                    {{localize "ZWOLF.Skills"}}: {{buildPoints.skills}} BP
+                  </span>
+                  {{#if (and isEidolon (gt buildPoints.skillExcessPenalty 0))}}
+                    <span class="bp-breakdown-divider">•</span>
+                    <span class="bp-breakdown-item bp-penalty" title="{{localize 'ZWOLF.SkillExcessPenaltyTooltip'}}">
+                      {{localize "ZWOLF.SkillExcess"}}: +{{buildPoints.skillExcessPenalty}} BP
+                    </span>
+                  {{/if}}
+                </div>
+                {{#if isEidolon}}
+                  <div class="bp-source-breakdown">
+                    <span class="bp-source-item" title="{{localize 'ZWOLF.FromOwnAncestry'}}">
+                      <i class="fas fa-user"></i> {{buildPoints.fromAncestry}} BP
+                    </span>
+                    <span class="bp-breakdown-divider">+</span>
+                    <span class="bp-source-item" title="{{localize 'ZWOLF.FromBaseCreatureUnused'}}">
+                      <i class="fas fa-link"></i> {{buildPoints.fromBaseUnused}} BP
+                    </span>
+                  </div>
+                {{/if}}
+              </div>
+              
+              <div class="build-points-controls">
+                <button type="button" 
+                        class="build-points-lock-btn {{#if system.buildPointsLocked}}locked{{else}}unlocked{{/if}}" 
+                        data-action="toggleLock"
+                        title="{{localize (ternary system.buildPointsLocked 'ZWOLF.UnlockSliders' 'ZWOLF.LockSliders')}}">
+                  <i class="fas {{#if system.buildPointsLocked}}fa-lock{{else}}fa-unlock{{/if}}"></i>
+                  <span class="lock-label">
+                    {{localize (ternary system.buildPointsLocked 'ZWOLF.Locked' 'ZWOLF.Unlocked')}}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div class="progression-config">
+              
+              <!-- Attributes Section -->
+              <div class="config-section">
+                <h5>
+                  <i class="fas fa-user-shield"></i>
+                  {{localize "ZWOLF.Attributes"}}
+                </h5>
+                <div class="config-list">
+                  {{#each system.attributes as |attribute key|}}
+                    {{> progression-slider 
+                        label=(capitalize key)
+                        statKey=key
+                        statType="attribute"
+                        progression=attribute.progression
+                        showAwesomeWarning=(eq attribute.progression 'awesome')
+                        isAlternateRow=(mod @index 2)}}
+                  {{/each}}
+                </div>
+              </div>
+
+              <!-- Skills Section -->
+              <div class="config-section">
+                <h5>
+                  <i class="fas fa-cogs"></i>
+                  {{localize "ZWOLF.Skills"}}
+                </h5>
+                <div class="config-list">
+                  {{#each system.skills as |skill key|}}
+                    {{> progression-slider 
+                        label=(capitalize key)
+                        statKey=key
+                        statType="skill"
+                        progression=skill.progression}}
+                  {{/each}}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Knacks Section -->
+          <div class="build-category knacks-section">
+            <h4>
+              <i class="fas fa-star"></i>
+              {{localize "ZWOLF.Knacks"}}
+              {{#if isEidolon}}
+                <span class="section-hint">
+                  ({{localize "ZWOLF.FromAncestryAndBasePlaceholders"}})
+                </span>
+              {{/if}}
+            </h4>
+            
+            {{#if knackSlots.length}}
+              <div class="knacks-grid compact-grid">
+                {{#each knackSlots as |slot|}}
+                  {{> item-slot 
+                      slotLabel=(concat (localize "ZWOLF.Knack") " " (math slot.index "+" 1))
+                      slotClass="knack-slot"
+                      dropZoneClass="knack-drop-zone"
+                      itemType="knack"
+                      slotIndex=slot.index
+                      item=slot.item
+                      icon="fa-star"
+                      compact=true}}
+                {{/each}}
+              </div>
+            {{else}}
+              <div class="no-slots-message">
+                <i class="fas fa-info-circle"></i>
+                <span>{{localize "ZWOLF.NoKnackSlots"}}</span>
+              </div>
+            {{/if}}
+          </div>
+
+          <!-- Tracks Section -->
+          <div class="build-category tracks-section">
+            <h4>
+              <i class="fas fa-road"></i>
+              {{localize "ZWOLF.Tracks"}}
+              {{#if isEidolon}}
+                <span class="section-hint">
+                  ({{localize "ZWOLF.OnlyBasePlaceholderPositions"}})
+                </span>
+              {{/if}}
+            </h4>
+            
+            {{#if trackSlots.length}}
+              <div class="tracks-grid compact-grid">
+                {{#each trackSlots as |slot|}}
+                  {{> item-slot 
+                      slotLabel=(concat (localize "ZWOLF.Track") " " (math slot.index "+" 1))
+                      slotClass="track-slot"
+                      dropZoneClass="track-drop-zone"
+                      itemType="track"
+                      slotIndex=slot.index
+                      item=slot.item
+                      icon="fa-road"
+                      compact=true}}
+                {{/each}}
+              </div>
+            {{else}}
+              <div class="no-slots-message">
+                <i class="fas fa-info-circle"></i>
+                <span>
+                  {{#if isEidolon}}
+                    {{localize "ZWOLF.NoEidolonTrackSlots"}}
+                  {{else}}
+                    {{localize "ZWOLF.NoTrackSlots" level=system.level}}
+                  {{/if}}
+                </span>
+              </div>
+            {{/if}}
+          </div>
+
+          <!-- Talents Section -->
+          <div class="build-category talents-section">
+            <h4>
+              <i class="fas fa-gem"></i>
+              {{localize "ZWOLF.Talents"}}
+              {{#if isEidolon}}
+                <span class="section-hint">
+                  ({{localize "ZWOLF.BasedOnEnabledTracks"}})
+                </span>
+              {{/if}}
+            </h4>
+            
+            {{#if talentSlots.length}}
+              <div class="talents-grid">
+                {{#each talentSlots as |slot|}}
+                  {{> item-slot 
+                      slotLabel=(concat (localize "ZWOLF.Talent") " " (math slot.index "+" 1))
+                      slotClass="talent-slot"
+                      dropZoneClass="talent-drop-zone"
+                      itemType="talent"
+                      slotIndex=slot.index
+                      item=slot.item
+                      icon="fa-gem"
+                      isDisabled=(not slot.hasTrack)
+                      disabledReason=(localize "ZWOLF.RequiresTrack" trackNumber=slot.trackNumber)
+                      extraInfo=(ternary slot.hasTrack 
+                                  (concat "(" (localize "ZWOLF.Track") " " slot.trackNumber ": " slot.trackName ")")
+                                  (concat "(" (localize "ZWOLF.Track") " " slot.trackNumber ": " (localize "ZWOLF.NotAssigned") ")"))}}
+                {{/each}}
+              </div>
+            {{else}}
+              <div class="no-slots-message">
+                <i class="fas fa-info-circle"></i>
+                <span>
+                  {{#if isEidolon}}
+                    {{localize "ZWOLF.NoEidolonTalentSlots"}}
+                  {{else}}
+                    {{localize "ZWOLF.NoTalentSlots" level=system.level}}
+                  {{/if}}
+                </span>
+              </div>
+            {{/if}}
+          </div>
+
+        </div>
+
+      {{else}}
+        <div class="no-content-message">
+          <i class="fas fa-info-circle"></i>
+          <span>{{localize "ZWOLF.ConfigurationOnlyForCharacters"}}</span>
+        </div>
+      {{/if}}
+    </div>
+  {{else}}
+    <div class="configure-content">
+      <div class="no-content-message">
+        <i class="fas fa-info-circle"></i>
+        <span>{{localize "ZWOLF.ConfigurationNotForSpawns"}}</span>
+      </div>
+    </div>
+  {{/unless}}
+</div>

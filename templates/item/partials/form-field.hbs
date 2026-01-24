@@ -1,0 +1,78 @@
+{{!-- templates/item/partials/form-field.hbs --}}
+{{!-- 
+  Reusable form field partial
+  
+  Parameters:
+  - label: Localization key for label
+  - type: "text", "number", "select", "editor", "multiselect"
+  - name: Input name attribute
+  - value: Current value
+  - placeholder: Placeholder text (optional)
+  - notes: Localization key for hint text (optional)
+  - fullWidth: Boolean for full-width styling (optional)
+  - min: Min value for numbers (optional)
+  - max: Max value for numbers (optional)
+  - step: Step for numbers (optional)
+  - options: Array of options for select (optional)
+  - disabled: Boolean for disabled state (optional)
+  - readonly: Boolean for readonly state (optional)
+  - owner: Owner for editor (required if type=editor)
+  - editable: Editable state for editor (required if type=editor)
+--}}
+
+<div class="form-group {{#if fullWidth}}basics-full-width{{/if}} {{#if stacked}}stacked{{/if}}">
+  <label>{{localize label}}</label>
+  
+  {{#if (eq type "text")}}
+    <input type="text" 
+           name="{{name}}" 
+           value="{{value}}" 
+           placeholder="{{#if placeholder}}{{localize placeholder}}{{/if}}"
+           {{#if disabled}}disabled{{/if}}
+           {{#if readonly}}readonly{{/if}}/>
+  
+  {{else if (eq type "number")}}
+    <input type="number" 
+           name="{{name}}" 
+           value="{{value}}" 
+           data-dtype="Number"
+           {{#if min}}min="{{min}}"{{/if}}
+           {{#if max}}max="{{max}}"{{/if}}
+           {{#if step}}step="{{step}}"{{/if}}
+           {{#if disabled}}disabled{{/if}}
+           {{#if readonly}}readonly{{/if}}/>
+  
+  {{else if (eq type "select")}}
+    <select name="{{name}}" 
+            {{#if disabled}}disabled{{/if}}
+            {{#if dataType}}data-dtype="{{dataType}}"{{/if}}>
+      {{#each options}}
+        <option value="{{this.value}}" {{selected this.value ../value}}>
+          {{localize this.label}}
+        </option>
+      {{/each}}
+    </select>
+  
+  {{else if (eq type "multiselect")}}
+    <select name="{{name}}" 
+            multiple 
+            size="{{#if size}}{{size}}{{else}}8{{/if}}" 
+            style="width: 100%;">
+      {{#each options}}
+        <option value="{{this.value}}" 
+                {{#if (includes ../value this.value)}}selected{{/if}}>
+          {{localize this.label}}
+        </option>
+      {{/each}}
+    </select>
+  
+  {{else if (eq type "editor")}}
+    <div class="editor-container">
+      {{editor value target=name button=true owner=owner editable=editable}}
+    </div>
+  {{/if}}
+  
+  {{#if notes}}
+    <p class="notes">{{localize notes}}</p>
+  {{/if}}
+</div>

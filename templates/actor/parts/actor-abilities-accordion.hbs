@@ -1,0 +1,77 @@
+{{!-- templates/actor/parts/actor-abilities-accordion.hbs --}}
+<div class="tab main {{#if (eq currentTab 'main')}}active{{/if}}" 
+     data-group="primary" 
+     data-tab="main" 
+     data-part-id="tab-main">
+  <div class="abilities-accordion">
+    
+    <!-- Passive Abilities -->
+    {{> ability-category 
+        icon="fa-shield-alt"
+        title="ZWOLF.PassiveAbilities"
+        abilities=abilityCategories.passive}}
+
+    <!-- Dominant Actions (with subsections for general and strikes) -->
+    <details class="ability-category">
+      <summary class="ability-category-header">
+        <i class="fas fa-fist-raised"></i>
+        {{localize "ZWOLF.DominantActions"}}
+        <span class="ability-count">
+          ({{math abilityCategories.dominantAction.length "+" abilityCategories.strike.length}})
+        </span>
+      </summary>
+      <div class="ability-list">
+        {{#if abilityCategories.dominantAction.length}}
+          <div class="ability-subsection">
+            <h6 class="ability-subsection-header">{{localize "ZWOLF.GeneralActions"}}</h6>
+            {{#each abilityCategories.dominantAction as |ability|}}
+              {{> ability-detail ability=ability}}
+            {{/each}}
+          </div>
+        {{/if}}
+        
+        {{#if abilityCategories.strike.length}}
+          <div class="ability-subsection">
+            <h6 class="ability-subsection-header">{{localize "ZWOLF.StrikeActions"}}</h6>
+            {{#each abilityCategories.strike as |ability|}}
+              {{> ability-detail ability=ability abilityClass="strike-ability"}}
+            {{/each}}
+          </div>
+        {{/if}}
+        
+        {{#unless (or abilityCategories.dominantAction.length abilityCategories.strike.length)}}
+          <div class="no-abilities">{{localize "ZWOLF.NoDominantActions"}}</div>
+        {{/unless}}
+      </div>
+    </details>
+
+    <!-- Swift Actions -->
+    {{> ability-category 
+        icon="fa-running"
+        title="ZWOLF.SwiftActions"
+        abilities=abilityCategories.swiftAction}}
+
+    <!-- Reactions -->
+    {{> ability-category 
+        icon="fa-bolt"
+        title="ZWOLF.Reactions"
+        abilities=abilityCategories.reaction}}
+
+    <!-- Free Actions -->
+    {{> ability-category 
+        icon="fa-hand-point-up"
+        title="ZWOLF.FreeActions"
+        abilities=abilityCategories.freeAction}}
+
+    <!-- Drawbacks (only if present) -->
+    {{#if abilityCategories.drawback.length}}
+      {{> ability-category 
+          icon="fa-exclamation-triangle"
+          title="ZWOLF.Drawbacks"
+          abilities=abilityCategories.drawback
+          categoryClass="drawback-category"
+          abilityClass="drawback-ability"}}
+    {{/if}}
+
+  </div>
+</div>

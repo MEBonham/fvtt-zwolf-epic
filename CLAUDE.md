@@ -34,8 +34,9 @@ zwolf-epic/
 ├── styles/
 │   ├── variables.css        # CSS custom properties
 │   └── [other stylesheets]
-└── lang/
-    └── en.json              # English localization
+├── lang/
+│   └── en.json              # English localization
+└── archive 2026-01-23/      # Pre-cleanup backup (reference only, not loaded)
 ```
 
 ## FoundryVTT v13 Conventions (CRITICAL)
