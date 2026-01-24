@@ -34,6 +34,7 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         const context = await super._prepareContext(options);
 
         context.system = this.item.system;
+        context.config = CONFIG.ZWOLF;
 
         return context;
     }

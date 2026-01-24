@@ -43,7 +43,8 @@
 <!-- Side Effects Section -->
 <div class="tier-side-effects">
   <h4><i class="fas fa-cog"></i> Side Effects</h4>
-  {{> side-effects-form 
-      sideEffects=tierData.sideEffects 
-      pathPrefix=(concat "system.tiers.tier" tierNumber ".sideEffects")}}
+  {{> side-effects-form
+      sideEffects=tierData.sideEffects
+      pathPrefix=(concat "system.tiers.tier" tierNumber ".sideEffects")
+      config=../config}}
 </div>

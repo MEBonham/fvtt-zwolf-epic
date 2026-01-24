@@ -22,7 +22,7 @@ export default class ZWolfActorSheet extends foundry.applications.api.Handlebars
 
   static DEFAULT_OPTIONS = {
     classes: ["z-wolf-epic", "sheet", "actor"],
-    position: { width: 900, height: 650 },
+    position: { width: 950, height: 650 },
     actions: {
       editImage: ZWolfActorSheet._onEditImage,
       rollProgression: ZWolfActorSheet._onRollProgression,

@@ -114,7 +114,9 @@
                     "darkvisionRadius": null,
                     "sizeSteps": 0,
                     "maxBulkBoost": 0,
-                    "grantedProficiency": ""
+                    "grantedProficiency": "",
+                    "resistances": [],
+                    "vulnerabilities": []
                 }
             },
             "tagged": {
@@ -177,7 +179,9 @@
                         "darkvisionRadius": null,
                         "sizeSteps": 0,
                         "knacksProvided": 0,
-                        "grantedProficiency": ""
+                        "grantedProficiency": "",
+                        "resistances": [],
+                        "vulnerabilities": []
                     }
                 },
                 "tier2": {
@@ -192,7 +196,9 @@
                         "darkvisionRadius": null,
                         "sizeSteps": 0,
                         "knacksProvided": 0,
-                        "grantedProficiency": ""
+                        "grantedProficiency": "",
+                        "resistances": [],
+                        "vulnerabilities": []
                     }
                 },
                 "tier3": {
@@ -207,7 +213,9 @@
                         "darkvisionRadius": null,
                         "sizeSteps": 0,
                         "knacksProvided": 0,
-                        "grantedProficiency": ""
+                        "grantedProficiency": "",
+                        "resistances": [],
+                        "vulnerabilities": []
                     }
                 },
                 "tier4": {
@@ -222,7 +230,9 @@
                         "darkvisionRadius": null,
                         "sizeSteps": 0,
                         "knacksProvided": 0,
-                        "grantedProficiency": ""
+                        "grantedProficiency": "",
+                        "resistances": [],
+                        "vulnerabilities": []
                     }
                 },
                 "tier5": {
@@ -237,7 +247,9 @@
                         "darkvisionRadius": null,
                         "sizeSteps": 0,
                         "knacksProvided": 0,
-                        "grantedProficiency": ""
+                        "grantedProficiency": "",
+                        "resistances": [],
+                        "vulnerabilities": []
                     }
                 }
             }

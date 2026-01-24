@@ -13,6 +13,7 @@ import { ZWolfItemSheet } from "./sheets/item-sheet.mjs";
 // Import helpers
 import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
 import { preloadTemplates } from "./helpers/templates.mjs";
+import { ZWOLF } from "./helpers/config.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -22,7 +23,7 @@ Hooks.once("init", async function () {
     console.log("Z-Wolf Epic | Initializing Z-Wolf Epic System");
 
     // Add custom constants for configuration
-    CONFIG.ZWOLF = {};
+    CONFIG.ZWOLF = ZWOLF;
 
     // Define custom Document classes
     CONFIG.Actor.documentClass = ZWolfActor;

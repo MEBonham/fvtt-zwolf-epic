@@ -175,22 +175,68 @@
   <div class="size-upgrades">
     <h4><i class="fas fa-arrows-alt"></i> {{localize 'ZWOLF.SizeUpgrades'}}</h4>
     <p class="notes">{{localize 'ZWOLF.SizeUpgradesHint'}}</p>
-    
+
     <div class="form-group">
       <label>{{localize 'ZWOLF.SizeSteps'}}</label>
       <div class="size-input-group">
-        <input type="number" 
-               name="{{pathPrefix}}.sizeSteps" 
-               value="{{sideEffects.sizeSteps}}" 
-               data-dtype="Number" 
-               step="1" 
+        <input type="number"
+               name="{{pathPrefix}}.sizeSteps"
+               value="{{sideEffects.sizeSteps}}"
+               data-dtype="Number"
+               step="1"
                placeholder="0"/>
         <span class="input-suffix">{{localize 'ZWOLF.Steps'}}</span>
       </div>
       <p class="notes">{{localize 'ZWOLF.SizeStepsHint'}}</p>
     </div>
   </div>
-  
+
+  <!-- Damage Resistances Section -->
+  <div class="damage-resistances">
+    <h4><i class="fas fa-shield-alt"></i> {{localize 'ZWOLF.DamageResistances'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.DamageResistancesHint'}}</p>
+
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.Resistances'}}</label>
+      <div class="resistance-checkboxes">
+        {{#each config.damageTypes}}
+          <div class="resistance-checkbox">
+            <input type="checkbox"
+                   name="{{../pathPrefix}}.resistances"
+                   value="{{@key}}"
+                   {{#if (includes ../sideEffects.resistances @key)}}checked{{/if}}
+                   data-dtype="Array"/>
+            <label>{{localize this.label}}</label>
+          </div>
+        {{/each}}
+      </div>
+      <p class="notes">{{localize 'ZWOLF.ResistancesHint'}}</p>
+    </div>
+  </div>
+
+  <!-- Damage Vulnerabilities Section -->
+  <div class="damage-vulnerabilities">
+    <h4><i class="fas fa-heart-broken"></i> {{localize 'ZWOLF.DamageVulnerabilities'}}</h4>
+    <p class="notes">{{localize 'ZWOLF.DamageVulnerabilitiesHint'}}</p>
+
+    <div class="form-group">
+      <label>{{localize 'ZWOLF.Vulnerabilities'}}</label>
+      <div class="vulnerability-checkboxes">
+        {{#each config.damageTypes}}
+          <div class="vulnerability-checkbox">
+            <input type="checkbox"
+                   name="{{../pathPrefix}}.vulnerabilities"
+                   value="{{@key}}"
+                   {{#if (includes ../sideEffects.vulnerabilities @key)}}checked{{/if}}
+                   data-dtype="Array"/>
+            <label>{{localize this.label}}</label>
+          </div>
+        {{/each}}
+      </div>
+      <p class="notes">{{localize 'ZWOLF.VulnerabilitiesHint'}}</p>
+    </div>
+  </div>
+
   <!-- Placeholder for Future Side Effects -->
   <div class="future-side-effects">
     <h4><i class="fas fa-plus-circle"></i> {{localize 'ZWOLF.FutureSideEffects'}}</h4>

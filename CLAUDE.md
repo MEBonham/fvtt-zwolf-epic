@@ -96,8 +96,37 @@ When creating a new localization key, first see if lang/en.json already has a si
 - All custom properties in `styles/variables.css`
 - Use `--z-wolf-` prefixed variables for theming
 
-### Known Issues / TODOs
-- [ ] 
+## Implementation Roadmap
+
+This is a ground-up rebuild from `archive 2026-01-23/` focusing on modern v13 conventions. Progress through phases in order due to dependencies.
+
+### Phase 1-6: Item Sheet Foundation
+1. **Helper Modules**: item-data-processor, html-enricher, editor-save-handler
+2. **Tab System**: 7 tabs (summary, basics, abilities, formulae, effects, tiers, attunements)
+3. **Granted Abilities**: Add/remove/update abilities on items
+4. **Track Tiers**: 5 tiers with tier-specific abilities and talent menus
+5. **Form Processing**: Number conversion, multi-select, lock system, rich text editors
+6. **Type-Specific**: Knack menus (ancestry), formulae (fundament), attunements (equipment), source tracking
+
+### Phase 7-9: Actor Sheet Data Layer
+7. **Side Effects**: Speed, TN boosts, vision radii, max bulk, resistances/vulnerabilities
+8. **Slots Calculation**: Knacks, tracks, talents, attunements (with eidolon placeholder logic)
+9. **Build Points**: Attribute/skill costs, progression sliders, lock toggle
+
+### Phase 10-14: Actor Sheet UI & Features
+10. **Item Management**: Display, edit, delete, auto-sync on changes
+11. **Drop Zones**: Foundation, slots, equipment, attunement with drag-over feedback
+12. **Equipment/Inventory**: Placement states, bulk calculation, weight/value, requirements
+13. **Granted Abilities Display**: Categorized abilities, exotic senses tooltip, character tags
+14. **Vision & Properties**: Vision radii, token integration, language limit, size validation
+
+### Phase 15-18: Gameplay & Polish
+15. **Dice Rolling**: Progression, stats, speed with net boosts
+16. **Rest & Wealth**: Short/extended rest, gain/lose wealth
+17. **Actor Types**: Eidolon (Gemini, skill excess penalty), Spawn (Swarmer, mirror base), Mook (Shape Ally, tags)
+18. **UI Polish**: Progression accordion, rich text editors, notifications
+
+**Key Principle**: Build dependencies first (helpers → items → actor data → actor UI)
 
 ## Do NOT
 
