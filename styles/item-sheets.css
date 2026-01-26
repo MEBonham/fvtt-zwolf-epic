@@ -446,7 +446,7 @@
 
 /* Editor content (view mode) */
 .zwolf-epic.sheet.item .editor-content {
-    padding: 0.75rem;
+    padding: 0.75rem 1.25rem;
     min-height: 100px;
     color: #d4d4d4;
     line-height: 1.6;
@@ -558,7 +558,7 @@
 
 /* ProseMirror content area */
 .zwolf-epic.sheet.item .prosemirror-editor .ProseMirror {
-    padding: 0.75rem;
+    padding: 0.75rem 1.25rem;
     min-height: 150px;
     color: #d4d4d4;
     line-height: 1.6;
@@ -787,7 +787,7 @@
 
 /* Readonly editor content */
 .zwolf-epic.sheet.item .editor-content-readonly {
-    padding: 0.75rem;
+    padding: 0.75rem 1.25rem;
     min-height: 60px;
     color: #999;
     line-height: 1.6;
@@ -811,4 +811,225 @@
 .zwolf-epic.sheet.item .main-description .editor-content {
     min-height: 150px;
     max-height: 600px;
+}
+
+/* ===================
+   Granted Abilities
+   =================== */
+
+.zwolf-epic.sheet.item .abilities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.zwolf-epic.sheet.item .abilities-header h3 {
+    margin: 0;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .ability-control {
+    padding: 0.4rem 0.75rem;
+    background: #1f3a1f;
+    border: 1px solid #2f5a2f;
+    border-radius: 3px;
+    color: #6bff6b;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .ability-control:hover {
+    background: #2f4a2f;
+    border-color: #3f7a3f;
+}
+
+.zwolf-epic.sheet.item .ability-control i {
+    font-size: 0.9rem;
+}
+
+.zwolf-epic.sheet.item .track-add-abilities-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.zwolf-epic.sheet.item .track-add-abilities-info i {
+    color: var(--z-wolf-primary);
+}
+
+.zwolf-epic.sheet.item .no-abilities,
+.zwolf-epic.sheet.item .no-abilities-tier {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
+    font-style: italic;
+}
+
+.zwolf-epic.sheet.item .no-abilities i,
+.zwolf-epic.sheet.item .no-abilities-tier i {
+    margin-right: 0.5rem;
+    color: #555;
+}
+
+/* Individual Ability Item */
+.zwolf-epic.sheet.item .ability-item {
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.zwolf-epic.sheet.item .ability-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Ability Header Row - Name, Action Type, Delete */
+.zwolf-epic.sheet.item .ability-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.zwolf-epic.sheet.item .ability-header input[type="text"] {
+    flex: 2;
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+    font-weight: 500;
+}
+
+.zwolf-epic.sheet.item .ability-header input[type="text"]:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+.zwolf-epic.sheet.item .ability-header input[type="text"]::placeholder {
+    color: #666;
+}
+
+.zwolf-epic.sheet.item .ability-header select {
+    flex: 1;
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .ability-header select:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+/* Tier selector (only for track items) */
+.zwolf-epic.sheet.item .ability-tier {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .ability-tier label {
+    color: #999;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.zwolf-epic.sheet.item .ability-tier select {
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+    min-width: 60px;
+}
+
+.zwolf-epic.sheet.item .ability-tier select:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+/* Delete ability button */
+.zwolf-epic.sheet.item .delete-ability {
+    padding: 0.5rem 0.75rem;
+    background: #3a1f1f;
+    border: 1px solid #5a2f2f;
+    border-radius: 3px;
+    color: #ff6b6b;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.zwolf-epic.sheet.item .delete-ability:hover {
+    background: #4a2f2f;
+    border-color: #7a3f3f;
+}
+
+.zwolf-epic.sheet.item .delete-ability i {
+    font-size: 0.9rem;
+}
+
+.zwolf-epic.sheet.item .delete-ability span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Ability Tags */
+.zwolf-epic.sheet.item .ability-tags {
+    margin-bottom: 0.75rem;
+}
+
+.zwolf-epic.sheet.item .ability-tags label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.zwolf-epic.sheet.item .ability-tags input {
+    width: 100%;
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .ability-tags input:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+.zwolf-epic.sheet.item .ability-tags input::placeholder {
+    color: #666;
+}
+
+/* Ability Description */
+.zwolf-epic.sheet.item .ability-description {
+    margin-bottom: 0;
+}
+
+.zwolf-epic.sheet.item .ability-description label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
 }

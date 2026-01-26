@@ -120,17 +120,22 @@ export class ItemDataProcessor {
   }
 
   /**
-   * Handle multi-select form fields (only for sizeOptions)
+   * Handle all multi-select form fields automatically
    * @param {HTMLFormElement} form - The form element
    * @param {Object} formData - Form data to modify
    */
   static processMultiSelectFields(form, formData) {
-    const sizeOptionsSelect = form.querySelector('select[name="system.sizeOptions"]');
+    // Find all multi-select elements (select elements with 'multiple' attribute)
+    const multiSelects = form.querySelectorAll("select[multiple]");
 
-    if (sizeOptionsSelect) {
-      const selectedValues = Array.from(sizeOptionsSelect.selectedOptions).map(option => option.value);
-      formData['system.sizeOptions'] = selectedValues;
-    }
+    multiSelects.forEach(select => {
+      const fieldName = select.name;
+      if (fieldName) {
+        // Get all selected values as an array
+        const selectedValues = Array.from(select.selectedOptions).map(option => option.value);
+        formData[fieldName] = selectedValues;
+      }
+    });
   }
 
   /**

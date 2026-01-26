@@ -369,6 +369,23 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
             context.actorEquipment = this.item.actor.items.filter(i => i.type === "equipment");
         }
 
+        // For equipment items, calculate if effects are active based on placement requirements
+        if (this.item.type === "equipment") {
+            const requiredPlacement = this.item.system.requiredPlacement;
+
+            // Only show status if there's a required placement
+            if (requiredPlacement) {
+                // Normalize placement values for comparison (hyphens to underscores)
+                const currentPlacement = this.item.system.placement?.replace(/-/g, "_") || "";
+                context.effectsActive = currentPlacement === requiredPlacement;
+                context.showPlacementStatus = true;
+            } else {
+                // No required placement means effects are always active
+                context.effectsActive = true;
+                context.showPlacementStatus = false;
+            }
+        }
+
         return context;
     }
 
@@ -439,8 +456,9 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
                 const value = formData[key];
 
                 // Ensure we have an object at this index
-                while (effects.length <= index) {
-                    effects.push({ id: foundry.utils.randomID(), type: "characterTag", value: "" });
+                // IMPORTANT: Don't create placeholder objects here - wait until we know the index is valid
+                if (!effects[index]) {
+                    effects[index] = {};
                 }
 
                 // Update the specific field
@@ -456,7 +474,26 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
             return this.item.system.sideEffects || [];
         }
 
-        return effects;
+        // Filter out any undefined/null slots (in case of gaps in indices) and validate
+        const validEffects = effects.filter(effect => {
+            // Must have an object with at least type and value
+            return effect && typeof effect === "object" && effect.type;
+        }).map(effect => {
+            // Ensure ID exists - preserve existing or generate new one if missing
+            if (!effect.id) {
+                effect.id = foundry.utils.randomID();
+            }
+            // Ensure required fields have defaults
+            return {
+                id: effect.id,
+                type: effect.type || "characterTag",
+                value: effect.value !== undefined ? effect.value : "",
+                // Preserve tier if it exists (for track items)
+                ...(effect.tier !== undefined && { tier: parseInt(effect.tier) || 1 })
+            };
+        });
+
+        return validEffects;
     }
 
     /**

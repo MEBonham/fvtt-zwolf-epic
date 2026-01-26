@@ -110,18 +110,40 @@
                   </optgroup>
                 </select>
 
-              {{else if (or (eq this.type 'speedProgression') (eq this.type 'toughnessTNProgression') (eq this.type 'destinyTNProgression'))}}
-                <!-- Dropdown for progressions -->
+              {{else if (eq this.type 'speedProgression')}}
+                <!-- Dropdown for speed progression (no "None" - if no progression, don't add effect) -->
                 <select name="{{this.pathPrefix}}.value" data-dtype="String">
-                  <option value="" {{selected '' this.value}}>
-                    {{localize 'ZWOLF.None'}}
-                  </option>
                   <option value="mediocre" {{selected 'mediocre' this.value}}>
                     {{localize 'ZWOLF.Mediocre'}}
                   </option>
                   <option value="moderate" {{selected 'moderate' this.value}}>
                     {{localize 'ZWOLF.Moderate'}}
                   </option>
+                  <option value="specialty" {{selected 'specialty' this.value}}>
+                    {{localize 'ZWOLF.Specialty'}}
+                  </option>
+                  <option value="awesome" {{selected 'awesome' this.value}}>
+                    {{localize 'ZWOLF.Awesome'}}
+                  </option>
+                </select>
+
+              {{else if (eq this.type 'toughnessTNProgression')}}
+                <!-- Dropdown for Toughness TN (defaults to Mediocre Bonus, so only Moderate/Specialty/Awesome) -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="moderate" {{selected 'moderate' this.value}}>
+                    {{localize 'ZWOLF.Moderate'}}
+                  </option>
+                  <option value="specialty" {{selected 'specialty' this.value}}>
+                    {{localize 'ZWOLF.Specialty'}}
+                  </option>
+                  <option value="awesome" {{selected 'awesome' this.value}}>
+                    {{localize 'ZWOLF.Awesome'}}
+                  </option>
+                </select>
+
+              {{else if (eq this.type 'destinyTNProgression')}}
+                <!-- Dropdown for Destiny TN (defaults to Moderate, so only Specialty/Awesome) -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
                   <option value="specialty" {{selected 'specialty' this.value}}>
                     {{localize 'ZWOLF.Specialty'}}
                   </option>

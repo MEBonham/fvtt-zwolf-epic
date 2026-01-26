@@ -1,4 +1,17 @@
 {
+    "TYPES": {
+        "Item": {
+            "ancestry": "Ancestry",
+            "fundament": "Fundament",
+            "equipment": "Equipment",
+            "knack": "Knack",
+            "track": "Track",
+            "talent": "Talent",
+            "attunement": "Attunement",
+            "commodity": "Commodity",
+            "universal": "Universal"
+        }
+    },
     "ZWOLF": {
         "Actor": {
             "Character": "Character",
