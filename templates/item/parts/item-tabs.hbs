@@ -1,0 +1,40 @@
+{{!-- templates/item/parts/item-tabs.hbs --}}
+<nav class="sheet-tabs tabs" data-group="primary" data-part-id="tabs">
+    {{!-- Summary tab (always visible for all types) --}}
+    <a class="item {{#if (eq currentTab 'summary')}}active{{/if}}"
+       data-group="primary"
+       data-tab="summary"
+       data-action="changeTab">
+        {{localize 'ZWOLF.Summary'}}
+    </a>
+
+    {{!-- Abilities tab (for types with granted abilities) --}}
+    {{#if showAbilitiesTab}}
+        <a class="item {{#if (eq currentTab 'abilities')}}active{{/if}}"
+           data-group="primary"
+           data-tab="abilities"
+           data-action="changeTab">
+            {{localize 'ZWOLF.GrantedAbilities'}}
+        </a>
+    {{/if}}
+
+    {{!-- Effects tab (for types with side effects or character tags) --}}
+    {{#if showEffectsTab}}
+        <a class="item {{#if (eq currentTab 'effects')}}active{{/if}}"
+           data-group="primary"
+           data-tab="effects"
+           data-action="changeTab">
+            {{localize 'ZWOLF.Effects'}}
+        </a>
+    {{/if}}
+
+    {{!-- Tiers tab (track only) --}}
+    {{#if (eq itemType "track")}}
+        <a class="item {{#if (eq currentTab 'tiers')}}active{{/if}}"
+           data-group="primary"
+           data-tab="tiers"
+           data-action="changeTab">
+            {{localize 'ZWOLF.Tiers'}}
+        </a>
+    {{/if}}
+</nav>

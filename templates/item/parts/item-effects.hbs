@@ -1,0 +1,49 @@
+{{!-- templates/item/parts/item-effects.hbs --}}
+<section class="tab effects" data-tab="effects" data-part-id="tab-effects">
+    <div class="effects-container">
+
+        {{#if (eq itemType "track")}}
+            {{!-- Track items: Show flat side effects list with tier dropdowns --}}
+            <div class="track-side-effects">
+                <h3><i class="fas fa-cogs"></i> {{localize 'ZWOLF.SideEffects'}}</h3>
+                <p class="section-description">{{localize 'ZWOLF.TrackSideEffectsDescription'}}</p>
+
+                {{> side-effects-form
+                    sideEffectsArray=sideEffectsArray
+                    itemType=itemType
+                    config=config}}
+            </div>
+
+        {{else}}
+            {{!-- Non-track items: Show single side effects form --}}
+            <div class="side-effects-section">
+                <h3><i class="fas fa-cogs"></i> {{localize 'ZWOLF.SideEffects'}}</h3>
+                <p class="section-description">{{localize 'ZWOLF.SideEffectsDescription'}}</p>
+
+                {{> side-effects-form
+                    sideEffectsArray=sideEffectsArray
+                    itemType=itemType
+                    config=config}}
+            </div>
+
+            {{!-- Equipment-specific effect notes --}}
+            {{#if (eq itemType "equipment")}}
+                <div class="equipment-effect-notes">
+                    <h4><i class="fas fa-hammer"></i> {{localize 'ZWOLF.EquipmentEffects'}}</h4>
+                    <p class="notes">{{localize 'ZWOLF.EquipmentEffectNotes'}}</p>
+
+                    {{#if system.equipped}}
+                        <div class="equipped-status active">
+                            <i class="fas fa-check-circle"></i> {{localize 'ZWOLF.EquippedActive'}}
+                        </div>
+                    {{else}}
+                        <div class="equipped-status inactive">
+                            <i class="fas fa-times-circle"></i> {{localize 'ZWOLF.EquippedInactive'}}
+                        </div>
+                    {{/if}}
+                </div>
+            {{/if}}
+        {{/if}}
+
+    </div>
+</section>

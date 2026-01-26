@@ -30,7 +30,7 @@ export default class ZWolfItemSheet extends foundry.applications.api.HandlebarsA
 
   static DEFAULT_OPTIONS = {
     classes: ["zwolf-epic", "sheet", "item"],
-    position: { width: 770, height: 600 },
+    position: { width: 900, height: 500 },
     window: { resizable: true, minimizable: true },
     form: { submitOnChange: true, closeOnSubmit: false }
   };

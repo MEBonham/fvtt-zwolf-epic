@@ -1,24 +1,14 @@
+{{!-- templates/item/item-sheet.hbs --}}
 <form class="zwolf-epic sheet item" autocomplete="off">
-    <header class="sheet-header">
-        <img class="profile-img" src="{{item.img}}" data-action="editImage" alt="{{item.name}}" />
-        <div class="header-fields">
-            <h1 class="item-name">
-                <input name="name" type="text" value="{{item.name}}" placeholder="Name" />
-            </h1>
-        </div>
-    </header>
+    {{> header}}
+
+    {{> tabs}}
 
     <section class="sheet-body">
-        <div class="item-properties">
-            <div class="property">
-                <label>Quantity</label>
-                <input type="number" name="system.quantity" value="{{system.quantity}}" min="0" />
-            </div>
-        </div>
-
-        <div class="description">
-            <label>Description</label>
-            {{formInput (formField fields.description value=system.description)}}
-        </div>
+        {{> tab-summary}}
+        {{> tab-abilities}}
+        {{> tab-effects}}
+        {{> tab-tiers}}
     </section>
 </form>
+

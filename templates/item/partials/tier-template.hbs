@@ -1,50 +1,14 @@
+{{!-- templates/item/partials/tier-template.hbs --}}
+
 <!-- Talent Menu Section -->
 <div class="talent-menu">
   <div class="form-group">
-    <label>Talent Menu</label>
-    <div class="editor-container">
-      {{editor tierData.talentMenu target=(concat "system.tiers.tier" tierNumber ".talentMenu") button=true owner=../owner editable=../editable}}
-    </div>
-    <p class="notes">List talents available at this tier</p>
+    <label>{{localize 'ZWOLF.TalentMenu'}}</label>
+    {{> rich-editor
+        value=tierData.talentMenu
+        target=(concat "system.tiers.tier" tierNumber ".talentMenu")
+        editable=editable
+        owner=owner}}
+    <p class="notes">{{localize 'ZWOLF.TalentMenuHint'}}</p>
   </div>
-</div>
-
-<!-- Character Tags -->
-<div class="form-group">
-  <label>Character Tags</label>
-  <input type="text" name="system.tiers.tier{{tierNumber}}.characterTags" value="{{join tierData.characterTags}}" placeholder="Tag1, Tag2"/>
-  <p class="notes">Tags added to characters at this tier</p>
-</div>
-
-<!-- Granted Abilities Section -->
-<div class="tier-granted-abilities" data-tier="{{tierNumber}}">
-  <div class="abilities-header">
-    <h4><i class="fas fa-magic"></i> Granted Abilities</h4>
-    <a class="ability-control" data-action="add-tier-ability" data-tier="{{tierNumber}}" title="Add Ability">
-      <i class="fas fa-plus"></i>
-    </a>
-  </div>
-  
-  <div class="abilities-list">
-    {{#each tierData.grantedAbilitiesArray as |ability|}}
-    {{> ability-item 
-        ability=ability 
-        nameTarget=ability.nameTarget
-        tagsTarget=ability.tagsTarget
-        typeTarget=ability.typeTarget
-        descriptionTarget=ability.descriptionTarget
-        deleteAction=ability.deleteAction
-        tierNumber=ability.tierNumber
-        editable=../editable}}
-    {{/each}}
-  </div>
-</div>
-
-<!-- Side Effects Section -->
-<div class="tier-side-effects">
-  <h4><i class="fas fa-cog"></i> Side Effects</h4>
-  {{> side-effects-form
-      sideEffects=tierData.sideEffects
-      pathPrefix=(concat "system.tiers.tier" tierNumber ".sideEffects")
-      config=../config}}
 </div>

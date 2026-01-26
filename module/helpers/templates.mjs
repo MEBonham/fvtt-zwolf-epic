@@ -10,10 +10,11 @@ export async function preloadTemplates() {
 
     // Only actual Handlebars partials need to be registered
     const partials = [
-        // Item partials
+        // Item partials (NOT parts - parts are loaded via PARTS config)
         "systems/zwolf-epic/templates/item/partials/ability-item.hbs",
         "systems/zwolf-epic/templates/item/partials/form-field.hbs",
         "systems/zwolf-epic/templates/item/partials/progression-select.hbs",
+        "systems/zwolf-epic/templates/item/partials/rich-editor.hbs",
         "systems/zwolf-epic/templates/item/partials/side-effects-form.hbs",
         "systems/zwolf-epic/templates/item/partials/tier-template.hbs",
 
@@ -33,10 +34,14 @@ export async function preloadTemplates() {
     const templateResults = await foundry.applications.handlebars.loadTemplates(templates);
     const partialResults = await foundry.applications.handlebars.loadTemplates(partials);
 
+    // Define custom names for partials if needed
+    const customPartialNames = {};
+
     // Register partials in Handlebars cache
     for (let i = 0; i < partials.length; i++) {
         const fullPath = partials[i];
-        const partialName = fullPath.split("/").pop().replace(".hbs", "");
+        // Use custom name if defined, otherwise use filename
+        const partialName = customPartialNames[fullPath] || fullPath.split("/").pop().replace(".hbs", "");
         let template = partialResults[i];
 
         if (template) {

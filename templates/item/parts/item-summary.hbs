@@ -1,0 +1,320 @@
+{{!-- templates/item/parts/item-summary.hbs --}}
+<div class="tab summary-tab" data-group="primary" data-tab="summary" data-part-id="tab-summary">
+
+    {{!-- ========== FUNDAMENT ========== --}}
+    {{#if (eq itemType "fundament")}}
+        <div class="fundament-summary">
+            {{> form-field
+                label="ZWOLF.BuildPoints"
+                type="number"
+                name="system.buildPoints"
+                value=system.buildPoints
+                min=0}}
+
+            {{> form-field
+                label="ZWOLF.KnacksProvided"
+                type="number"
+                name="system.knacksProvided"
+                value=system.knacksProvided
+                min=0}}
+
+            {{> form-field
+                label="ZWOLF.RequiredKnackTag"
+                type="text"
+                name="system.requiredKnackTag"
+                value=system.requiredKnackTag
+                placeholder="ZWOLF.RequiredKnackTagPlaceholder"
+                fullWidth=true}}
+        </div>
+
+    {{!-- ========== KNACK ========== --}}
+    {{else if (eq itemType "knack")}}
+        <div class="knack-summary">
+            {{> form-field
+                label="ZWOLF.Required"
+                type="editor"
+                name="system.required"
+                value=system.required
+                owner=owner
+                editable=editable
+}}
+        </div>
+
+    {{!-- ========== EQUIPMENT ========== --}}
+    {{else if (eq itemType "equipment")}}
+        <div class="equipment-summary">
+            <!-- Physical Properties -->
+            <div class="form-group">
+                <div class="form-fields">
+                    {{> form-field
+                        label="ZWOLF.Quantity"
+                        type="select"
+                        name="system.quantity"
+                        value=system.quantity
+                        stacked=true
+                        options=(array
+                            (hash value="1" label="1")
+                            (hash value="many" label="ZWOLF.Many"))}}
+
+                    {{> form-field
+                        label="ZWOLF.Price"
+                        type="number"
+                        name="system.price"
+                        value=system.price
+                        min=0
+                        step=0.01
+                        stacked=true}}
+
+                    {{> form-field
+                        label="ZWOLF.Bulk"
+                        type="number"
+                        name="system.bulk"
+                        value=system.bulk
+                        min=0
+                        step=0.1
+                        stacked=true}}
+
+                    {{> form-field
+                        label="ZWOLF.Structure"
+                        type="number"
+                        name="system.structure"
+                        value=system.structure
+                        min=0
+                        stacked=true}}
+                </div>
+            </div>
+
+            <!-- Placement -->
+            {{> form-field
+                label="ZWOLF.Placement"
+                type="select"
+                name="system.placement"
+                value=system.placement
+                disabled=(not item.actor)
+                options=(array
+                    (hash value="stowed" label="ZWOLF.Stowed")
+                    (hash value="wielded" label="ZWOLF.Wielded")
+                    (hash value="worn" label="ZWOLF.Worn")
+                    (hash value="readily-available" label="ZWOLF.ReadilyAvailable")
+                    (hash value="not-carried" label="ZWOLF.NotCarried"))}}
+
+            <!-- Required Placement -->
+            <div class="form-group">
+                <label>{{localize 'ZWOLF.RequiredPlacement'}}</label>
+                <select name="system.requiredPlacement" data-dtype="String">
+                    <option value="" {{selected '' system.requiredPlacement}}>
+                        {{localize 'ZWOLF.NoRequirement'}}
+                    </option>
+                    <option value="wielded" {{selected 'wielded' system.requiredPlacement}}>
+                        {{localize 'ZWOLF.Wielded'}}
+                    </option>
+                    <option value="worn" {{selected 'worn' system.requiredPlacement}}>
+                        {{localize 'ZWOLF.Worn'}}
+                    </option>
+                    <option value="readily_available" {{selected 'readily_available' system.requiredPlacement}}>
+                        {{localize 'ZWOLF.ReadilyAvailable'}}
+                    </option>
+                    <option value="stowed" {{selected 'stowed' system.requiredPlacement}}>
+                        {{localize 'ZWOLF.Stowed'}}
+                    </option>
+                    <option value="not_carried" {{selected 'not_carried' system.requiredPlacement}}>
+                        {{localize 'ZWOLF.NotCarried'}}
+                    </option>
+                </select>
+
+                {{#if system.requiredPlacement}}
+                    <div class="placement-warning-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>{{localize 'ZWOLF.PlacementRequirementActive'}}:</strong>
+                        {{localize 'ZWOLF.PlacementRequirementActiveDescription' placement=system.requiredPlacement}}
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+
+    {{!-- ========== COMMODITY ========== --}}
+    {{else if (eq itemType "commodity")}}
+        <div class="commodity-summary">
+            <!-- Commodity Type -->>
+            {{> form-field
+                label="ZWOLF.CommodityType"
+                type="select"
+                name="system.commodityType"
+                value=system.commodityType
+                options=(array
+                    (hash value="sundries" label="ZWOLF.Sundries")
+                    (hash value="ritualComponents" label="ZWOLF.RitualComponents"))}}
+
+            <!-- Physical Properties -->>
+            <div class="form-group">
+                <div class="form-fields">
+                    {{> form-field
+                        label="ZWOLF.Price"
+                        type="number"
+                        name="system.price"
+                        value=system.price
+                        min=0
+                        step=0.01
+                        stacked=true}}
+
+                    {{> form-field
+                        label="ZWOLF.Bulk"
+                        type="number"
+                        name="system.bulk"
+                        value=system.bulk
+                        min=0
+                        step=0.1
+                        stacked=true}}
+                </div>
+            </div>
+
+            <!-- Placement -->>
+            {{> form-field
+                label="ZWOLF.Placement"
+                type="select"
+                name="system.placement"
+                value=system.placement
+                disabled=(not item.actor)
+                options=(array
+                    (hash value="stowed" label="ZWOLF.Stowed")
+                    (hash value="wielded" label="ZWOLF.Wielded")
+                    (hash value="worn" label="ZWOLF.Worn")
+                    (hash value="readily_available" label="ZWOLF.ReadilyAvailable")
+                    (hash value="not_carried" label="ZWOLF.NotCarried"))}}
+        </div>
+
+    {{!-- ========== TALENT ========== --}}
+    {{else if (eq itemType "talent")}}
+        <div class="talent-summary">
+            {{#if system.required}}
+                {{> form-field
+                    label="ZWOLF.KnacksProvided"
+                    type="number"
+                    name="system.knacksProvided"
+                    value=system.knacksProvided
+                    min=0
+                    readonly=true}}
+            {{/if}}
+
+            {{> form-field
+                label="ZWOLF.Required"
+                type="editor"
+                name="system.required"
+                value=system.required
+                owner=owner
+                editable=editable
+}}
+        </div>
+
+    {{!-- ========== ANCESTRY ========== --}}
+    {{else if (eq itemType "ancestry")}}
+        <div class="ancestry-summary">
+            {{> form-field
+                label="ZWOLF.BuildPoints"
+                type="number"
+                name="system.buildPoints"
+                value=system.buildPoints
+                min=0}}
+
+            {{> form-field
+                label="ZWOLF.SizeOptions"
+                type="multiselect"
+                name="system.sizeOptions"
+                value=system.sizeOptions
+                size=9
+                options=(array
+                    (hash value="diminutive" label="ZWOLF.Diminutive")
+                    (hash value="tiny" label="ZWOLF.Tiny")
+                    (hash value="small" label="ZWOLF.Small")
+                    (hash value="medium" label="ZWOLF.Medium")
+                    (hash value="large" label="ZWOLF.Large")
+                    (hash value="huge" label="ZWOLF.Huge")
+                    (hash value="gargantuan" label="ZWOLF.Gargantuan")
+                    (hash value="colossal" label="ZWOLF.Colossal")
+                    (hash value="titanic" label="ZWOLF.Titanic"))}}
+
+            {{> form-field
+                label="ZWOLF.KnacksProvided"
+                type="number"
+                name="system.knacksProvided"
+                value=system.knacksProvided
+                min=0}}
+
+            {{> form-field
+                label="ZWOLF.Required"
+                type="editor"
+                name="system.required"
+                value=system.required
+                owner=owner
+                editable=editable
+}}
+        </div>
+
+    {{!-- ========== TRACK ========== --}}
+    {{else if (eq itemType "track")}}
+        <div class="track-summary">
+            {{> form-field
+                label="ZWOLF.Required"
+                type="editor"
+                name="system.required"
+                value=system.required
+                owner=owner
+                editable=editable
+}}
+        </div>
+
+    {{!-- ========== ATTUNEMENT ========== --}}
+    {{else if (eq itemType "attunement")}}
+        <div class="attunement-summary">
+            {{> form-field
+                label="ZWOLF.Tier"
+                type="select"
+                name="system.tier"
+                value=system.tier
+                options=(array
+                    (hash value=1 label="ZWOLF.Tier1")
+                    (hash value=2 label="ZWOLF.Tier2")
+                    (hash value=3 label="ZWOLF.Tier3")
+                    (hash value=4 label="ZWOLF.Tier4"))}}
+
+            {{#if item.actor}}
+                <!-- Equipment Selection Dropdown (only when on an actor) -->>
+                <div class="form-group">
+                    <label>{{localize 'ZWOLF.AppliesTo'}}</label>
+                    <select name="system.appliesTo" data-dtype="String">
+                        <option value="">{{localize 'ZWOLF.SelectEquipment'}}</option>
+                        {{#each actorEquipment as |equip|}}
+                            <option value="{{equip.id}}" {{selected equip.id ../system.appliesTo}}>
+                                {{equip.name}}
+                            </option>
+                        {{/each}}
+                    </select>
+                </div>
+            {{else}}
+                <!-- Text field when not on an actor -->>
+                {{> form-field
+                    label="ZWOLF.AppliesTo"
+                    type="text"
+                    name="system.appliesTo"
+                    value=system.appliesTo
+                    placeholder="ZWOLF.AppliesToPlaceholder"}}
+            {{/if}}
+
+            {{> form-field
+                label="ZWOLF.Required"
+                type="editor"
+                name="system.required"
+                value=system.required
+                owner=owner
+                editable=editable
+}}
+        </div>
+
+    {{!-- ========== UNIVERSAL (and default fallback) ========== --}}
+    {{else}}
+        <div class="universal-summary">
+            <!-- No fields for universal items -->
+        </div>
+    {{/if}}
+
+</div>

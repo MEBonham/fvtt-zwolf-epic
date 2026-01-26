@@ -20,7 +20,8 @@
     "styles": [
         "styles/variables.css",
         "styles/zwolf-epic.css",
-        "styles/actor-sheets.css"
+        "styles/actor-sheets.css",
+        "styles/item-sheets.css"
     ],
     "languages": [
         {

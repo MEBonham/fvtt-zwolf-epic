@@ -1,0 +1,39 @@
+{{!-- templates/item/partials/rich-editor.hbs --}}
+{{!--
+  Custom rich text editor with Edit/Save button workflow
+
+  Parameters:
+  - value: Current HTML content
+  - target: Data path (e.g., "system.description")
+  - editable: Whether user can edit
+  - owner: Whether user is owner
+  - placeholder: Optional placeholder text when empty
+  - cssClass: Optional additional CSS class
+--}}
+
+<div class="editor {{#if cssClass}}{{cssClass}}{{/if}}">
+  {{#if editable}}
+    {{!-- View mode: Enriched content with Edit button --}}
+    <div class="editor-content" data-edit="{{target}}">
+      {{#if value}}
+        {{{value}}}
+      {{else}}
+        <em>{{#if placeholder}}{{localize placeholder}}{{else}}{{localize 'ZWOLF.NoDescription'}}{{/if}}</em>
+      {{/if}}
+    </div>
+    <div class="editor-toolbar">
+      <button type="button" class="editor-edit" title="{{localize 'ZWOLF.Edit'}}">
+        <i class="fas fa-edit"></i> {{localize 'ZWOLF.Edit'}}
+      </button>
+    </div>
+  {{else}}
+    {{!-- Non-editable: Just show content --}}
+    <div class="editor-content-readonly">
+      {{#if value}}
+        {{{value}}}
+      {{else}}
+        <em>{{#if placeholder}}{{localize placeholder}}{{else}}{{localize 'ZWOLF.NoDescription'}}{{/if}}</em>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

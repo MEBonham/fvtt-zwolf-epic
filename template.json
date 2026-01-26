@@ -106,22 +106,10 @@
                 "grantedAbilities": {}
             },
             "sideEffectsCapable": {
-                "sideEffects": {
-                    "speedProgression": "",
-                    "toughnessTNProgression": "",
-                    "destinyTNProgression": "",
-                    "nightsightRadius": null,
-                    "darkvisionRadius": null,
-                    "sizeSteps": 0,
-                    "maxBulkBoost": 0,
-                    "grantedProficiency": "",
-                    "resistances": [],
-                    "vulnerabilities": []
-                }
+                "sideEffects": []
             },
             "tagged": {
                 "tags": "",
-                "characterTags": "",
                 "required": ""
             }
         },
@@ -137,8 +125,8 @@
             "buildPoints": 15,
             "knacksProvided": 4,
             "requiredKnackTag": "",
-            "vitalityKey": "",
-            "coastKey": ""
+            "vitalityFunction": "standard",
+            "coastFunction": "standard"
         },
         "equipment": {
             "templates": ["base", "sideEffectsCapable"],
@@ -148,13 +136,7 @@
             "requiredPlacement": "",
             "price": 0,
             "bulk": 0,
-            "structure": 10,
-            "attunements": {
-                "tier1": { "description": "" },
-                "tier2": { "description": "" },
-                "tier3": { "description": "" },
-                "tier4": { "description": "" }
-            }
+            "structure": 10
         },
         "knack": {
             "templates": ["base", "sideEffectsCapable", "tagged"]
@@ -163,94 +145,22 @@
             "templates": ["base", "sideEffectsCapable", "tagged"]
         },
         "track": {
-            "templates": ["base", "sideEffectsCapable"],
-            "tags": "",
-            "required": "",
+            "templates": ["base", "sideEffectsCapable", "tagged"],
             "tiers": {
                 "tier1": {
-                    "talentMenu": "",
-                    "grantedAbilities": {},
-                    "characterTags": "",
-                    "sideEffects": {
-                        "speedProgression": "",
-                        "toughnessTNProgression": "",
-                        "destinyTNProgression": "",
-                        "nightsightRadius": null,
-                        "darkvisionRadius": null,
-                        "sizeSteps": 0,
-                        "knacksProvided": 0,
-                        "grantedProficiency": "",
-                        "resistances": [],
-                        "vulnerabilities": []
-                    }
+                    "talentMenu": ""
                 },
                 "tier2": {
-                    "talentMenu": "",
-                    "grantedAbilities": {},
-                    "characterTags": "",
-                    "sideEffects": {
-                        "speedProgression": "",
-                        "toughnessTNProgression": "",
-                        "destinyTNProgression": "",
-                        "nightsightRadius": null,
-                        "darkvisionRadius": null,
-                        "sizeSteps": 0,
-                        "knacksProvided": 0,
-                        "grantedProficiency": "",
-                        "resistances": [],
-                        "vulnerabilities": []
-                    }
+                    "talentMenu": ""
                 },
                 "tier3": {
-                    "talentMenu": "",
-                    "grantedAbilities": {},
-                    "characterTags": "",
-                    "sideEffects": {
-                        "speedProgression": "",
-                        "toughnessTNProgression": "",
-                        "destinyTNProgression": "",
-                        "nightsightRadius": null,
-                        "darkvisionRadius": null,
-                        "sizeSteps": 0,
-                        "knacksProvided": 0,
-                        "grantedProficiency": "",
-                        "resistances": [],
-                        "vulnerabilities": []
-                    }
+                    "talentMenu": ""
                 },
                 "tier4": {
-                    "talentMenu": "",
-                    "grantedAbilities": {},
-                    "characterTags": "",
-                    "sideEffects": {
-                        "speedProgression": "",
-                        "toughnessTNProgression": "",
-                        "destinyTNProgression": "",
-                        "nightsightRadius": null,
-                        "darkvisionRadius": null,
-                        "sizeSteps": 0,
-                        "knacksProvided": 0,
-                        "grantedProficiency": "",
-                        "resistances": [],
-                        "vulnerabilities": []
-                    }
+                    "talentMenu": ""
                 },
                 "tier5": {
-                    "talentMenu": "",
-                    "grantedAbilities": {},
-                    "characterTags": "",
-                    "sideEffects": {
-                        "speedProgression": "",
-                        "toughnessTNProgression": "",
-                        "destinyTNProgression": "",
-                        "nightsightRadius": null,
-                        "darkvisionRadius": null,
-                        "sizeSteps": 0,
-                        "knacksProvided": 0,
-                        "grantedProficiency": "",
-                        "resistances": [],
-                        "vulnerabilities": []
-                    }
+                    "talentMenu": ""
                 }
             }
         },

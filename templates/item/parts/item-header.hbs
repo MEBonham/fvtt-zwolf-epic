@@ -1,0 +1,76 @@
+{{!-- templates/item/parts/item-header.hbs --}}
+<section class="sheet-header-wrapper" data-part-id="header">
+    <header class="sheet-header">
+        <img class="profile-img"
+             src="{{item.img}}"
+             data-action="editImage"
+             alt="{{item.name}}"
+             title="{{item.name}}"
+             height="64"
+             width="64"/>
+
+        <div class="header-fields">
+            <h1 class="charname">
+                <input name="name"
+                       type="text"
+                       value="{{item.name}}"
+                       placeholder="{{localize 'ZWOLF.ItemName'}}"/>
+            </h1>
+
+            <div class="item-subtitle">
+                {{localize (concat "ZWOLF.ItemType" (capitalize itemType))}}
+            </div>
+
+            {{!-- Tags field for applicable item types --}}
+            {{#if hasTags}}
+                <div class="header-tags">
+                    <input name="system.tags"
+                           type="text"
+                           value="{{system.tags}}"
+                           placeholder="{{localize 'ZWOLF.TagsPlaceholder'}}"
+                           title="{{localize 'ZWOLF.TagsHint'}}"/>
+                </div>
+            {{/if}}
+
+            {{!-- Formulae fields for fundament items --}}
+            {{#if (eq itemType "fundament")}}
+                <div class="header-formulae">
+                    <div class="header-field">
+                        <label>{{localize 'ZWOLF.VitalityFormula'}}</label>
+                        <select name="system.vitalityFunction">
+                            <option value="standard" {{#if (or (eq system.vitalityFunction "standard") (not system.vitalityFunction))}}selected{{/if}}>
+                                {{localize 'ZWOLF.VitalityStandard'}}
+                            </option>
+                            <option value="hardy" {{#if (eq system.vitalityFunction "hardy")}}selected{{/if}}>
+                                {{localize 'ZWOLF.VitalityHardy'}}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="header-field">
+                        <label>{{localize 'ZWOLF.CoastFormula'}}</label>
+                        <select name="system.coastFunction">
+                            <option value="standard" {{#if (or (eq system.coastFunction "standard") (not system.coastFunction))}}selected{{/if}}>
+                                {{localize 'ZWOLF.CoastStandard'}}
+                            </option>
+                            <option value="cunning" {{#if (eq system.coastFunction "cunning")}}selected{{/if}}>
+                                {{localize 'ZWOLF.CoastCunning'}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            {{/if}}
+
+            {{!-- Source indicator (for items copied from world items) --}}
+            {{#if item.parent}}
+                {{#with (getSourceItem item)}}
+                    <span class="source-indicator"
+                          data-tooltip="{{localize 'ZWOLF.CopyOfWorldItem' name=this.name}}">
+                        <i class="fas fa-link"></i>
+                        <span class="source-name">{{this.name}}</span>
+                    </span>
+                {{/with}}
+            {{/if}}
+        </div>
+    </header>
+</section>

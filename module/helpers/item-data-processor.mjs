@@ -32,9 +32,9 @@ export class ItemDataProcessor {
   }
 
   /**
-   * Ensure granted abilities array has proper structure
+   * Ensure granted abilities object has proper structure
    * @param {Array|Object} abilities - Raw abilities array or object
-   * @returns {Object} - Validated abilities as object (not array)
+   * @returns {Object} - Validated abilities as object with random ID keys
    */
   static validateGrantedAbilities(abilities) {
     // Always return an object, not an array - this matches your data structure
@@ -48,26 +48,26 @@ export class ItemDataProcessor {
             name: ability.name || "",
             tags: typeof ability.tags === 'string' ? ability.tags : "",
             type: ability.type || "passive",
-            description: ability.description || ""
+            description: ability.description || "",
+            tier: typeof ability.tier === 'number' ? ability.tier : 0
           };
         }
       });
     } else if (abilities && typeof abilities === 'object') {
       // Clean up object, preserving existing structure
       Object.keys(abilities).forEach(key => {
-        const index = parseInt(key);
-        if (!isNaN(index) && abilities[key]) {  // Only include valid indices with data
+        if (abilities[key]) {  // Only include entries with data
           result[key] = {
             name: abilities[key].name || "",
             tags: typeof abilities[key].tags === 'string' ? abilities[key].tags : "",
             type: abilities[key].type || "passive",
-            description: abilities[key].description || ""
+            description: abilities[key].description || "",
+            tier: typeof abilities[key].tier === 'number' ? abilities[key].tier : 0
           };
         }
       });
     }
 
-    // Don't auto-fill missing indices - let deletions stay deleted
     return result;
   }
 
@@ -114,60 +114,6 @@ export class ItemDataProcessor {
     // If we had any ability updates, replace with the complete updated array
     if (hasAbilityUpdates) {
       processedData['system.grantedAbilities'] = updatedAbilities;
-    }
-
-    return processedData;
-  }
-
-  /**
-   * Process track-specific tier abilities
-   * @param {Object} formData - Form data to process
-   * @param {Object} currentTierData - Current tier data from item
-   * @returns {Object} - Processed form data
-   */
-  static preserveTrackTierAbilities(formData, currentTierData) {
-    const processedData = foundry.utils.duplicate(formData);
-
-    // Handle each tier (1-5)
-    for (let tierNum = 1; tierNum <= 5; tierNum++) {
-      const currentTierAbilities = foundry.utils.duplicate(
-        foundry.utils.getProperty(currentTierData, `tiers.tier${tierNum}.grantedAbilities`) || []
-      );
-
-      const updatedTierAbilities = foundry.utils.duplicate(currentTierAbilities);
-      let hasTierUpdates = false;
-
-      // Process form data for this tier
-      Object.keys(processedData).forEach(key => {
-        const tierAbilityMatch = key.match(new RegExp(`^system\\.tiers\\.tier${tierNum}\\.grantedAbilities\\.(\\d+)\\.(.+)$`));
-        if (tierAbilityMatch) {
-          const index = parseInt(tierAbilityMatch[1]);
-          const field = tierAbilityMatch[2];
-          const value = processedData[key];
-
-          // Ensure we have an ability object at this index
-          while (updatedTierAbilities.length <= index) {
-            updatedTierAbilities.push({
-              name: "",
-              tags: "",
-              type: "passive",
-              description: ""
-            });
-          }
-
-          // Update the specific field
-          updatedTierAbilities[index][field] = value;
-          hasTierUpdates = true;
-
-          // Remove the individual field update from form data
-          delete processedData[key];
-        }
-      });
-
-      // If we had any tier ability updates, replace with the complete updated array
-      if (hasTierUpdates) {
-        processedData[`system.tiers.tier${tierNum}.grantedAbilities`] = updatedTierAbilities;
-      }
     }
 
     return processedData;
