@@ -101,6 +101,9 @@ export class EditorSaveHandler {
             const parent = editorContent.parentNode;
             parent.insertBefore(editorContainer, editorContent);
 
+            // Debug: log the content being loaded
+            console.log("Z-Wolf Epic | Editor loading content for", target, ":", content ? content.substring(0, 100) : "(empty)");
+
             // Create ProseMirror editor
             await foundry.applications.ux.TextEditor.create({
                 target: editorElement,
@@ -108,13 +111,30 @@ export class EditorSaveHandler {
                 height: 150
             });
 
-            // Wait for editor to initialize
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // Set initial content after editor is fully initialized
+            if (content && content.trim() !== "") {
+                // Wait for ProseMirror to fully initialize
+                await new Promise(resolve => setTimeout(resolve, 100));
 
-            // Set content in the ProseMirror editor
-            const prosemirrorDiv = editorElement.querySelector(".ProseMirror");
-            if (prosemirrorDiv && content && content.trim() !== "") {
-                prosemirrorDiv.innerHTML = content;
+                // Search in multiple locations - the editor structure may vary
+                let prosemirrorDiv = editorElement.querySelector(".ProseMirror");
+                if (!prosemirrorDiv) {
+                    prosemirrorDiv = editorContainer.querySelector(".ProseMirror");
+                }
+                if (!prosemirrorDiv) {
+                    // Try finding it as a sibling or in the parent
+                    prosemirrorDiv = editorElement.parentElement?.querySelector(".ProseMirror");
+                }
+
+                if (prosemirrorDiv) {
+                    prosemirrorDiv.innerHTML = content;
+                    console.log("Z-Wolf Epic | Content set in editor");
+                } else {
+                    // Debug: log the actual DOM structure
+                    console.warn("Z-Wolf Epic | Could not find .ProseMirror element");
+                    console.log("Z-Wolf Epic | editorElement innerHTML:", editorElement.innerHTML.substring(0, 500));
+                    console.log("Z-Wolf Epic | editorContainer innerHTML:", editorContainer.innerHTML.substring(0, 500));
+                }
             }
 
             // Save handler

@@ -125,6 +125,24 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             challenge: calculateTn("specialty", level, progressionOnlyLevel)
         };
 
+        // Calculate slots (Phase 8)
+        if (context.isEidolon) {
+            // Eidolons use special slot calculations
+            this._calculateEidolonSlots(context);
+        } else if (!context.isSpawn && !context.isMook) {
+            // Regular character slot calculations
+            this._calculateSlots(context);
+        }
+
+        // Calculate build points (Phase 9)
+        if (context.isCharacter) {
+            if (context.isEidolon) {
+                this._calculateEidolonBuildPoints(context);
+            } else {
+                this._calculateBuildPoints(context);
+            }
+        }
+
         return context;
     }
 
@@ -484,6 +502,618 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         }
 
         return unlocked;
+    }
+
+    // ========================================
+    // SLOTS CALCULATION (PHASE 8)
+    // ========================================
+
+    /**
+     * Calculate all slots for regular characters (not eidolons)
+     * @param {Object} context - Sheet context
+     * @private
+     */
+    _calculateSlots(context) {
+        const totalKnacksProvided = this._calculateTotalKnacksProvided();
+        context.knackSlots = this._prepareSlots("knack", totalKnacksProvided);
+
+        const trackSlotCount = Math.min(4, context.system.level || 0);
+        context.trackSlots = this._prepareSlots("track", trackSlotCount);
+
+        context.talentSlots = this._prepareSlots("talent", context.system.level || 0);
+    }
+
+    /**
+     * Calculate total knacks provided from ancestry, fundament, talents, and track tiers
+     * @returns {number} Total knack slots available
+     * @private
+     */
+    _calculateTotalKnacksProvided() {
+        let totalKnacks = 0;
+
+        // From ancestry
+        if (this.actor.system.ancestryId) {
+            const ancestryItem = this.actor.items.get(this.actor.system.ancestryId);
+            totalKnacks += ancestryItem?.system?.knacksProvided || 0;
+        }
+
+        // From fundament (not for eidolons)
+        if (this.actor.type !== "eidolon" && this.actor.system.fundamentId) {
+            const fundamentItem = this.actor.items.get(this.actor.system.fundamentId);
+            totalKnacks += fundamentItem?.system?.knacksProvided || 0;
+        }
+
+        // From talents
+        const talentItems = this.actor.items.filter(item => item.type === "talent");
+        talentItems.forEach((talent) => {
+            totalKnacks += talent.system?.knacksProvided || 0;
+        });
+
+        // From track tiers
+        const characterLevel = this.actor.system.level || 0;
+        const trackItems = this.actor.items.filter(item => item.type === "track");
+
+        trackItems.forEach(track => {
+            const trackSlotIndex = this._getTrackSlotIndex(track);
+            const unlockedTiers = this._getUnlockedTiers(trackSlotIndex, characterLevel);
+
+            unlockedTiers.forEach(tierNumber => {
+                const tierData = track.system.tiers?.[`tier${tierNumber}`];
+                if (tierData?.sideEffects && Array.isArray(tierData.sideEffects)) {
+                    // Find knacksProvided side effect
+                    const knackEffect = tierData.sideEffects.find(e => e.type === "knacksProvided");
+                    if (knackEffect) {
+                        totalKnacks += parseInt(knackEffect.value) || 0;
+                    }
+                }
+            });
+        });
+
+        return totalKnacks;
+    }
+
+    /**
+     * Prepare slots for a given item type
+     * @param {string} itemType - Type of item (knack, track, talent)
+     * @param {number} slotCount - Number of slots
+     * @returns {Array} Array of slot objects
+     * @private
+     */
+    _prepareSlots(itemType, slotCount) {
+        if (itemType === "talent") {
+            return this._prepareTalentSlots(slotCount);
+        } else if (itemType === "track") {
+            return this._prepareTrackSlots(slotCount);
+        } else {
+            return this._prepareSequentialSlots(itemType, slotCount);
+        }
+    }
+
+    /**
+     * Prepare talent slots with track association
+     * @param {number} slotCount - Total level (one talent per level)
+     * @returns {Array} Talent slots with track associations
+     * @private
+     */
+    _prepareTalentSlots(slotCount) {
+        const slots = [];
+
+        // Get track assignments
+        const trackItems = this.actor.items.filter(item => item.type === "track");
+        const assignedTracks = new Map();
+
+        trackItems.forEach(track => {
+            const slotIndex = this._getTrackSlotIndex(track);
+            if (slotIndex < 4) {
+                assignedTracks.set(slotIndex + 1, track);
+            }
+        });
+
+        // Helper to get track info for a talent slot
+        const getTrackInfo = (talentSlotNumber) => {
+            const modResult = talentSlotNumber % 4;
+            const trackNumber = modResult === 0 ? 4 : modResult;
+            const assignedTrack = assignedTracks.get(trackNumber);
+
+            return {
+                trackNumber: trackNumber,
+                trackName: assignedTrack ? assignedTrack.name : null,
+                hasTrack: !!assignedTrack
+            };
+        };
+
+        // Create all slots
+        for (let i = 0; i < slotCount; i++) {
+            const talentSlotNumber = i + 1;
+            const trackInfo = getTrackInfo(talentSlotNumber);
+
+            slots.push({
+                index: i,
+                item: null,
+                talentNumber: talentSlotNumber,
+                trackNumber: trackInfo.trackNumber,
+                trackName: trackInfo.trackName,
+                hasTrack: trackInfo.hasTrack
+            });
+        }
+
+        // Fill slots with talent items
+        const talentItems = this.actor.items.filter(item => item.type === "talent");
+        talentItems.forEach((talent) => {
+            const slotIndex = talent.getFlag("zwolf-epic", "slotIndex");
+
+            if (slotIndex !== undefined && slotIndex < slotCount && slots[slotIndex] && !slots[slotIndex].item) {
+                slots[slotIndex].item = talent.toObject();
+            } else {
+                // Find first available slot
+                for (let i = 0; i < slotCount; i++) {
+                    if (!slots[i].item) {
+                        slots[i].item = talent.toObject();
+                        talent.setFlag("zwolf-epic", "slotIndex", i);
+                        break;
+                    }
+                }
+            }
+        });
+
+        return slots;
+    }
+
+    /**
+     * Prepare track slots
+     * @param {number} slotCount - Number of track slots (min of 4 or level)
+     * @returns {Array} Track slots
+     * @private
+     */
+    _prepareTrackSlots(slotCount) {
+        const slots = [];
+        const items = this.actor.items.filter(item => item.type === "track");
+
+        // Create all slots
+        for (let i = 0; i < slotCount; i++) {
+            slots.push({ index: i, item: null });
+        }
+
+        // Fill slots based on stored slotIndex
+        items.forEach((item) => {
+            const slotIndex = this._getTrackSlotIndex(item);
+
+            if (slotIndex < slotCount && slots[slotIndex] && !slots[slotIndex].item) {
+                slots[slotIndex].item = item.toObject();
+            } else {
+                // Find first available slot
+                for (let i = 0; i < slotCount; i++) {
+                    if (!slots[i].item) {
+                        slots[i].item = item.toObject();
+                        item.setFlag("zwolf-epic", "slotIndex", i);
+                        break;
+                    }
+                }
+            }
+        });
+
+        return slots;
+    }
+
+    /**
+     * Prepare sequential slots (for knacks)
+     * @param {string} itemType - Item type
+     * @param {number} slotCount - Number of slots
+     * @returns {Array} Sequential slots
+     * @private
+     */
+    _prepareSequentialSlots(itemType, slotCount) {
+        const slots = [];
+        const items = this.actor.items.filter(item => item.type === itemType);
+
+        for (let i = 0; i < slotCount; i++) {
+            slots.push({
+                index: i,
+                item: items[i] ? items[i].toObject() : null
+            });
+        }
+
+        return slots;
+    }
+
+    /**
+     * Get track slot index with fallback
+     * @param {Object} trackItem - Track item
+     * @returns {number} Slot index
+     * @private
+     */
+    _getTrackSlotIndex(trackItem) {
+        const storedIndex = trackItem.getFlag("zwolf-epic", "slotIndex");
+        if (storedIndex !== undefined) return storedIndex;
+
+        const trackItems = this.actor.items.filter(i => i.type === "track");
+        return trackItems.findIndex(t => t.id === trackItem.id);
+    }
+
+    /**
+     * Calculate slots for eidolons (special placeholder-based logic)
+     * @param {Object} context - Sheet context
+     * @private
+     */
+    _calculateEidolonSlots(context) {
+        // Get base creature
+        const baseCreature = context.system.baseCreatureId
+            ? game.actors.get(context.system.baseCreatureId)
+            : null;
+
+        if (!baseCreature) {
+            // No base creature - use minimal defaults
+            context.knackSlots = [];
+            context.trackSlots = [];
+            context.talentSlots = [];
+            return;
+        }
+
+        // Knack slots from own ancestry + base creature's "(Eidolon Placeholder)" knacks
+        const ancestry = context.system.ancestryId
+            ? this.actor.items.get(context.system.ancestryId)
+            : null;
+        let totalKnacks = ancestry?.system?.knacksProvided || 0;
+
+        const placeholderKnacks = baseCreature.items.filter(item =>
+            item.type === "knack" && item.name === "(Eidolon Placeholder)"
+        ).length;
+
+        totalKnacks += placeholderKnacks;
+        context.knackSlots = this._prepareSequentialSlots("knack", totalKnacks);
+
+        // Track slots only for placeholder positions
+        context.trackSlots = this._calculateEidolonTrackSlots(baseCreature);
+
+        // Talent slots based on enabled tracks
+        context.talentSlots = this._prepareEidolonTalentSlots(baseCreature);
+    }
+
+    /**
+     * Calculate track slots for eidolon based on placeholders in base creature
+     * @param {Object} baseCreature - Base creature actor
+     * @returns {Array} Track slots
+     * @private
+     */
+    _calculateEidolonTrackSlots(baseCreature) {
+        const slots = [];
+
+        // Find base creature's "(Eidolon Placeholder)" tracks
+        const placeholderTracks = baseCreature.items.filter(item =>
+            item.type === "track" && item.name === "(Eidolon Placeholder)"
+        );
+
+        // Create slots only for placeholder positions
+        placeholderTracks.forEach(track => {
+            const slotIndex = track.getFlag("zwolf-epic", "slotIndex");
+            if (slotIndex !== undefined) {
+                slots.push({
+                    index: slotIndex,
+                    item: null,
+                    enabled: true
+                });
+            }
+        });
+
+        // Fill with eidolon's actual tracks
+        const eidolonTracks = this.actor.items.filter(item => item.type === "track");
+        eidolonTracks.forEach(track => {
+            const slotIndex = track.getFlag("zwolf-epic", "slotIndex");
+            const slot = slots.find(s => s.index === slotIndex);
+            if (slot && !slot.item) {
+                slot.item = track.toObject();
+            }
+        });
+
+        return slots.sort((a, b) => a.index - b.index);
+    }
+
+    /**
+     * Prepare talent slots for eidolon based on enabled tracks
+     * @param {Object} baseCreature - Base creature actor
+     * @returns {Array} Talent slots
+     * @private
+     */
+    _prepareEidolonTalentSlots(baseCreature) {
+        const slots = [];
+        const characterLevel = baseCreature.system.level || 0;
+
+        // Get eidolon's track assignments
+        const trackItems = this.actor.items.filter(item => item.type === "track");
+        const assignedTracks = new Map();
+
+        trackItems.forEach(track => {
+            const slotIndex = this._getTrackSlotIndex(track);
+            assignedTracks.set(slotIndex + 1, track);
+        });
+
+        // Get base creature's placeholder track positions
+        const placeholderTracks = baseCreature.items.filter(item =>
+            item.type === "track" && item.name === "(Eidolon Placeholder)"
+        );
+        const enabledTrackPositions = new Set();
+        placeholderTracks.forEach(track => {
+            const slotIndex = track.getFlag("zwolf-epic", "slotIndex");
+            if (slotIndex !== undefined) {
+                enabledTrackPositions.add(slotIndex + 1);
+            }
+        });
+
+        // Only create talent slots for enabled track positions
+        for (let trackNum = 1; trackNum <= 4; trackNum++) {
+            if (!enabledTrackPositions.has(trackNum)) continue;
+
+            // Calculate how many talent slots this track should have
+            const tierLevels = [trackNum, trackNum + 4, trackNum + 8, trackNum + 12, trackNum + 16];
+            const unlockedTiers = tierLevels.filter(level => characterLevel >= level).length;
+
+            // Create slots for each unlocked tier
+            for (let tier = 0; tier < unlockedTiers; tier++) {
+                const trackInfo = assignedTracks.get(trackNum);
+
+                slots.push({
+                    index: slots.length,
+                    item: null,
+                    trackNumber: trackNum,
+                    trackName: trackInfo ? trackInfo.name : null,
+                    hasTrack: !!trackInfo
+                });
+            }
+        }
+
+        // Fill slots with talent items
+        const talentItems = this.actor.items.filter(item => item.type === "talent");
+        talentItems.forEach((talent) => {
+            const slotIndex = talent.getFlag("zwolf-epic", "slotIndex");
+
+            if (slotIndex !== undefined && slotIndex < slots.length && !slots[slotIndex].item) {
+                slots[slotIndex].item = talent.toObject();
+            } else {
+                // Find first available slot
+                for (let i = 0; i < slots.length; i++) {
+                    if (!slots[i].item) {
+                        slots[i].item = talent.toObject();
+                        talent.setFlag("zwolf-epic", "slotIndex", i);
+                        break;
+                    }
+                }
+            }
+        });
+
+        return slots;
+    }
+
+    // ========================================
+    // BUILD POINTS CALCULATION (PHASE 9)
+    // ========================================
+
+    /**
+     * Calculate build points for regular characters (PC/NPC)
+     * @param {Object} context - Sheet context
+     * @private
+     */
+    _calculateBuildPoints(context) {
+        const ancestry = context.system.ancestryId
+            ? this.actor.items.get(context.system.ancestryId)
+            : null;
+        const fundament = context.system.fundamentId
+            ? this.actor.items.get(context.system.fundamentId)
+            : null;
+
+        const attributeBP = this._calculateAttributeBP(context.system.attributes || {});
+        const skillBP = this._calculateSkillBP(context.system.skills || {}, context.system.attributes || {});
+        const maxBP = this._calculateMaxBP(ancestry, fundament);
+
+        context.buildPoints = {
+            attributes: attributeBP,
+            skills: skillBP,
+            total: attributeBP + skillBP,
+            max: maxBP
+        };
+    }
+
+    /**
+     * Calculate attribute build points cost
+     * @param {Object} attributes - Attributes object
+     * @returns {number} Total BP cost
+     * @private
+     */
+    _calculateAttributeBP(attributes) {
+        const costs = {
+            mediocre: -5,
+            moderate: 0,
+            specialty: 4,
+            awesome: 8
+        };
+
+        let total = 0;
+        const attributeKeys = ["agility", "fortitude", "perception", "willpower"];
+
+        attributeKeys.forEach(key => {
+            const progression = attributes[key]?.progression || "moderate";
+            total += costs[progression];
+        });
+
+        return total;
+    }
+
+    /**
+     * Calculate skill build points cost including excess penalties
+     * @param {Object} skills - Skills object
+     * @param {Object} attributes - Attributes object
+     * @returns {number} Total BP cost
+     * @private
+     */
+    _calculateSkillBP(skills, attributes) {
+        const baseCosts = {
+            mediocre: 0,
+            moderate: 1,
+            specialty: 2,
+            awesome: 3
+        };
+
+        const progressionValues = {
+            mediocre: 1,
+            moderate: 2,
+            specialty: 3,
+            awesome: 4
+        };
+
+        // Get base values from attributes
+        const attributeValues = {};
+        Object.keys(attributes).forEach(key => {
+            const progression = attributes[key]?.progression || "moderate";
+            attributeValues[key] = progressionValues[progression];
+        });
+
+        let total = 0;
+
+        // Calculate cost for each skill
+        const skillConfigs = {
+            acumen: { base: attributeValues.willpower },
+            athletics: { base: Math.max(attributeValues.agility, attributeValues.fortitude) },
+            brawn: { base: attributeValues.fortitude },
+            dexterity: { base: attributeValues.agility },
+            glibness: { base: progressionValues[skills.insight?.progression || "mediocre"] },
+            influence: { base: attributeValues.willpower },
+            insight: { base: attributeValues.perception },
+            stealth: { base: attributeValues.agility }
+        };
+
+        Object.keys(skillConfigs).forEach(skillKey => {
+            const skillProgression = skills[skillKey]?.progression || "mediocre";
+            const skillValue = progressionValues[skillProgression];
+            const baseValue = skillConfigs[skillKey].base;
+
+            const baseCost = baseCosts[skillProgression];
+            const excessCost = Math.max(0, skillValue - baseValue);
+
+            total += baseCost + excessCost;
+        });
+
+        return total;
+    }
+
+    /**
+     * Calculate maximum build points from ancestry and fundament
+     * @param {Object} ancestry - Ancestry item
+     * @param {Object} fundament - Fundament item
+     * @returns {number} Maximum BP available
+     * @private
+     */
+    _calculateMaxBP(ancestry, fundament) {
+        let maxBP = 0;
+
+        if (ancestry?.system?.buildPoints) {
+            maxBP += ancestry.system.buildPoints;
+        }
+
+        if (fundament?.system?.buildPoints) {
+            maxBP += fundament.system.buildPoints;
+        }
+
+        return maxBP;
+    }
+
+    /**
+     * Calculate build points for eidolons
+     * @param {Object} context - Sheet context
+     * @private
+     */
+    _calculateEidolonBuildPoints(context) {
+        const baseCreature = context.system.baseCreatureId
+            ? game.actors.get(context.system.baseCreatureId)
+            : null;
+
+        if (!baseCreature) {
+            // No base creature - use minimal defaults
+            context.buildPoints = {
+                attributes: 0,
+                skills: 0,
+                skillExcessPenalty: 0,
+                total: 0,
+                max: 0,
+                fromAncestry: 0,
+                fromBaseUnused: 0
+            };
+            return;
+        }
+
+        // Calculate eidolon's own BP usage
+        const attributeBP = this._calculateAttributeBP(this.actor.system.attributes || {});
+        const skillBP = this._calculateSkillBP(this.actor.system.skills || {}, this.actor.system.attributes || {});
+
+        // Calculate skill excess penalty (1 BP per skill that exceeds base creature)
+        const skillExcessPenalty = this._calculateEidolonSkillExcessPenalty(baseCreature);
+
+        // Get BP from own ancestry
+        const ancestry = context.system.ancestryId
+            ? this.actor.items.get(context.system.ancestryId)
+            : null;
+        const ancestryBP = ancestry?.system?.buildPoints || 0;
+
+        // Calculate base creature's unused BP
+        const baseAncestry = baseCreature.system.ancestryId
+            ? baseCreature.items.get(baseCreature.system.ancestryId)
+            : null;
+        const baseFundament = baseCreature.system.fundamentId
+            ? baseCreature.items.get(baseCreature.system.fundamentId)
+            : null;
+
+        const baseAttributeBP = this._calculateAttributeBP(baseCreature.system.attributes || {});
+        const baseSkillBP = this._calculateSkillBP(baseCreature.system.skills || {}, baseCreature.system.attributes || {});
+        const baseMaxBP = this._calculateMaxBP(baseAncestry, baseFundament);
+        const baseTotalBP = baseAttributeBP + baseSkillBP;
+        const baseUnusedBP = baseMaxBP - baseTotalBP;
+
+        // Eidolon's max = own ancestry + base creature's unused BP
+        const maxBP = ancestryBP + Math.max(0, baseUnusedBP);
+
+        context.buildPoints = {
+            attributes: attributeBP,
+            skills: skillBP,
+            skillExcessPenalty: skillExcessPenalty,
+            total: attributeBP + skillBP + skillExcessPenalty,
+            max: maxBP,
+            fromAncestry: ancestryBP,
+            fromBaseUnused: Math.max(0, baseUnusedBP)
+        };
+    }
+
+    /**
+     * Calculate BP penalty for eidolon skills that exceed base creature
+     * @param {Object} baseCreature - Base creature actor
+     * @returns {number} Total penalty BP
+     * @private
+     */
+    _calculateEidolonSkillExcessPenalty(baseCreature) {
+        const progressionValues = {
+            mediocre: 1,
+            moderate: 2,
+            specialty: 3,
+            awesome: 4
+        };
+
+        let penalty = 0;
+        const eidolonSkills = this.actor.system.skills || {};
+        const baseSkills = baseCreature.system.skills || {};
+
+        const skillKeys = ["acumen", "athletics", "brawn", "dexterity", "glibness", "influence", "insight", "stealth"];
+
+        skillKeys.forEach(skillKey => {
+            const eidolonProgression = eidolonSkills[skillKey]?.progression || "mediocre";
+            const baseProgression = baseSkills[skillKey]?.progression || "mediocre";
+
+            const eidolonValue = progressionValues[eidolonProgression] || 1;
+            const baseValue = progressionValues[baseProgression] || 1;
+
+            // If eidolon's skill is higher than base creature's, add 1 BP penalty (regardless of how many steps)
+            if (eidolonValue > baseValue) {
+                penalty += 1;
+            }
+        });
+
+        return penalty;
     }
 
     /**

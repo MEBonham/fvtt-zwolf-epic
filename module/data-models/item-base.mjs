@@ -15,7 +15,14 @@ export class ZWolfItemBase extends foundry.abstract.TypeDataModel {
                 initial: 1,
                 integer: true,
                 min: 0
-            })
+            }),
+            grantedAbilities: new fields.ObjectField({ required: false, initial: {} }),
+            sideEffects: new fields.ArrayField(
+                new fields.ObjectField(),
+                { required: false, initial: [] }
+            ),
+            tags: new fields.StringField({ required: false, blank: true, initial: "" }),
+            required: new fields.StringField({ required: false, blank: true, initial: "" })
         };
     }
 

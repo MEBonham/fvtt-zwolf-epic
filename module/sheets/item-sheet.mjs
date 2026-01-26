@@ -326,29 +326,32 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         }
 
         // For track items, group abilities by tier for display
-        if (this.item.type === "track" && this.item.system.grantedAbilities) {
-            // Group abilities by tier
+        if (this.item.type === "track") {
+            // Group abilities by tier - always initialize for all 5 tiers
             const abilitiesByTier = {};
             for (let tier = 1; tier <= 5; tier++) {
                 abilitiesByTier[tier] = [];
             }
 
-            Object.entries(this.item.system.grantedAbilities).forEach(([id, ability]) => {
-                const tier = ability.tier || 1;
-                if (tier >= 1 && tier <= 5) {
-                    abilitiesByTier[tier].push({
-                        ...ability,
-                        id,
-                        index: id,
-                        tier,
-                        nameTarget: `system.grantedAbilities.${id}.name`,
-                        tagsTarget: `system.grantedAbilities.${id}.tags`,
-                        typeTarget: `system.grantedAbilities.${id}.type`,
-                        descriptionTarget: `system.grantedAbilities.${id}.description`,
-                        tierTarget: `system.grantedAbilities.${id}.tier`
-                    });
-                }
-            });
+            // Populate with existing abilities if any
+            if (this.item.system.grantedAbilities) {
+                Object.entries(this.item.system.grantedAbilities).forEach(([id, ability]) => {
+                    const tier = ability.tier || 1;
+                    if (tier >= 1 && tier <= 5) {
+                        abilitiesByTier[tier].push({
+                            ...ability,
+                            id,
+                            index: id,
+                            tier,
+                            nameTarget: `system.grantedAbilities.${id}.name`,
+                            tagsTarget: `system.grantedAbilities.${id}.tags`,
+                            typeTarget: `system.grantedAbilities.${id}.type`,
+                            descriptionTarget: `system.grantedAbilities.${id}.description`,
+                            tierTarget: `system.grantedAbilities.${id}.tier`
+                        });
+                    }
+                });
+            }
 
             context.abilitiesByTier = abilitiesByTier;
         }
