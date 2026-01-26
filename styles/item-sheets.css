@@ -40,8 +40,8 @@
 }
 
 .zwolf-epic.sheet.item .sheet-header .profile-img {
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
     border: 2px solid #5a6a7a;
     border-radius: 4px;
     cursor: pointer;
@@ -807,10 +807,20 @@
     max-height: 300px;
 }
 
+.zwolf-epic.sheet.item .ability-description .prosemirror-editor .ProseMirror {
+    padding: 0.75rem 1.25rem;
+    min-height: 60px;
+}
+
 /* Expanded editor variant (for main description) */
 .zwolf-epic.sheet.item .main-description .editor-content {
     min-height: 150px;
     max-height: 600px;
+}
+
+.zwolf-epic.sheet.item .main-description .prosemirror-editor .ProseMirror {
+    padding: 0.75rem 1.25rem;
+    min-height: 150px;
 }
 
 /* ===================

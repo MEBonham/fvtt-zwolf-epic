@@ -213,7 +213,7 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         html += `<optgroup label="${game.i18n.localize('ZWOLF.SeedProficiencies')}">`;
         for (const [key, prof] of Object.entries(config.proficiencies || {})) {
             if (prof.type === "seed") {
-                html += `<option value="${key}" ${currentValue === key ? "selected" : ""}>${game.i18n.localize(prof.label)}</option>`;
+                html += `<option value="${key}" ${currentValue === key ? "selected" : ""}>${prof.label}</option>`;
             }
         }
         html += `</optgroup>`;
@@ -222,7 +222,7 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         html += `<optgroup label="${game.i18n.localize('ZWOLF.WeaponProficiencies')}">`;
         for (const [key, prof] of Object.entries(config.proficiencies || {})) {
             if (prof.type === "weapon") {
-                html += `<option value="${key}" ${currentValue === key ? "selected" : ""}>${game.i18n.localize(prof.label)}</option>`;
+                html += `<option value="${key}" ${currentValue === key ? "selected" : ""}>${prof.label}</option>`;
             }
         }
         html += `</optgroup>`;
@@ -231,7 +231,7 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
         html += `<optgroup label="${game.i18n.localize('ZWOLF.MiscellaneousProficiencies')}">`;
         for (const [key, prof] of Object.entries(config.proficiencies || {})) {
             if (prof.type === "miscellaneous") {
-                html += `<option value="${key}" ${currentValue === key ? "selected" : ""}>${game.i18n.localize(prof.label)}</option>`;
+                html += `<option value="${key}" ${currentValue === key ? "selected" : ""}>${prof.label}</option>`;
             }
         }
         html += `</optgroup>`;
@@ -577,7 +577,7 @@ export class ZWolfItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
         // Create new ability with default values
         const newAbility = {
-            name: game.i18n.localize("ZWOLF.NewAbility"),
+            name: this.item.name,
             type: "passive",
             tags: "",
             description: "",

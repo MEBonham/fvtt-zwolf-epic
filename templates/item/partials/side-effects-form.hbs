@@ -82,28 +82,28 @@
                     {{localize 'ZWOLF.None'}}
                   </option>
                   <optgroup label="{{localize 'ZWOLF.SeedProficiencies'}}">
-                    {{#each ../../config.proficiencies}}
+                    {{#each ../config.proficiencies}}
                       {{#if (eq this.type 'seed')}}
                         <option value="{{@key}}" {{selected @key ../this.value}}>
-                          {{localize this.label}}
+                          {{this.label}}
                         </option>
                       {{/if}}
                     {{/each}}
                   </optgroup>
                   <optgroup label="{{localize 'ZWOLF.WeaponProficiencies'}}">
-                    {{#each ../../config.proficiencies}}
+                    {{#each ../config.proficiencies}}
                       {{#if (eq this.type 'weapon')}}
                         <option value="{{@key}}" {{selected @key ../this.value}}>
-                          {{localize this.label}}
+                          {{this.label}}
                         </option>
                       {{/if}}
                     {{/each}}
                   </optgroup>
                   <optgroup label="{{localize 'ZWOLF.MiscellaneousProficiencies'}}">
-                    {{#each ../../config.proficiencies}}
+                    {{#each ../config.proficiencies}}
                       {{#if (eq this.type 'miscellaneous')}}
                         <option value="{{@key}}" {{selected @key ../this.value}}>
-                          {{localize this.label}}
+                          {{this.label}}
                         </option>
                       {{/if}}
                     {{/each}}
@@ -180,7 +180,7 @@
                   <option value="" {{selected '' this.value}}>
                     {{localize 'ZWOLF.None'}}
                   </option>
-                  {{#each ../../config.damageTypes}}
+                  {{#each ../config.damageTypes}}
                     <option value="{{@key}}" {{selected @key ../this.value}}>
                       {{localize this.label}}
                     </option>
@@ -193,7 +193,7 @@
                   <option value="" {{selected '' this.value}}>
                     {{localize 'ZWOLF.None'}}
                   </option>
-                  {{#each ../../config.damageTypes}}
+                  {{#each ../config.damageTypes}}
                     <option value="{{@key}}" {{selected @key ../this.value}}>
                       {{localize this.label}}
                     </option>
