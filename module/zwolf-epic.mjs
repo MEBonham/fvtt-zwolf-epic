@@ -14,6 +14,10 @@ import { ZWolfItemSheet } from "./sheets/item-sheet.mjs";
 import { registerHandlebarsHelpers } from "./helpers/handlebars.mjs";
 import { preloadTemplates } from "./helpers/templates.mjs";
 import { ZWOLF } from "./helpers/config.mjs";
+import { registerItemContextMenuOption } from "./helpers/item-sync.mjs";
+
+// Import hooks
+import { registerItemHooks } from "./hooks/item.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -57,6 +61,12 @@ Hooks.once("init", async function () {
 
     // Preload Handlebars templates
     await preloadTemplates();
+
+    // Register item hooks (source tracking for Push to Actors)
+    registerItemHooks();
+
+    // Register item context menu option (Push to Actors)
+    registerItemContextMenuOption();
 });
 
 /* -------------------------------------------- */

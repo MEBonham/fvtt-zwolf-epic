@@ -2,6 +2,7 @@ const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 import { SheetStateManager } from "../helpers/sheet-state-manager.mjs";
 import { calculateProgressionBonuses, calculateTn } from "../helpers/calculation-utils.mjs";
+import { DropZoneHandler } from "../helpers/drop-zone-handler.mjs";
 
 /**
  * Actor sheet for Z-Wolf Epic actors.
@@ -33,7 +34,9 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         },
         actions: {
             editImage: ZWolfActorSheet.#onEditImage,
-            changeTab: ZWolfActorSheet.#onChangeTab
+            changeTab: ZWolfActorSheet.#onChangeTab,
+            editItem: ZWolfActorSheet.#onEditItem,
+            deleteItem: ZWolfActorSheet.#onDeleteItem
         },
         form: {
             submitOnChange: true
@@ -142,6 +145,14 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
                 this._calculateBuildPoints(context);
             }
         }
+
+        // Get foundation items (Phase 11)
+        context.ancestry = context.system.ancestryId
+            ? this.actor.items.get(context.system.ancestryId)?.toObject()
+            : null;
+        context.fundament = context.system.fundamentId
+            ? this.actor.items.get(context.system.fundamentId)?.toObject()
+            : null;
 
         return context;
     }
@@ -1123,10 +1134,30 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     _onRender(context, options) {
         super._onRender(context, options);
 
+        // Initialize drop zones (not for spawns)
+        if (this.document.type !== "spawn") {
+            const dropHandler = new DropZoneHandler(this);
+            dropHandler.bindDropZones(this.element);
+        }
+
         // Restore state AFTER everything else
         if (this.stateManager) {
             this.stateManager.restoreState();
         }
+    }
+
+    /**
+     * Override drop handler to prevent default behavior when using custom drop zones
+     * @override
+     */
+    async _onDrop(event) {
+        // If a custom drop zone is handling this, skip default behavior
+        if (this._processingCustomDrop) {
+            return;
+        }
+
+        // Otherwise, use default behavior
+        return super._onDrop(event);
     }
 
     static async #onChangeTab(event, target) {
@@ -1179,4 +1210,38 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         });
         fp.browse();
     }
+
+    /**
+     * Handle editing an item
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onEditItem(event, target) {
+        const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+        const item = this.document.items.get(itemId);
+        if (item) {
+            item.sheet.render(true);
+        }
+    }
+
+    /**
+     * Handle deleting an item
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onDeleteItem(event, target) {
+        const itemId = target.closest("[data-item-id]")?.dataset.itemId;
+        const item = this.document.items.get(itemId);
+        if (!item) return;
+
+        const confirmed = await Dialog.confirm({
+            title: `Delete ${item.name}?`,
+            content: `<p>Are you sure you want to delete <strong>${item.name}</strong>?</p>`
+        });
+
+        if (confirmed) {
+            await item.delete();
+        }
+    }
 }
+
