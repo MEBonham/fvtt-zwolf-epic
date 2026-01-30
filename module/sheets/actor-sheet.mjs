@@ -3,6 +3,7 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 import { SheetStateManager } from "../helpers/sheet-state-manager.mjs";
 import { calculateProgressionBonuses, calculateTn } from "../helpers/calculation-utils.mjs";
 import { DropZoneHandler } from "../helpers/drop-zone-handler.mjs";
+import { ZWolfDice } from "../dice/dice-system.mjs";
 
 /**
  * Actor sheet for Z-Wolf Epic actors.
@@ -36,7 +37,16 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             editImage: ZWolfActorSheet.#onEditImage,
             changeTab: ZWolfActorSheet.#onChangeTab,
             editItem: ZWolfActorSheet.#onEditItem,
-            deleteItem: ZWolfActorSheet.#onDeleteItem
+            deleteItem: ZWolfActorSheet.#onDeleteItem,
+            toggleLock: ZWolfActorSheet.#onToggleLock,
+            gainWealth: ZWolfActorSheet.#onGainWealth,
+            loseWealth: ZWolfActorSheet.#onLoseWealth,
+            shortRest: ZWolfActorSheet.#onShortRest,
+            extendedRest: ZWolfActorSheet.#onExtendedRest,
+            rollSpeed: ZWolfActorSheet.#onRollSpeed,
+            rollProgression: ZWolfActorSheet.#onRollProgression,
+            rollStat: ZWolfActorSheet.#onRollStat,
+            toggleProgression: ZWolfActorSheet.#onToggleProgression
         },
         form: {
             submitOnChange: true
@@ -119,6 +129,11 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         // Organize stats by progression
         context.progressions = this._organizeByProgression(context.system, progressionBonuses);
 
+        // Calculate speed bonus for display
+        context.speedBonus = sideEffects.speedProgression
+            ? progressionBonuses[sideEffects.speedProgression] || 0
+            : 0;
+
         // Calculate target numbers
         context.tns = {
             toughness: calculateTn(sideEffects.toughnessTNProgression, level, progressionOnlyLevel),
@@ -153,6 +168,42 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         context.fundament = context.system.fundamentId
             ? this.actor.items.get(context.system.fundamentId)?.toObject()
             : null;
+
+        // Prepare inventory context (Phase 12)
+        if (context.showInventory) {
+            this._prepareInventoryContext(context);
+        }
+
+        // Gather granted abilities (Phase 13)
+        context.abilityCategories = this._gatherGrantedAbilities();
+
+        // Format character tags for display (Phase 13)
+        context.characterTags = sideEffects.characterTags?.join(", ") || "";
+
+        // Build exotic senses display data (includes abilities + vision enhancements)
+        context.exoticSensesDisplay = this._buildExoticSensesDisplay(
+            context.abilityCategories.exoticSenses,
+            sideEffects
+        );
+
+        // Calculate and update effective size (Phase 14)
+        const effectiveSize = this._calculateEffectiveSize(sideEffects);
+        context.effectiveSize = effectiveSize;
+
+        // Update actor's effectiveSize if it changed
+        if (this.actor.system.effectiveSize !== effectiveSize) {
+            this.actor.update({ "system.effectiveSize": effectiveSize }, { render: false });
+        }
+
+        // Calculate language limit (Phase 14)
+        context.languageLimit = this._calculateLanguageLimit();
+
+        // Build calculated values for template (Phase 16)
+        context.calculatedValues = {
+            maxVitality: context.system.vitalityPoints?.max ?? 12,
+            maxStamina: context.system.staminaPoints?.max ?? 4,
+            coastNumber: context.system.coastNumber ?? 4
+        };
 
         return context;
     }
@@ -433,6 +484,194 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             resistances: Array.from(accumulated.resistances),
             vulnerabilities: Array.from(accumulated.vulnerabilities)
         };
+    }
+
+    // ========================================
+    // GRANTED ABILITIES GATHERING (PHASE 13)
+    // ========================================
+
+    /**
+     * Gather all granted abilities from items and organize by category
+     * @returns {Object} Abilities organized by type
+     * @private
+     */
+    _gatherGrantedAbilities() {
+        const categories = {
+            passive: [],
+            drawback: [],
+            exoticSenses: [],
+            dominantAction: [],
+            swiftAction: [],
+            reaction: [],
+            freeAction: [],
+            strike: [],
+            journey: [],
+            miscellaneous: []
+        };
+
+        const characterLevel = this.actor.system.level || 0;
+
+        /**
+         * Process abilities from an item's grantedAbilities object
+         * @param {Object} item - The source item
+         * @param {Object} grantedAbilities - The abilities object
+         * @param {string} sourceSuffix - Optional suffix for source name (e.g., "(Tier 2)")
+         */
+        const processAbilities = (item, grantedAbilities, sourceSuffix = "") => {
+            if (!grantedAbilities || typeof grantedAbilities !== "object") return;
+
+            Object.entries(grantedAbilities).forEach(([key, ability]) => {
+                if (!ability || !ability.name) return;
+
+                const abilityType = ability.type || "miscellaneous";
+                const category = categories[abilityType] || categories.miscellaneous;
+
+                category.push({
+                    id: key,
+                    name: ability.name,
+                    type: abilityType,
+                    tags: ability.tags || "",
+                    description: ability.description || "",
+                    itemId: item.id,
+                    itemName: sourceSuffix ? `${item.name} ${sourceSuffix}` : item.name
+                });
+            });
+        };
+
+        // Process each item on the actor
+        this.actor.items.forEach(item => {
+            // Skip equipment not in required placement
+            if (item.type === "equipment" && !this._isEquipmentActive(item)) return;
+
+            // Skip inactive attunements
+            if (item.type === "attunement" && !this._isAttunementActive(item)) return;
+
+            // For track items, process tier-specific abilities based on character level
+            if (item.type === "track") {
+                // Process base track abilities
+                if (item.system?.grantedAbilities) {
+                    processAbilities(item, item.system.grantedAbilities);
+                }
+
+                // Process tier-specific abilities
+                const trackSlotIndex = this._getTrackSlotIndex(item);
+                const unlockedTiers = this._getUnlockedTiers(trackSlotIndex, characterLevel);
+
+                unlockedTiers.forEach(tierNumber => {
+                    const tierData = item.system.tiers?.[`tier${tierNumber}`];
+                    if (tierData?.grantedAbilities) {
+                        processAbilities(item, tierData.grantedAbilities, `(Tier ${tierNumber})`);
+                    }
+                });
+            } else {
+                // Process regular item abilities
+                if (item.system?.grantedAbilities) {
+                    processAbilities(item, item.system.grantedAbilities);
+                }
+            }
+        });
+
+        // Sort each category by name
+        Object.keys(categories).forEach(key => {
+            categories[key].sort((a, b) => a.name.localeCompare(b.name));
+        });
+
+        return categories;
+    }
+
+    /**
+     * Build exotic senses display data combining abilities and vision enhancements
+     * @param {Array} exoticSensesAbilities - Abilities of type exoticSenses
+     * @param {Object} sideEffects - Processed side effects
+     * @returns {Object} Display data for exotic senses tooltip
+     * @private
+     */
+    _buildExoticSensesDisplay(exoticSensesAbilities, sideEffects) {
+        const items = [];
+
+        // Base vision values
+        const baseNightsight = 1;
+        const baseDarkvision = 0.2;
+
+        // Check for enhanced nightsight
+        const nightsightRadius = sideEffects.nightsightRadius || baseNightsight;
+        if (nightsightRadius > baseNightsight) {
+            items.push({
+                name: game.i18n.localize("ZWOLF.Nightsight"),
+                tags: `${nightsightRadius}m`,
+                source: sideEffects.nightsightRadiusSource || ""
+            });
+        }
+
+        // Check for enhanced darkvision
+        const darkvisionRadius = sideEffects.darkvisionRadius || baseDarkvision;
+        if (darkvisionRadius > baseDarkvision) {
+            items.push({
+                name: game.i18n.localize("ZWOLF.Darkvision"),
+                tags: `${darkvisionRadius}m`,
+                source: sideEffects.darkvisionRadiusSource || ""
+            });
+        }
+
+        // Add exotic senses abilities
+        exoticSensesAbilities.forEach(ability => {
+            items.push({
+                name: ability.name,
+                tags: ability.tags || "",
+                source: ability.itemName || ""
+            });
+        });
+
+        return {
+            hasContent: items.length > 0,
+            items: items
+        };
+    }
+
+    // ========================================
+    // PHASE 14: VISION & PROPERTIES
+    // ========================================
+
+    /**
+     * Calculate effective size based on base size and size modifiers
+     * @param {Object} sideEffects - Processed side effects
+     * @returns {string} Effective size key
+     * @private
+     */
+    _calculateEffectiveSize(sideEffects) {
+        const sizeOrder = [
+            "diminutive", "tiny", "small", "medium",
+            "large", "huge", "gargantuan", "colossal", "titanic"
+        ];
+
+        const baseSize = this.actor.system.size || "medium";
+        const sizeModifier = sideEffects?.sizeModifier || 0;
+
+        // Find base size index
+        let sizeIndex = sizeOrder.indexOf(baseSize);
+        if (sizeIndex === -1) sizeIndex = 3; // Default to medium
+
+        // Apply modifier
+        sizeIndex += sizeModifier;
+
+        // Clamp to valid range
+        sizeIndex = Math.max(0, Math.min(sizeOrder.length - 1, sizeIndex));
+
+        return sizeOrder[sizeIndex];
+    }
+
+    /**
+     * Calculate maximum languages based on Linguist knacks
+     * Base: 2 languages, +2 per Linguist knack
+     * @returns {number} Maximum number of languages
+     * @private
+     */
+    _calculateLanguageLimit() {
+        const linguistCount = this.actor.items.filter(item =>
+            item.type === "knack" && item.name.toLowerCase() === "linguist"
+        ).length;
+
+        return 2 + (linguistCount * 2);
     }
 
     /**
@@ -1140,10 +1379,50 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             dropHandler.bindDropZones(this.element);
         }
 
+        // Bind progression slider events
+        this._bindProgressionSliders();
+
+        // Bind equipment placement change events
+        this._bindEquipmentPlacementSelects();
+
         // Restore state AFTER everything else
         if (this.stateManager) {
             this.stateManager.restoreState();
         }
+    }
+
+    /**
+     * Bind equipment placement select change events
+     * @private
+     */
+    _bindEquipmentPlacementSelects() {
+        const selects = this.element.querySelectorAll(".equipment-placement-select");
+        selects.forEach(select => {
+            select.addEventListener("change", (event) => this._onEquipmentPlacementChange(event));
+        });
+    }
+
+    /**
+     * Bind progression slider events and apply locked state
+     * @private
+     */
+    _bindProgressionSliders() {
+        const sliders = this.element.querySelectorAll(".progression-slider");
+        const isLocked = this.document.system.buildPointsLocked || false;
+
+        sliders.forEach(slider => {
+            // Apply locked state
+            slider.disabled = isLocked;
+            if (isLocked) {
+                slider.classList.add("locked");
+            } else {
+                slider.classList.remove("locked");
+            }
+
+            // Bind change event
+            slider.addEventListener("input", (event) => this._onProgressionSliderChange(event));
+            slider.addEventListener("change", (event) => this._onProgressionSliderChange(event));
+        });
     }
 
     /**
@@ -1241,6 +1520,554 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
         if (confirmed) {
             await item.delete();
+        }
+    }
+
+    /**
+     * Handle toggling the build points lock
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onToggleLock(event, target) {
+        const currentLockState = this.document.system.buildPointsLocked || false;
+        await this.document.update({ "system.buildPointsLocked": !currentLockState });
+
+        const message = !currentLockState
+            ? game.i18n.localize("ZWOLF.BuildPointsLocked")
+            : game.i18n.localize("ZWOLF.BuildPointsUnlocked");
+        ui.notifications.info(message);
+    }
+
+    /**
+     * Handle progression slider change
+     * @param {Event} event - The change event
+     * @private
+     */
+    async _onProgressionSliderChange(event) {
+        event.preventDefault();
+
+        // Check if sliders are locked
+        const isLocked = this.document.system.buildPointsLocked || false;
+        if (isLocked) {
+            ui.notifications.warn(game.i18n.localize("ZWOLF.BuildPointsLockedWarning"));
+            // Reset slider to current value
+            this.render(false);
+            return;
+        }
+
+        const element = event.currentTarget;
+        const statKey = element.dataset.stat;
+        const statType = element.dataset.type;
+        const sliderValue = parseInt(element.value);
+
+        const progressionMap = {
+            1: "mediocre",
+            2: "moderate",
+            3: "specialty",
+            4: "awesome"
+        };
+
+        const newProgression = progressionMap[sliderValue];
+
+        let updatePath;
+        if (statType === "attribute") {
+            updatePath = `system.attributes.${statKey}.progression`;
+        } else if (statType === "skill") {
+            updatePath = `system.skills.${statKey}.progression`;
+        }
+
+        if (updatePath && newProgression) {
+            await this.document.update({ [updatePath]: newProgression });
+        }
+    }
+
+    // ========================================
+    // INVENTORY CONTEXT (PHASE 12)
+    // ========================================
+
+    /**
+     * Prepare inventory context data
+     * @param {Object} context - Sheet context
+     * @private
+     */
+    _prepareInventoryContext(context) {
+        // Get all equipment and commodities
+        const equipmentItems = this.actor.items.filter(item => item.type === "equipment");
+        const commodityItems = this.actor.items.filter(item => item.type === "commodity");
+
+        // Organize equipment by placement
+        const placements = ["wielded", "worn", "readily_available", "stowed", "not_carried"];
+        context.equipment = {};
+
+        placements.forEach(placement => {
+            context.equipment[placement] = equipmentItems
+                .filter(item => item.system.placement === placement)
+                .map(item => this._prepareEquipmentItem(item));
+        });
+
+        // Add commodities to stowed (or their placement if set)
+        commodityItems.forEach(item => {
+            const placement = item.system.placement || "stowed";
+            if (!context.equipment[placement]) {
+                context.equipment[placement] = [];
+            }
+            context.equipment[placement].push(this._prepareCommodityItem(item));
+        });
+
+        // Calculate inventory totals
+        context.inventoryTotals = this._calculateInventoryTotals(equipmentItems, commodityItems, context.sideEffects);
+
+        // Prepare attunement slots
+        context.attunementSlots = this._prepareAttunementSlots();
+    }
+
+    /**
+     * Prepare a single equipment item for display
+     * @param {Object} item - Equipment item
+     * @returns {Object} Prepared item data
+     * @private
+     */
+    _prepareEquipmentItem(item) {
+        const itemData = item.toObject();
+
+        // Check placement validity
+        itemData.placementValid = this._isEquipmentActive(item);
+
+        // Check for linked attunement
+        const linkedAttunement = this.actor.items.find(
+            att => att.type === "attunement" && att.system.appliesTo === item.id
+        );
+
+        if (linkedAttunement) {
+            itemData.attunementTier = linkedAttunement.system.tier || 1;
+            itemData.attunementActive = this._isAttunementActive(linkedAttunement);
+        }
+
+        return itemData;
+    }
+
+    /**
+     * Prepare a commodity item for display
+     * @param {Object} item - Commodity item
+     * @returns {Object} Prepared item data
+     * @private
+     */
+    _prepareCommodityItem(item) {
+        const itemData = item.toObject();
+        itemData.isCommodity = true;
+        itemData.placementValid = true;
+        return itemData;
+    }
+
+    /**
+     * Calculate inventory totals (bulk, max bulk, value)
+     * @param {Array} equipmentItems - Equipment items
+     * @param {Array} commodityItems - Commodity items
+     * @param {Object} sideEffects - Side effects data
+     * @returns {Object} Inventory totals
+     * @private
+     */
+    _calculateInventoryTotals(equipmentItems, commodityItems, sideEffects) {
+        let totalBulk = 0;
+
+        // Calculate bulk from equipment (only if carried)
+        equipmentItems.forEach(item => {
+            const placement = item.system.placement || "stowed";
+            // Not carried items don't count toward bulk
+            if (placement !== "not_carried") {
+                const itemBulk = parseFloat(item.system.bulk) || 0;
+                const quantity = parseInt(item.system.quantity) || 1;
+                totalBulk += itemBulk * quantity;
+            }
+        });
+
+        // Calculate bulk from commodities
+        commodityItems.forEach(item => {
+            const placement = item.system.placement || "stowed";
+            if (placement !== "not_carried") {
+                const itemBulk = parseFloat(item.system.bulk) || 0;
+                const quantity = parseInt(item.system.quantity) || 1;
+                totalBulk += itemBulk * quantity;
+            }
+        });
+
+        // Calculate max bulk
+        let maxBulk = 10;
+
+        // Size modifier based on effective size
+        const sizeModifiers = {
+            "diminutive": -12, "tiny": -8, "small": -4, "medium": 0,
+            "large": 4, "huge": 8, "gargantuan": 12, "colossal": 16,
+            "titanic": 20
+        };
+        const effectiveSize = this.actor.system?.effectiveSize || this.actor.system?.size || "medium";
+        maxBulk += sizeModifiers[effectiveSize] || 0;
+
+        // Brawn progression bonus
+        const brawnProgression = this.actor.system?.skills?.brawn?.progression || "mediocre";
+        const brawnBonus = { "mediocre": 0, "moderate": 3, "specialty": 6, "awesome": 9 };
+        maxBulk += brawnBonus[brawnProgression] || 0;
+
+        // Bulk capacity boosts from side effects
+        const bulkBoost = sideEffects?.bulkCapacityBoost || 0;
+        maxBulk += bulkBoost;
+
+        // Ensure minimum of 1
+        maxBulk = Math.max(1, maxBulk);
+
+        // Calculate total value
+        let totalValue = 0;
+        equipmentItems.forEach(item => {
+            const price = parseFloat(item.system.price) || 0;
+            const quantity = parseInt(item.system.quantity) || 1;
+            totalValue += price * quantity;
+        });
+        commodityItems.forEach(item => {
+            const price = parseFloat(item.system.price) || 0;
+            const quantity = parseInt(item.system.quantity) || 1;
+            totalValue += price * quantity;
+        });
+
+        return {
+            bulk: Math.round(totalBulk * 10) / 10,
+            maxBulk: maxBulk,
+            isOverBulk: totalBulk > maxBulk,
+            value: totalValue
+        };
+    }
+
+    /**
+     * Prepare attunement slots for display
+     * The last slot is always "overextended" - using it causes the character
+     * to be continually Shaken.
+     * @returns {Object} Attunement slots data
+     * @private
+     */
+    _prepareAttunementSlots() {
+        const attunementItems = this.actor.items.filter(item => item.type === "attunement");
+        const level = this.actor.system.level || 1;
+
+        // Calculate total slots: floor((level + 3) / 4)
+        // Level 1: 1 slot, Level 2-5: 2 slots, Level 6-9: 3 slots, etc.
+        const totalSlots = Math.floor((level + 3) / 4);
+
+        // Create slots array
+        const slots = [];
+        let hasOverextended = false;
+
+        for (let i = 0; i < totalSlots; i++) {
+            // Last slot is always the "overextended" slot (causes Shaken if used)
+            const isOverextended = (i === totalSlots - 1);
+
+            // Each slot's tier equals its position (1-based)
+            const slotTier = i + 1;
+
+            // Find attunement assigned to this slot
+            const attunement = attunementItems.find(
+                att => att.getFlag("zwolf-epic", "slotIndex") === i
+            );
+
+            const slot = {
+                index: i,
+                slotIndex: i + 1, // 1-based for display
+                tier: slotTier,
+                item: attunement ? attunement.toObject() : null,
+                isOverextended: isOverextended
+            };
+
+            // If attunement has appliesTo, find the equipment item
+            if (attunement && attunement.system.appliesTo) {
+                const appliedEquipment = this.actor.items.get(attunement.system.appliesTo);
+                if (appliedEquipment) {
+                    slot.item.appliedEquipment = appliedEquipment.toObject();
+                }
+            }
+
+            // Track if the overextended slot is actually being used
+            if (isOverextended && attunement) {
+                hasOverextended = true;
+            }
+
+            slots.push(slot);
+        }
+
+        // Handle any attunements not yet assigned to slots
+        attunementItems.forEach(att => {
+            const slotIndex = att.getFlag("zwolf-epic", "slotIndex");
+            if (slotIndex === undefined || slotIndex >= totalSlots) {
+                // Find first empty slot
+                for (let i = 0; i < slots.length; i++) {
+                    if (!slots[i].item) {
+                        slots[i].item = att.toObject();
+                        // Check if this is the overextended slot being filled
+                        if (slots[i].isOverextended) {
+                            hasOverextended = true;
+                        }
+                        att.setFlag("zwolf-epic", "slotIndex", i);
+                        break;
+                    }
+                }
+            }
+        });
+
+        return {
+            slots: slots,
+            total: totalSlots,
+            filled: attunementItems.length,
+            hasOverextended: hasOverextended
+        };
+    }
+
+    /**
+     * Handle gaining wealth
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onGainWealth(event, target) {
+        const currentWealth = this.document.system.wealth || 0;
+
+        // Prompt for amount
+        const content = `
+            <form>
+                <div class="form-group">
+                    <label>${game.i18n.localize("ZWOLF.GainWealth")}</label>
+                    <input type="number" name="amount" value="1" min="0" autofocus />
+                </div>
+            </form>
+        `;
+
+        const result = await Dialog.prompt({
+            title: game.i18n.localize("ZWOLF.GainWealth"),
+            content: content,
+            callback: (html) => {
+                const form = html.querySelector("form");
+                return parseInt(form.amount.value) || 0;
+            },
+            rejectClose: false
+        });
+
+        if (result !== null && result > 0) {
+            const newWealth = currentWealth + result;
+            await this.document.update({ "system.wealth": newWealth });
+            ui.notifications.info(`${game.i18n.localize("ZWOLF.Wealth")}: ${currentWealth} → ${newWealth}`);
+        }
+    }
+
+    /**
+     * Handle losing wealth
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onLoseWealth(event, target) {
+        const currentWealth = this.document.system.wealth || 0;
+
+        // Prompt for amount
+        const content = `
+            <form>
+                <div class="form-group">
+                    <label>${game.i18n.localize("ZWOLF.LoseWealth")}</label>
+                    <input type="number" name="amount" value="1" min="0" max="${currentWealth}" autofocus />
+                </div>
+            </form>
+        `;
+
+        const result = await Dialog.prompt({
+            title: game.i18n.localize("ZWOLF.LoseWealth"),
+            content: content,
+            callback: (html) => {
+                const form = html.querySelector("form");
+                return parseInt(form.amount.value) || 0;
+            },
+            rejectClose: false
+        });
+
+        if (result !== null && result > 0) {
+            const newWealth = Math.max(0, currentWealth - result);
+            await this.document.update({ "system.wealth": newWealth });
+            ui.notifications.info(`${game.i18n.localize("ZWOLF.Wealth")}: ${currentWealth} → ${newWealth}`);
+        }
+    }
+
+    // ========================================
+    // REST ACTIONS (PHASE 16)
+    // ========================================
+
+    /**
+     * Handle taking a short rest
+     * Costs 1 SP, restores VP to max
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onShortRest(event, target) {
+        const currentSP = this.document.system.staminaPoints?.value ?? 0;
+        const maxVP = this.document.system.vitalityPoints?.max ?? 12;
+
+        // Check if character has stamina to spend
+        if (currentSP <= 0) {
+            ui.notifications.warn(game.i18n.localize("ZWOLF.NoStaminaForRest"));
+            return;
+        }
+
+        // Confirm the rest using DialogV2
+        const confirmed = await foundry.applications.api.DialogV2.confirm({
+            window: { title: game.i18n.localize("ZWOLF.ShortRest") },
+            content: `<p>${game.i18n.localize("ZWOLF.ShortRestConfirm")}</p>
+                <ul>
+                    <li>${game.i18n.format("ZWOLF.SpendStamina", { current: currentSP, new: currentSP - 1 })}</li>
+                    <li>${game.i18n.localize("ZWOLF.RestoreVitality")}</li>
+                </ul>`,
+            rejectClose: false,
+            modal: true
+        });
+
+        if (!confirmed) return;
+
+        try {
+            // Update actor: spend 1 SP, restore VP to max
+            await this.document.update({
+                "system.staminaPoints.value": currentSP - 1,
+                "system.vitalityPoints.value": maxVP
+            });
+
+            ui.notifications.info(game.i18n.localize("ZWOLF.ShortRestComplete"));
+        } catch (error) {
+            console.error("Z-Wolf Epic | Error during Short Rest:", error);
+            ui.notifications.error(game.i18n.localize("ZWOLF.RestFailed"));
+        }
+    }
+
+    /**
+     * Handle taking an extended rest
+     * Restores SP and VP to max
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onExtendedRest(event, target) {
+        const maxSP = this.document.system.staminaPoints?.max ?? 4;
+        const maxVP = this.document.system.vitalityPoints?.max ?? 12;
+
+        // Confirm the rest using DialogV2
+        const confirmed = await foundry.applications.api.DialogV2.confirm({
+            window: { title: game.i18n.localize("ZWOLF.ExtendedRest") },
+            content: `<p>${game.i18n.localize("ZWOLF.ExtendedRestConfirm")}</p>
+                <ul>
+                    <li>${game.i18n.localize("ZWOLF.RestoreStamina")}</li>
+                    <li>${game.i18n.localize("ZWOLF.RestoreVitality")}</li>
+                </ul>`,
+            rejectClose: false,
+            modal: true
+        });
+
+        if (!confirmed) return;
+
+        try {
+            // Update actor: restore both SP and VP to max
+            await this.document.update({
+                "system.staminaPoints.value": maxSP,
+                "system.vitalityPoints.value": maxVP
+            });
+
+            ui.notifications.info(game.i18n.localize("ZWOLF.ExtendedRestComplete"));
+        } catch (error) {
+            console.error("Z-Wolf Epic | Error during Extended Rest:", error);
+            ui.notifications.error(game.i18n.localize("ZWOLF.RestFailed"));
+        }
+    }
+
+    // ========================================
+    // DICE ROLLING ACTIONS (PHASE 15)
+    // ========================================
+
+    /**
+     * Handle rolling speed check
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onRollSpeed(event, target) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Get speed progression from side effects (may be null)
+        const sideEffects = this._processSideEffects();
+        const speedProgression = sideEffects?.speedProgression || null;
+
+        await ZWolfDice.rollSpeed(this.actor, speedProgression);
+    }
+
+    /**
+     * Handle rolling for a progression tier
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onRollProgression(event, target) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const progression = target.dataset.progression;
+        const bonus = parseInt(target.dataset.bonus) || 0;
+
+        if (!progression) {
+            ui.notifications.warn("No progression specified for roll");
+            return;
+        }
+
+        await ZWolfDice.rollProgression(this.actor, progression, bonus);
+    }
+
+    /**
+     * Handle rolling for an individual stat (attribute or skill)
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onRollStat(event, target) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const statKey = target.dataset.stat;
+        const statType = target.dataset.type;
+
+        if (!statKey || !statType) {
+            ui.notifications.warn("Invalid stat specified for roll");
+            return;
+        }
+
+        if (statType === "attribute") {
+            await ZWolfDice.rollAttribute(this.actor, statKey);
+        } else if (statType === "skill") {
+            await ZWolfDice.rollSkill(this.actor, statKey);
+        }
+    }
+
+    /**
+     * Handle toggling progression accordion sections
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onToggleProgression(event, target) {
+        // Don't toggle if clicking on the roll die icon
+        if (event.target.closest("[data-action=\"rollProgression\"]")) {
+            return;
+        }
+
+        const progressionGroup = target.closest(".progression-group");
+        if (progressionGroup) {
+            progressionGroup.classList.toggle("collapsed");
+        }
+    }
+
+    /**
+     * Handle equipment placement change
+     * @param {Event} event - The change event
+     * @private
+     */
+    async _onEquipmentPlacementChange(event) {
+        const select = event.currentTarget;
+        const itemId = select.dataset.itemId;
+        const newPlacement = select.value;
+
+        const item = this.actor.items.get(itemId);
+        if (item) {
+            await item.update({ "system.placement": newPlacement });
         }
     }
 }

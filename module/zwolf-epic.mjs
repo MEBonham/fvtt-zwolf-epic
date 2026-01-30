@@ -1,6 +1,13 @@
 // Import document classes
 import { ZWolfActor } from "./documents/Actor.mjs";
 import { ZWolfItem } from "./documents/Item.mjs";
+import ZWolfTokenDocument from "./documents/Token.mjs";
+
+// Import vision system
+import { ZWolfVisionRadiusDisplay } from "./vision/vision-radius-display.mjs";
+
+// Import dice system
+import { ZWolfDice } from "./dice/dice-system.mjs";
 
 // Import data models
 import { ZWolfActorBase } from "./data-models/actor-base.mjs";
@@ -32,6 +39,7 @@ Hooks.once("init", async function () {
     // Define custom Document classes
     CONFIG.Actor.documentClass = ZWolfActor;
     CONFIG.Item.documentClass = ZWolfItem;
+    CONFIG.Token.documentClass = ZWolfTokenDocument;
 
     // Register data models
     CONFIG.Actor.dataModels = {
@@ -67,6 +75,9 @@ Hooks.once("init", async function () {
 
     // Register item context menu option (Push to Actors)
     registerItemContextMenuOption();
+
+    // Initialize dice system (Phase 15)
+    ZWolfDice.initialize();
 });
 
 /* -------------------------------------------- */
@@ -75,4 +86,16 @@ Hooks.once("init", async function () {
 
 Hooks.once("ready", async function () {
     console.log("Z-Wolf Epic | System Ready");
+
+    // Check for libWrapper dependency
+    if (!game.modules.get("lib-wrapper")?.active) {
+        ui.notifications.error(
+            game.i18n.localize("ZWOLF.Errors.LibWrapperRequired"),
+            { permanent: true }
+        );
+        console.error("Z-Wolf Epic | libWrapper module is not active. Some features may not work correctly.");
+    }
+
+    // Initialize vision radius display (Phase 14)
+    ZWolfVisionRadiusDisplay.initialize();
 });

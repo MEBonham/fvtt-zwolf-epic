@@ -8,6 +8,7 @@
                 "liabilities": "",
                 "notes": "",
                 "size": "medium",
+                "effectiveSize": "medium",
                 "tags": "Humanoid",
                 "nightsight": 1,
                 "darkvision": 0.2,
@@ -79,6 +80,8 @@
         },
         "eidolon": {
             "templates": ["base", "partialCharacter", "summoned"],
+            "ancestryId": null,
+            "buildPointsLocked": false,
             "wealth": 0
         },
         "mook": {

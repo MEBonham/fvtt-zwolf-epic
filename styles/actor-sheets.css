@@ -305,6 +305,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    padding-left: 1.5rem;
 }
 
 .progression-group {
@@ -328,6 +329,7 @@
     cursor: pointer;
     user-select: none;
     border-radius: 4px 4px 0 0;
+    position: relative;
 }
 
 .progression-header:hover {
@@ -346,6 +348,57 @@
 
 .progression-group.collapsed .progression-header i.fa-chevron-down {
     transform: rotate(-90deg);
+}
+
+.progression-header .progression-die {
+    position: absolute;
+    left: -1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.progression-header .progression-die:hover {
+    color: #fff;
+    transform: translateY(-50%) scale(1.15);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* Color-coded progression headers matching slider colors */
+.progression-group.mediocre .progression-header {
+    background: linear-gradient(135deg, #c62828, #a31d1d);
+}
+
+.progression-group.mediocre .progression-header:hover {
+    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+}
+
+.progression-group.moderate .progression-header {
+    background: linear-gradient(135deg, #ff9800, #e68900);
+}
+
+.progression-group.moderate .progression-header:hover {
+    background: linear-gradient(135deg, #ffa726, #ff9800);
+}
+
+.progression-group.specialty .progression-header {
+    background: linear-gradient(135deg, #4caf50, #388e3c);
+}
+
+.progression-group.specialty .progression-header:hover {
+    background: linear-gradient(135deg, #66bb6a, #4caf50);
+}
+
+.progression-group.awesome .progression-header {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+}
+
+.progression-group.awesome .progression-header:hover {
+    background: linear-gradient(135deg, #42a5f5, #2196f3);
 }
 
 .progression-bonus {
@@ -995,5 +1048,1114 @@
     font-size: 0.8em;
     font-weight: 400;
     color: #888;
+    font-style: italic;
+}
+
+/* ===================
+   Build Points Header & Lock
+   =================== */
+
+.build-points-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.build-points-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bp-label {
+    color: #888;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.bp-total {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #9ab;
+}
+
+.bp-total.negative {
+    color: #f44336;
+}
+
+.bp-total.over-max {
+    color: #ff9800;
+}
+
+.bp-total.at-max {
+    color: #4caf50;
+}
+
+.bp-breakdown {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.85em;
+    color: #888;
+}
+
+.bp-breakdown-divider {
+    color: #555;
+}
+
+.bp-penalty {
+    color: #ff9800;
+}
+
+.bp-source-breakdown {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.bp-source-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.build-points-controls {
+    display: flex;
+    align-items: center;
+}
+
+.build-points-lock-btn {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #9ab;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.build-points-lock-btn:hover {
+    background: rgba(58, 74, 90, 0.5);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.build-points-lock-btn.locked {
+    background: #c62828;
+    color: white;
+    border-color: #b71c1c;
+}
+
+.build-points-lock-btn.locked:hover {
+    background: #d32f2f;
+}
+
+/* ===================
+   Progression Config Sections
+   =================== */
+
+.progression-config {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.config-section h5 {
+    color: #9ab;
+    margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1em;
+}
+
+.config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.config-row:hover {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.config-row-alt {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.config-row-alt:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.stat-label {
+    color: #9ab;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 100px;
+}
+
+.awesome-warning {
+    color: #ff9800;
+    cursor: help;
+}
+
+/* ===================
+   Progression Slider Styles
+   =================== */
+
+.progression-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    max-width: 300px;
+    margin-left: 1rem;
+}
+
+.progression-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right,
+        #c62828 0%, #c62828 25%,
+        #ff9800 25%, #ff9800 50%,
+        #4caf50 50%, #4caf50 75%,
+        #2196f3 75%, #2196f3 100%);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    padding: 0 25px;
+}
+
+.progression-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #e4e4e4;
+    border: 2px solid #3a4a5a;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    transform: translateY(-4px);
+}
+
+.progression-slider::-webkit-slider-thumb:hover {
+    transform: translateY(-6px) scale(1.1);
+    background: #fff;
+}
+
+.progression-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #e4e4e4;
+    border: 2px solid #3a4a5a;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    transform: translateY(-6px);
+}
+
+.progression-slider::-moz-range-thumb:hover {
+    transform: translateY(-6px) scale(1.1);
+    background: #fff;
+}
+
+/* Locked slider state */
+.progression-slider:disabled,
+.progression-slider.locked {
+    cursor: not-allowed;
+    opacity: 0.5;
+    filter: grayscale(50%);
+}
+
+.progression-slider:disabled::-webkit-slider-thumb,
+.progression-slider.locked::-webkit-slider-thumb {
+    cursor: not-allowed;
+    background: #888;
+}
+
+.progression-slider:disabled::-moz-range-thumb,
+.progression-slider.locked::-moz-range-thumb {
+    cursor: not-allowed;
+    background: #888;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+}
+
+.slider-label {
+    font-size: 0.75em;
+    color: #888;
+    text-align: center;
+    flex: 1;
+}
+
+/* ===========================================
+   INVENTORY TAB - Phase 12
+   Equipment, bulk, wealth management
+   =========================================== */
+
+/* ===================
+   Inventory Container
+   =================== */
+
+.inventory-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ===================
+   Inventory Summary
+   =================== */
+
+.inventory-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+}
+
+.bulk-section,
+.wealth-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #9ab;
+    font-size: 0.9em;
+}
+
+.bulk-display {
+    color: #9ab;
+    font-weight: 700;
+    font-size: 1.1em;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Bulk warning states */
+.bulk-display.over-capacity {
+    color: #f44336;
+    background: rgba(244, 67, 54, 0.15);
+    border-color: #f44336;
+}
+
+.bulk-display.near-capacity {
+    color: #ff9800;
+    background: rgba(255, 152, 0, 0.1);
+    border-color: #ff9800;
+}
+
+/* Wealth input group */
+.wealth-input-group {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.wealth-input-group input[type="number"] {
+    width: 70px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+    color: #9ab;
+    padding: 0.35rem 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.wealth-gain-button,
+.wealth-loss-button {
+    padding: 0.35rem 0.5rem;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+}
+
+.wealth-gain-button {
+    background: #4caf50;
+}
+
+.wealth-gain-button:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+.wealth-loss-button {
+    background: #f44336;
+}
+
+.wealth-loss-button:hover {
+    background: #da190b;
+    transform: translateY(-1px);
+}
+
+.wealth-gain-button:active,
+.wealth-loss-button:active {
+    transform: translateY(0);
+}
+
+/* ===================
+   Equipment Categories
+   =================== */
+
+.inventory-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.equipment-category {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ab;
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.category-header i {
+    opacity: 0.8;
+    font-size: 0.9em;
+}
+
+.equipment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ===================
+   Equipment Items
+   =================== */
+
+.equipment-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.equipment-item:hover {
+    border-color: #5a6a7a;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.equipment-item.invalid-placement {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.equipment-item .item-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #2a2a2a;
+}
+
+.equipment-item .item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.equipment-item .item-name {
+    color: #e4e4e4;
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 0.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.equipment-item .item-details {
+    color: #888;
+    font-size: 0.8em;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.equipment-item .item-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.item-placement {
+    margin-top: 0.25rem;
+}
+
+.equipment-placement-select {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    background: #2a2a2a;
+    color: #d4d4d4;
+    cursor: pointer;
+}
+
+.equipment-placement-select:hover {
+    border-color: #5a6a7a;
+}
+
+.equipment-placement-select:focus {
+    border-color: #6a7a8a;
+    outline: none;
+}
+
+.equipment-item .item-controls {
+    display: flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.equipment-item .item-control {
+    color: #888;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+
+.equipment-item .item-control:hover {
+    color: #9ab;
+}
+
+.equipment-item .item-control[data-action="deleteItem"]:hover {
+    color: #f44336;
+}
+
+/* ===================
+   Attunement Stars
+   =================== */
+
+.attunement-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    color: #4a9eff;
+    font-size: 0.7em;
+}
+
+.attunement-stars i {
+    filter: drop-shadow(0 0 2px rgba(74, 158, 255, 0.5));
+}
+
+.attunement-stars.inactive {
+    color: #555;
+    opacity: 0.6;
+}
+
+.attunement-stars.inactive i {
+    filter: none;
+}
+
+/* ===================
+   No Equipment Message
+   =================== */
+
+.no-equipment-message {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
+}
+
+.no-equipment-message i {
+    margin-right: 0.5rem;
+    opacity: 0.7;
+}
+
+/* ===================
+   Equipment Drop Section
+   =================== */
+
+.equipment-drop-section {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.equipment-drop-section h4 {
+    color: #9ab;
+    margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95em;
+}
+
+.equipment-drop-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.equipment-drop-zone,
+.equipment-buy-zone {
+    min-height: 100px;
+    border: 2px dashed #3a3a3a;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    padding: 1rem;
+}
+
+.equipment-drop-zone:hover,
+.equipment-buy-zone:hover {
+    border-color: #5a6a7a;
+    background: rgba(58, 74, 90, 0.15);
+}
+
+.equipment-drop-zone .drop-prompt,
+.equipment-buy-zone .drop-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    color: #888;
+    user-select: none;
+}
+
+.equipment-drop-zone .drop-prompt i,
+.equipment-buy-zone .drop-prompt i {
+    font-size: 1.8em;
+    opacity: 0.5;
+}
+
+.equipment-drop-zone .drop-prompt span,
+.equipment-buy-zone .drop-prompt span {
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.drop-hint {
+    font-size: 0.75em;
+    font-style: italic;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+
+/* Buy zone gold accent */
+.equipment-buy-zone {
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.equipment-buy-zone:hover {
+    border-color: rgba(212, 175, 55, 0.7);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.equipment-buy-zone .drop-prompt i {
+    color: #d4af37;
+}
+
+/* Drag-over states */
+.equipment-drop-zone.drag-over,
+.equipment-buy-zone.drag-over {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.15);
+    border-style: solid;
+}
+
+.equipment-drop-zone.drag-over .drop-prompt i,
+.equipment-buy-zone.drag-over .drop-prompt i {
+    opacity: 1;
+    color: #4caf50;
+}
+
+/* Invalid drop state */
+.equipment-drop-zone.invalid-drop,
+.equipment-buy-zone.invalid-drop {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.15);
+    cursor: not-allowed;
+}
+
+.equipment-drop-zone.invalid-drop .drop-prompt i,
+.equipment-buy-zone.invalid-drop .drop-prompt i {
+    color: #f44336;
+}
+
+/* ===================
+   Attunements Section
+   =================== */
+
+.attunements-section {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.attunements-section .section-header {
+    color: #9ab;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1em;
+}
+
+.attunements-section .attunement-info {
+    font-size: 0.85em;
+    color: #888;
+    font-weight: normal;
+    margin-left: auto;
+}
+
+.attunement-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.attunement-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.attunement-slot.overextended {
+    background: rgba(255, 152, 0, 0.1);
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 152, 0, 0.4);
+}
+
+.attunement-slot .slot-label {
+    font-weight: 600;
+    color: #9ab;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.overextended-badge {
+    color: #ff9800;
+    font-weight: bold;
+    font-size: 0.8em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.4rem;
+    background: rgba(255, 152, 0, 0.2);
+    border-radius: 3px;
+}
+
+.attunement-drop-zone {
+    min-height: 70px;
+    background: rgba(64, 224, 208, 0.05);
+    border: 2px dashed rgba(64, 224, 208, 0.3);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.attunement-drop-zone:hover {
+    border-color: rgba(64, 224, 208, 0.5);
+    background: rgba(64, 224, 208, 0.1);
+}
+
+.attunement-drop-zone.drag-over {
+    border-color: #40e0d0;
+    background: rgba(64, 224, 208, 0.2);
+    border-style: solid;
+}
+
+.attunement-drop-zone.overextended-zone {
+    border-color: rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.08);
+}
+
+/* Attunement warning (Shaken from overextended slot) */
+.attunement-warning {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 152, 0, 0.15);
+    border: 1px solid rgba(255, 152, 0, 0.5);
+    border-radius: 4px;
+    color: #ff9800;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.attunement-warning i {
+    font-size: 1.1em;
+}
+
+/* ===================
+   Responsive Design
+   =================== */
+
+@media (max-width: 768px) {
+    .inventory-summary {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .bulk-section,
+    .wealth-section {
+        justify-content: space-between;
+    }
+
+    .equipment-drop-zones {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===========================================
+   ABILITIES ACCORDION - Phase 13
+   Granted abilities display with categories
+   =========================================== */
+
+/* ===================
+   Exotic Senses Icon (Header)
+   =================== */
+
+.exotic-senses-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(147, 112, 219, 0.2);
+    border: 1px solid rgba(147, 112, 219, 0.5);
+    border-radius: 50%;
+    color: #9370db;
+    cursor: help;
+    transition: all 0.2s ease;
+    margin-left: auto;
+}
+
+.exotic-senses-icon:hover {
+    background: rgba(147, 112, 219, 0.35);
+    border-color: rgba(147, 112, 219, 0.8);
+    transform: scale(1.1);
+}
+
+.exotic-senses-icon i {
+    font-size: 1em;
+}
+
+/* ===================
+   Abilities Accordion Container
+   =================== */
+
+.abilities-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ===================
+   Ability Category (Accordion Section)
+   =================== */
+
+.ability-category {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ability-category[open] {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.ability-category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(58, 74, 90, 0.3);
+    color: #9ab;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+    list-style: none;
+}
+
+.ability-category-header::-webkit-details-marker {
+    display: none;
+}
+
+.ability-category-header::before {
+    content: "\f054";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 0.7em;
+    transition: transform 0.2s ease;
+    width: 12px;
+    text-align: center;
+}
+
+.ability-category[open] > .ability-category-header::before {
+    transform: rotate(90deg);
+}
+
+.ability-category-header:hover {
+    background: rgba(58, 74, 90, 0.5);
+}
+
+.ability-category-header i {
+    font-size: 0.9em;
+    opacity: 0.8;
+    width: 18px;
+    text-align: center;
+}
+
+.ability-count {
+    margin-left: auto;
+    font-size: 0.85em;
+    font-weight: normal;
+    color: #888;
+}
+
+/* Drawback category styling */
+.ability-category.drawback-category {
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.ability-category.drawback-category > .ability-category-header {
+    background: rgba(244, 67, 54, 0.15);
+    color: #ff8a80;
+}
+
+.ability-category.drawback-category > .ability-category-header:hover {
+    background: rgba(244, 67, 54, 0.25);
+}
+
+/* ===================
+   Ability List
+   =================== */
+
+.ability-list {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.no-abilities {
+    padding: 1rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* ===================
+   Ability Subsection (e.g., Strike Actions under Dominant)
+   =================== */
+
+.ability-subsection {
+    margin-bottom: 0.5rem;
+}
+
+.ability-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.ability-subsection-header {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.5rem 0.25rem;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===================
+   Ability Item (Individual Ability)
+   =================== */
+
+.ability-item {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+}
+
+.ability-item[open] {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.ability-name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9em;
+    color: #d4d4d4;
+    list-style: none;
+    transition: background-color 0.15s ease;
+}
+
+.ability-name::-webkit-details-marker {
+    display: none;
+}
+
+.ability-name:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ability-tags {
+    font-size: 0.85em;
+    color: #888;
+    font-style: italic;
+}
+
+.ability-source {
+    font-size: 0.8em;
+    color: #666;
+    margin-left: auto;
+}
+
+/* Drawback ability styling */
+.ability-item.drawback-ability {
+    border-color: rgba(244, 67, 54, 0.2);
+}
+
+.ability-item.drawback-ability .ability-name {
+    color: #ff8a80;
+}
+
+/* Strike ability styling */
+.ability-item.strike-ability {
+    border-left: 3px solid rgba(255, 152, 0, 0.5);
+}
+
+/* ===================
+   Ability Description
+   =================== */
+
+.ability-description {
+    padding: 0.75rem;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: #b4b4b4;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.ability-description p {
+    margin: 0 0 0.5rem 0;
+}
+
+.ability-description p:last-child {
+    margin-bottom: 0;
+}
+
+.ability-description ul,
+.ability-description ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.ability-description li {
+    margin-bottom: 0.25rem;
+}
+
+/* ===================
+   Empty State
+   =================== */
+
+.abilities-accordion:empty::before {
+    content: "No abilities available";
+    display: block;
+    padding: 2rem;
+    text-align: center;
+    color: #666;
     font-style: italic;
 }

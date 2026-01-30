@@ -14,6 +14,18 @@
             "discord": "https://discord.gg/qU83g3F2qY"
         }
     ],
+    "relationships": {
+        "requires": [
+            {
+                "id": "lib-wrapper",
+                "type": "module",
+                "manifest": "https://github.com/ruipin/fvtt-lib-wrapper/releases/latest/download/module.json",
+                "compatibility": {
+                    "verified": "1.12.14.0"
+                }
+            }
+        ]
+    },
     "esmodules": [
         "module/zwolf-epic.mjs"
     ],
@@ -21,7 +33,8 @@
         "styles/variables.css",
         "styles/zwolf-epic.css",
         "styles/actor-sheets.css",
-        "styles/item-sheets.css"
+        "styles/item-sheets.css",
+        "styles/dice.css"
     ],
     "languages": [
         {

@@ -121,21 +121,21 @@
       </div>
     </div>
     
-    {{#unless sideEffects.speedProgression}}
-      <div class="resource speed-resource">
-        <label>{{localize "ZWOLF.Speed"}}</label>
-        <div class="resource-value-single">
-          <div class="speed-with-roll">
+    <div class="resource speed-resource">
+      <label>{{localize "ZWOLF.Speed"}}</label>
+      <div class="resource-value-single">
+        <div class="speed-with-roll">
+          {{#if sideEffects.speedProgression}}
+            <span class="calculated-value">{{formatBonus speedBonus}}</span>
+          {{else}}
             <span class="static-value">+0</span>
-            <i class="fas fa-dice-d12 speed-roll-die" 
-               data-action="rollSpeed"
-               data-modifier="0" 
-               data-flavor="{{localize 'ZWOLF.SpeedCheck'}}"
-               title="{{localize 'ZWOLF.RollSpeedCheck'}}"></i>
-          </div>
+          {{/if}}
+          <i class="fas fa-dice-d12 speed-roll-die"
+             data-action="rollSpeed"
+             title="{{localize 'ZWOLF.RollSpeedCheck'}}"></i>
         </div>
       </div>
-    {{/unless}}
+    </div>
 
     {{#if isCharacter}}
       <div class="resource rest-buttons-resource">
@@ -198,9 +198,9 @@
       </div>
     {{/if}}
     
-    {{#if abilityCategories.exoticSenses.length}}
-      <div class="exotic-senses-icon" 
-           title="{{#each abilityCategories.exoticSenses}}{{name}}{{#if tags}} · {{tags}}{{/if}}{{#unless @last}}, {{/unless}}{{/each}}">
+    {{#if exoticSensesDisplay.hasContent}}
+      <div class="exotic-senses-icon"
+           title="{{#each exoticSensesDisplay.items}}{{name}}{{#if tags}} ({{tags}}){{/if}}{{#if source}} — {{source}}{{/if}}{{#unless @last}}&#10;{{/unless}}{{/each}}">
         <i class="fas fa-eye"></i>
       </div>
     {{/if}}
