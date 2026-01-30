@@ -62,6 +62,11 @@ export class ZWolfDice {
             return null;
         }
 
+        // Get net boosts from UI if not provided
+        if (netBoosts === null || netBoosts === undefined) {
+            netBoosts = ZWolfDiceUI.getNetBoosts();
+        }
+
         const skill = actor.system.skills?.[skillName];
 
         if (!skill || !skill.progression) {
@@ -96,6 +101,11 @@ export class ZWolfDice {
         if (!actor) {
             ui.notifications.warn(game.i18n.localize("ZWOLF_DICE.NoActor"));
             return null;
+        }
+
+        // Get net boosts from UI if not provided
+        if (netBoosts === null || netBoosts === undefined) {
+            netBoosts = ZWolfDiceUI.getNetBoosts();
         }
 
         const attribute = actor.system.attributes?.[attributeName];
@@ -134,6 +144,11 @@ export class ZWolfDice {
             return null;
         }
 
+        // Get net boosts from UI if not provided
+        if (netBoosts === null || netBoosts === undefined) {
+            netBoosts = ZWolfDiceUI.getNetBoosts();
+        }
+
         // If no speed progression, use +0 modifier
         const modifier = speedProgression ? calculateProgressionBonus(actor, speedProgression) : 0;
         const flavor = game.i18n.localize("ZWOLF.SpeedCheck");
@@ -161,6 +176,11 @@ export class ZWolfDice {
         if (!actor) {
             ui.notifications.warn(game.i18n.localize("ZWOLF_DICE.NoActor"));
             return null;
+        }
+
+        // Get net boosts from UI if not provided
+        if (netBoosts === null || netBoosts === undefined) {
+            netBoosts = ZWolfDiceUI.getNetBoosts();
         }
 
         const progressionDisplayName = game.i18n.localize(`ZWOLF.${capitalize(progression)}`) || capitalize(progression);

@@ -1963,17 +1963,14 @@
     display: none;
 }
 
-.ability-category-header::before {
-    content: "\f054";
-    font-family: "Font Awesome 6 Free";
-    font-weight: 900;
+.ability-category-header .accordion-chevron {
     font-size: 0.7em;
     transition: transform 0.2s ease;
     width: 12px;
     text-align: center;
 }
 
-.ability-category[open] > .ability-category-header::before {
+.ability-category[open] > .ability-category-header .accordion-chevron {
     transform: rotate(90deg);
 }
 
@@ -2090,6 +2087,18 @@
     background: rgba(255, 255, 255, 0.05);
 }
 
+.ability-name .accordion-chevron {
+    font-size: 0.65em;
+    transition: transform 0.2s ease;
+    width: 10px;
+    text-align: center;
+    color: #666;
+}
+
+.ability-item[open] > .ability-name .accordion-chevron {
+    transform: rotate(90deg);
+}
+
 .ability-tags {
     font-size: 0.85em;
     color: #888;
@@ -2158,4 +2167,94 @@
     text-align: center;
     color: #666;
     font-style: italic;
+}
+
+/* ===========================================
+   BIOGRAPHY TAB
+   Liabilities, languages, notes sections
+   =========================================== */
+
+.biography-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.languages-section,
+.liabilities-section,
+.notes-section {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+/* Override generic tab h3 underline for biography sections */
+.biography-content h3 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0.75rem;
+}
+
+/* Languages collapsible section */
+.languages-section {
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.languages-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+}
+
+.languages-header::-webkit-details-marker {
+    display: none;
+}
+
+.languages-header .accordion-chevron {
+    font-size: 0.7em;
+    transition: transform 0.2s ease;
+    width: 12px;
+    text-align: center;
+}
+
+.languages-section[open] > .languages-header .accordion-chevron {
+    transform: rotate(90deg);
+}
+
+.languages-title {
+    font-weight: 600;
+    color: #9ab;
+}
+
+.language-count {
+    font-size: 0.9em;
+    font-weight: normal;
+    color: #888;
+}
+
+.languages-content {
+    padding: 0 1rem 1rem;
+}
+
+/* No content message */
+.no-content-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
+}
+
+.no-content-message i {
+    font-size: 1.2em;
+    opacity: 0.7;
 }
