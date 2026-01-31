@@ -1,0 +1,6 @@
+# LevelDB compendium runtime files
+packs/**/LOCK
+packs/**/*.ldb
+packs/**/LOG
+packs/**/LOG.old
+packs/**/*.log
