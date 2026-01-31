@@ -298,7 +298,7 @@
     background: #252525;
     border-right: 2px solid #3a3a3a;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding: 0.9rem 0.5rem 0.5rem;
 }
 
 .progressions-container {
@@ -363,42 +363,42 @@
 }
 
 .progression-header .progression-die:hover {
-    color: #fff;
+    color: var(--z-wolf-primary, #4a90a4);
     transform: translateY(-50%) scale(1.15);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 /* Color-coded progression headers matching slider colors */
 .progression-group.mediocre .progression-header {
-    background: linear-gradient(135deg, #c62828, #a31d1d);
+    background: linear-gradient(135deg, #a31d1d, #8b1515);
 }
 
 .progression-group.mediocre .progression-header:hover {
-    background: linear-gradient(135deg, #d32f2f, #b71c1c);
+    background: linear-gradient(135deg, #b71c1c, #a31d1d);
 }
 
 .progression-group.moderate .progression-header {
-    background: linear-gradient(135deg, #ff9800, #e68900);
+    background: linear-gradient(135deg, #c79100, #a67900);
 }
 
 .progression-group.moderate .progression-header:hover {
-    background: linear-gradient(135deg, #ffa726, #ff9800);
+    background: linear-gradient(135deg, #d9a000, #c79100);
 }
 
 .progression-group.specialty .progression-header {
-    background: linear-gradient(135deg, #4caf50, #388e3c);
+    background: linear-gradient(135deg, #388e3c, #2e7d32);
 }
 
 .progression-group.specialty .progression-header:hover {
-    background: linear-gradient(135deg, #66bb6a, #4caf50);
+    background: linear-gradient(135deg, #43a047, #388e3c);
 }
 
 .progression-group.awesome .progression-header {
-    background: linear-gradient(135deg, #2196f3, #1976d2);
+    background: linear-gradient(135deg, #1976d2, #1565c0);
 }
 
 .progression-group.awesome .progression-header:hover {
-    background: linear-gradient(135deg, #42a5f5, #2196f3);
+    background: linear-gradient(135deg, #1e88e5, #1976d2);
 }
 
 .progression-bonus {
@@ -1240,10 +1240,10 @@
     width: 100%;
     height: 8px;
     background: linear-gradient(to right,
-        #c62828 0%, #c62828 25%,
-        #ff9800 25%, #ff9800 50%,
-        #4caf50 50%, #4caf50 75%,
-        #2196f3 75%, #2196f3 100%);
+        #a31d1d 0%, #a31d1d 25%,
+        #c79100 25%, #c79100 50%,
+        #388e3c 50%, #388e3c 75%,
+        #1976d2 75%, #1976d2 100%);
     border-radius: 4px;
     outline: none;
     cursor: pointer;
@@ -2257,4 +2257,161 @@
 .no-content-message i {
     font-size: 1.2em;
     opacity: 0.7;
+}
+
+/* ===========================================
+   PHASE 17: ACTOR TYPE TRAITS
+   Eidolon (Gemini), Spawn (Swarmer), Mook (Shape Ally)
+   =========================================== */
+
+/* ===================
+   Trait Badges
+   =================== */
+
+.trait-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.75rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.2s ease;
+}
+
+.trait-badge i {
+    font-size: 0.9em;
+}
+
+/* Gemini trait (Eidolon) */
+.trait-badge.trait-gemini {
+    background: linear-gradient(135deg, rgba(147, 112, 219, 0.3), rgba(106, 90, 205, 0.3));
+    border: 1px solid rgba(147, 112, 219, 0.6);
+    color: #c9b8f0;
+}
+
+.trait-badge.trait-gemini:hover {
+    background: linear-gradient(135deg, rgba(147, 112, 219, 0.5), rgba(106, 90, 205, 0.5));
+    border-color: rgba(147, 112, 219, 0.9);
+    transform: translateY(-1px);
+}
+
+/* Swarmer trait (Spawn) */
+.trait-badge.trait-swarmer {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.3));
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    color: #a5d6a7;
+}
+
+.trait-badge.trait-swarmer:hover {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.5), rgba(56, 142, 60, 0.5));
+    border-color: rgba(76, 175, 80, 0.9);
+    transform: translateY(-1px);
+}
+
+/* Shape Ally trait (Mook) */
+.trait-badge.trait-shapeAlly {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(245, 124, 0, 0.3));
+    border: 1px solid rgba(255, 152, 0, 0.6);
+    color: #ffcc80;
+}
+
+.trait-badge.trait-shapeAlly:hover {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.5), rgba(245, 124, 0, 0.5));
+    border-color: rgba(255, 152, 0, 0.9);
+    transform: translateY(-1px);
+}
+
+/* ===================
+   Mirroring Base Indicator (Spawns)
+   =================== */
+
+.mirroring-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    border-radius: 4px;
+    color: #81c784;
+    font-size: 0.85em;
+    margin-left: auto;
+}
+
+.mirroring-indicator i {
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===================
+   No Base Creature Warning
+   =================== */
+
+.no-base-warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    background: rgba(244, 67, 54, 0.15);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    border-radius: 4px;
+    color: #ef9a9a;
+    font-size: 0.85em;
+    margin-left: auto;
+}
+
+.no-base-warning i {
+    color: #f44336;
+}
+
+/* ===================
+   Spawn Header Adjustments
+   =================== */
+
+.spawn-header .header-line-2 {
+    flex-wrap: wrap;
+}
+
+/* ===================
+   Mook Header Adjustments
+   =================== */
+
+.mook-header .header-line-2 {
+    flex-wrap: wrap;
+}
+
+/* Mook combined TN styling */
+.tn-group-mook .tn-combined .tn-value {
+    font-size: 1.4em;
+    color: #ffd54f;
+}
+
+/* ===================
+   Character Name with Trait Badge Alignment
+   =================== */
+
+.sheet-header .charname {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sheet-header .charname input {
+    flex: 1;
+    min-width: 150px;
 }

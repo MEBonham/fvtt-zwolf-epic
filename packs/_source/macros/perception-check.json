@@ -1,0 +1,11 @@
+{
+    "name": "Perception Check",
+    "type": "script",
+    "img": "icons/magic/perception/eye-ringed-glow-angry-small-red.webp",
+    "scope": "global",
+    "command": "/**\n * Z-Wolf Epic - Perception Check\n * Rolls a Perception attribute check for the selected token.\n * Uses current Net Boosts from the Dice UI.\n */\n\n// Verify Z-Wolf Epic dice system is available\nif (!window.ZWolfDice) {\n    ui.notifications.error(\"Z-Wolf Epic dice system not loaded!\");\n    return;\n}\n\n// Get selected tokens\nconst tokens = canvas.tokens.controlled;\n\n// Validate selection\nif (tokens.length === 0) {\n    ui.notifications.warn(\"Please select a token first.\");\n    return;\n}\n\nif (tokens.length > 1) {\n    ui.notifications.warn(\"Please select only one token.\");\n    return;\n}\n\nconst token = tokens[0];\nconst actor = token.actor;\n\n// Validate actor exists\nif (!actor) {\n    ui.notifications.error(\"Selected token has no associated actor.\");\n    return;\n}\n\n// Validate actor has the attribute\nif (!actor.system.attributes?.perception) {\n    ui.notifications.warn(`${actor.name} does not have a Perception attribute.`);\n    return;\n}\n\n// Get net boosts from dice UI\nconst netBoosts = ZWolfDice.getNetBoosts();\n\n// Roll the attribute check\nawait ZWolfDice.rollAttribute(actor, \"perception\", netBoosts);",
+    "flags": {},
+    "ownership": {
+        "default": 0
+    }
+}

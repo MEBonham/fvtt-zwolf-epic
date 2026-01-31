@@ -63,6 +63,16 @@ export class ZWolfActor extends Actor {
         if (["pc", "npc", "eidolon"].includes(this.type)) {
             this._prepareCharacterDerivedData();
         }
+
+        // Handle spawn "mirror base" - copy progressions from base creature
+        if (this.type === "spawn") {
+            this._prepareSpawnDerivedData();
+        }
+
+        // Handle mook derived data
+        if (this.type === "mook") {
+            this._prepareMookDerivedData();
+        }
     }
 
     // ========================================
@@ -167,6 +177,119 @@ export class ZWolfActor extends Actor {
             console.error("Z-Wolf Epic | Error calculating coast:", error);
             return DEFAULT_COAST;
         }
+    }
+
+    // ========================================
+    // SPAWN DERIVED DATA (PHASE 17)
+    // ========================================
+
+    /**
+     * Prepare derived data for spawn actors
+     * Implements the "Swarmer" trait - mirrors base creature's progressions
+     * @private
+     */
+    _prepareSpawnDerivedData() {
+        const baseCreature = this.system.baseCreatureId
+            ? game.actors.get(this.system.baseCreatureId)
+            : null;
+
+        if (!baseCreature) {
+            // No base creature - use defaults
+            return;
+        }
+
+        // Mirror attributes from base creature
+        if (baseCreature.system.attributes) {
+            this.system.attributes = foundry.utils.deepClone(baseCreature.system.attributes);
+        }
+
+        // Mirror skills from base creature
+        if (baseCreature.system.skills) {
+            this.system.skills = foundry.utils.deepClone(baseCreature.system.skills);
+        }
+
+        // Mirror level from base creature
+        this.system.level = baseCreature.system.level || 0;
+
+        // Mirror size from base creature
+        this.system.size = baseCreature.system.size || "medium";
+        this.system.effectiveSize = baseCreature.system.effectiveSize || this.system.size;
+
+        // Mirror tags from base creature
+        this.system.tags = baseCreature.system.tags || "Humanoid";
+
+        // Mirror coast number from base creature
+        this.system.coastNumber = baseCreature.system.coastNumber || 4;
+
+        // Mark as mirroring base for UI display
+        this.system.mirroringBase = true;
+    }
+
+    // ========================================
+    // MOOK DERIVED DATA (PHASE 17)
+    // ========================================
+
+    /**
+     * Prepare derived data for mook actors
+     * Implements the "Shape Ally" trait - simplified stats from base creature
+     * @private
+     */
+    _prepareMookDerivedData() {
+        const baseCreature = this.system.baseCreatureId
+            ? game.actors.get(this.system.baseCreatureId)
+            : null;
+
+        if (!baseCreature) {
+            // No base creature - use defaults
+            return;
+        }
+
+        // Mooks use base creature's level
+        this.system.level = baseCreature.system.level || 0;
+
+        // Mooks use base creature's size
+        this.system.size = baseCreature.system.size || "medium";
+        this.system.effectiveSize = baseCreature.system.effectiveSize || this.system.size;
+
+        // Mooks can have their own tags or inherit from base
+        if (!this.system.tags || this.system.tags === "Humanoid") {
+            this.system.tags = baseCreature.system.tags || "Humanoid";
+        }
+
+        // Mooks use simplified progressions: poor (mediocre) and good (moderate)
+        // Convert base creature's progressions to simplified versions
+        this.system.attributes = this._simplifyProgressions(baseCreature.system.attributes);
+        this.system.skills = this._simplifyProgressions(baseCreature.system.skills);
+
+        // Coast number from base creature
+        this.system.coastNumber = baseCreature.system.coastNumber || 4;
+    }
+
+    /**
+     * Convert full progressions to simplified mook progressions (poor/good)
+     * mediocre stays as mediocre (poor)
+     * moderate, specialty, awesome become moderate (good)
+     * @param {Object} stats - Stats object with progressions
+     * @returns {Object} Simplified stats object
+     * @private
+     */
+    _simplifyProgressions(stats) {
+        if (!stats) return {};
+
+        const simplified = {};
+
+        for (const [key, value] of Object.entries(stats)) {
+            const progression = value?.progression || "mediocre";
+            // Simplify: mediocre -> mediocre (poor), everything else -> moderate (good)
+            const simplifiedProgression = progression === "mediocre" ? "mediocre" : "moderate";
+
+            simplified[key] = {
+                ...value,
+                progression: simplifiedProgression
+            };
+        }
+
+        return simplified;
     }
 
     // ========================================

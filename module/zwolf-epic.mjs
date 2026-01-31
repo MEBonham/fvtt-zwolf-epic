@@ -25,6 +25,13 @@ import { registerItemContextMenuOption } from "./helpers/item-sync.mjs";
 
 // Import hooks
 import { registerItemHooks } from "./hooks/item.mjs";
+import { registerCombatHooks } from "./hooks/combat.mjs";
+import { registerTokenHooks } from "./hooks/token.mjs";
+import { registerActorDirectoryHook } from "./hooks/ui.mjs";
+import { registerConditionLogger } from "./hooks/condition-logger.mjs";
+
+// Import compendium helpers
+import { populateMacrosCompendium, registerMacroSettings } from "./helpers/compendium-macros.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -73,8 +80,23 @@ Hooks.once("init", async function () {
     // Register item hooks (source tracking for Push to Actors)
     registerItemHooks();
 
+    // Register combat hooks (custom initiative system)
+    registerCombatHooks();
+
+    // Register token hooks (HUD modifications, detection modes)
+    registerTokenHooks();
+
+    // Register UI hooks (actor directory level display)
+    registerActorDirectoryHook();
+
+    // Register condition logger (chat messages for condition changes)
+    registerConditionLogger();
+
     // Register item context menu option (Push to Actors)
     registerItemContextMenuOption();
+
+    // Register macro compendium settings
+    registerMacroSettings();
 
     // Initialize dice system (Phase 15)
     ZWolfDice.initialize();
@@ -98,4 +120,7 @@ Hooks.once("ready", async function () {
 
     // Initialize vision radius display (Phase 14)
     ZWolfVisionRadiusDisplay.initialize();
+
+    // Populate macros compendium on first load
+    await populateMacrosCompendium();
 });

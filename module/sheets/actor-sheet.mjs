@@ -143,6 +143,11 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             challenge: calculateTn("specialty", level, progressionOnlyLevel)
         };
 
+        // Mooks use combined Toughness/Destiny TN (average of the two, rounded up)
+        if (context.isMook) {
+            context.tns.combined = Math.ceil((context.tns.toughness + context.tns.destiny) / 2);
+        }
+
         // Calculate slots (Phase 8)
         if (context.isEidolon) {
             // Eidolons use special slot calculations
@@ -177,6 +182,24 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         // Gather granted abilities (Phase 13)
         context.abilityCategories = this._gatherGrantedAbilities();
 
+        // Add proficiencies as a virtual passive ability if any exist
+        if (sideEffects.proficiencies?.length > 0) {
+            const proficiencyAbility = this._buildProficienciesAbility(sideEffects.proficiencies);
+            context.abilityCategories.passive.unshift(proficiencyAbility);
+        }
+
+        // Add resistances as a virtual passive ability if any exist
+        if (sideEffects.resistances?.length > 0) {
+            const resistanceAbility = this._buildResistancesAbility(sideEffects.resistances);
+            context.abilityCategories.passive.unshift(resistanceAbility);
+        }
+
+        // Add vulnerabilities as a virtual drawback if any exist
+        if (sideEffects.vulnerabilities?.length > 0) {
+            const vulnerabilityAbility = this._buildVulnerabilitiesAbility(sideEffects.vulnerabilities);
+            context.abilityCategories.drawback.unshift(vulnerabilityAbility);
+        }
+
         // Format character tags for display (Phase 13)
         context.characterTags = sideEffects.characterTags?.join(", ") || "";
 
@@ -204,6 +227,25 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             maxStamina: context.system.staminaPoints?.max ?? 4,
             coastNumber: context.system.coastNumber ?? 4
         };
+
+        // Get base creature for spawns and mooks (Phase 17)
+        if (context.isSpawn || context.isMook || context.isEidolon) {
+            context.baseCreature = context.system.baseCreatureId
+                ? game.actors.get(context.system.baseCreatureId)?.toObject()
+                : null;
+            context.hasBaseCreature = !!context.baseCreature;
+
+            // Add trait information
+            context.trait = context.system.trait || this._getDefaultTrait();
+            context.traitLabel = this._getTraitLabel(context.trait);
+            context.traitDescription = this._getTraitDescription(context.trait);
+
+            // Flag if spawn is mirroring base
+            context.mirroringBase = context.system.mirroringBase || false;
+
+            // Get available base creatures for the selector dropdown
+            context.availableBaseCreatures = this._getAvailableBaseCreatures();
+        }
 
         return context;
     }
@@ -577,6 +619,114 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         });
 
         return categories;
+    }
+
+    /**
+     * Build a virtual "Proficiencies" ability from collected proficiency keys
+     * @param {Array<string>} proficiencyKeys - Array of proficiency keys
+     * @returns {Object} Ability object for display
+     * @private
+     */
+    _buildProficienciesAbility(proficiencyKeys) {
+        const proficiencies = CONFIG.ZWOLF.proficiencies;
+
+        // Group proficiencies by type
+        const grouped = {
+            seed: [],
+            weapon: [],
+            miscellaneous: []
+        };
+
+        proficiencyKeys.forEach(key => {
+            const prof = proficiencies[key];
+            if (prof) {
+                grouped[prof.type].push(prof.label);
+            }
+        });
+
+        // Build description parts
+        const parts = [];
+
+        if (grouped.seed.length > 0) {
+            grouped.seed.sort();
+            parts.push(`<strong>${game.i18n.localize("ZWOLF.SeedProficiencies")}:</strong> ${grouped.seed.join(", ")}`);
+        }
+
+        if (grouped.weapon.length > 0) {
+            grouped.weapon.sort();
+            parts.push(`<strong>${game.i18n.localize("ZWOLF.WeaponProficiencies")}:</strong> ${grouped.weapon.join(", ")}`);
+        }
+
+        if (grouped.miscellaneous.length > 0) {
+            grouped.miscellaneous.sort();
+            parts.push(`<strong>${game.i18n.localize("ZWOLF.MiscellaneousProficiencies")}:</strong> ${grouped.miscellaneous.join(", ")}`);
+        }
+
+        return {
+            id: "virtual-proficiencies",
+            name: game.i18n.localize("ZWOLF.Proficiencies"),
+            type: "passive",
+            tags: "",
+            description: parts.join("<br>"),
+            itemId: null,
+            itemName: ""
+        };
+    }
+
+    /**
+     * Build a virtual "Resistances" ability from collected resistance keys
+     * @param {Array<string>} resistanceKeys - Array of damage type keys
+     * @returns {Object} Ability object for display
+     * @private
+     */
+    _buildResistancesAbility(resistanceKeys) {
+        const damageTypes = CONFIG.ZWOLF.damageTypes;
+
+        // Get localized labels for each resistance
+        const labels = resistanceKeys
+            .map(key => {
+                const dmgType = damageTypes[key];
+                return dmgType ? game.i18n.localize(dmgType.label) : key;
+            })
+            .sort();
+
+        return {
+            id: "virtual-resistances",
+            name: game.i18n.localize("ZWOLF.Resistances"),
+            type: "passive",
+            tags: "",
+            description: labels.join(", "),
+            itemId: null,
+            itemName: ""
+        };
+    }
+
+    /**
+     * Build a virtual "Vulnerabilities" drawback from collected vulnerability keys
+     * @param {Array<string>} vulnerabilityKeys - Array of damage type keys
+     * @returns {Object} Ability object for display
+     * @private
+     */
+    _buildVulnerabilitiesAbility(vulnerabilityKeys) {
+        const damageTypes = CONFIG.ZWOLF.damageTypes;
+
+        // Get localized labels for each vulnerability
+        const labels = vulnerabilityKeys
+            .map(key => {
+                const dmgType = damageTypes[key];
+                return dmgType ? game.i18n.localize(dmgType.label) : key;
+            })
+            .sort();
+
+        return {
+            id: "virtual-vulnerabilities",
+            name: game.i18n.localize("ZWOLF.Vulnerabilities"),
+            type: "drawback",
+            tags: "",
+            description: labels.join(", "),
+            itemId: null,
+            itemName: ""
+        };
     }
 
     /**
@@ -1894,7 +2044,7 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     /**
      * Handle taking a short rest
-     * Costs 1 SP, restores VP to max
+     * Costs 1 SP, restores VP to max, grants Suffused condition
      * @param {Event} event - The triggering event
      * @param {HTMLElement} target - The element that was clicked
      */
@@ -1915,6 +2065,7 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
                 <ul>
                     <li>${game.i18n.format("ZWOLF.SpendStamina", { current: currentSP, new: currentSP - 1 })}</li>
                     <li>${game.i18n.localize("ZWOLF.RestoreVitality")}</li>
+                    <li>${game.i18n.localize("ZWOLF.GainSuffused")}</li>
                 </ul>`,
             rejectClose: false,
             modal: true
@@ -1929,6 +2080,9 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
                 "system.vitalityPoints.value": maxVP
             });
 
+            // Add Suffused condition
+            await this.#addCondition("suffused");
+
             ui.notifications.info(game.i18n.localize("ZWOLF.ShortRestComplete"));
         } catch (error) {
             console.error("Z-Wolf Epic | Error during Short Rest:", error);
@@ -1938,7 +2092,7 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     /**
      * Handle taking an extended rest
-     * Restores SP and VP to max
+     * Restores SP and VP to max, grants Suffused, removes Bruised
      * @param {Event} event - The triggering event
      * @param {HTMLElement} target - The element that was clicked
      */
@@ -1953,6 +2107,9 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
                 <ul>
                     <li>${game.i18n.localize("ZWOLF.RestoreStamina")}</li>
                     <li>${game.i18n.localize("ZWOLF.RestoreVitality")}</li>
+                    <li>${game.i18n.localize("ZWOLF.GainSuffused")}</li>
+                    <li>${game.i18n.localize("ZWOLF.RemoveBruised")}</li>
+                    <li>${game.i18n.localize("ZWOLF.FortitudeReminder")}</li>
                 </ul>`,
             rejectClose: false,
             modal: true
@@ -1967,10 +2124,69 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
                 "system.vitalityPoints.value": maxVP
             });
 
-            ui.notifications.info(game.i18n.localize("ZWOLF.ExtendedRestComplete"));
+            // Add Suffused condition
+            await this.#addCondition("suffused");
+
+            // Remove Bruised condition
+            await this.#removeCondition("bruised");
+
+            // Check for Dying/Wounded and show reminder
+            const hasDying = this.document.effects.find(e => e.statuses.has("dying"));
+            const hasWounded = this.document.effects.find(e => e.statuses.has("wounded"));
+
+            if (hasDying || hasWounded) {
+                ui.notifications.info(game.i18n.localize("ZWOLF.ExtendedRestCompleteWithReminder"));
+            } else {
+                ui.notifications.info(game.i18n.localize("ZWOLF.ExtendedRestComplete"));
+            }
         } catch (error) {
             console.error("Z-Wolf Epic | Error during Extended Rest:", error);
             ui.notifications.error(game.i18n.localize("ZWOLF.RestFailed"));
+        }
+    }
+
+    // ========================================
+    // CONDITION HELPER METHODS
+    // ========================================
+
+    /**
+     * Add a condition effect to the actor
+     * @param {string} conditionId - The condition ID to add
+     */
+    async #addCondition(conditionId) {
+        // Check if condition already exists
+        const existingEffect = this.document.effects.find(e => e.statuses.has(conditionId));
+        if (existingEffect) {
+            console.log(`Z-Wolf Epic | ${conditionId} condition already exists`);
+            return;
+        }
+
+        const conditionData = CONFIG.ZWOLF?.conditions?.[conditionId];
+        if (!conditionData) {
+            console.error(`Z-Wolf Epic | Unknown condition: ${conditionId}`);
+            return;
+        }
+
+        // Create the effect
+        const effectData = {
+            name: game.i18n.localize(conditionData.label),
+            icon: conditionData.icon,
+            statuses: [conditionId]
+        };
+
+        await this.document.createEmbeddedDocuments("ActiveEffect", [effectData]);
+        console.log(`Z-Wolf Epic | Added ${conditionId} condition`);
+    }
+
+    /**
+     * Remove a condition effect from the actor
+     * @param {string} conditionId - The condition ID to remove
+     */
+    async #removeCondition(conditionId) {
+        const effect = this.document.effects.find(e => e.statuses.has(conditionId));
+        if (effect) {
+            await effect.delete();
+            console.log(`Z-Wolf Epic | Removed ${conditionId} condition`);
         }
     }
 
@@ -2069,6 +2285,72 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         if (item) {
             await item.update({ "system.placement": newPlacement });
         }
+    }
+
+    // ========================================
+    // PHASE 17: ACTOR TYPE TRAIT HELPERS
+    // ========================================
+
+    /**
+     * Get the default trait for the current actor type
+     * @returns {string} Default trait key
+     * @private
+     */
+    _getDefaultTrait() {
+        const defaults = {
+            eidolon: "gemini",
+            mook: "shapeAlly",
+            spawn: "swarmer"
+        };
+        return defaults[this.actor.type] || "";
+    }
+
+    /**
+     * Get the localized label for a trait
+     * @param {string} trait - Trait key
+     * @returns {string} Localized trait label
+     * @private
+     */
+    _getTraitLabel(trait) {
+        const labels = {
+            gemini: "ZWOLF.TraitGemini",
+            swarmer: "ZWOLF.TraitSwarmer",
+            shapeAlly: "ZWOLF.TraitShapeAlly"
+        };
+        const key = labels[trait];
+        return key ? game.i18n.localize(key) : trait;
+    }
+
+    /**
+     * Get the localized description for a trait
+     * @param {string} trait - Trait key
+     * @returns {string} Localized trait description
+     * @private
+     */
+    _getTraitDescription(trait) {
+        const descriptions = {
+            gemini: "ZWOLF.TraitGeminiDescription",
+            swarmer: "ZWOLF.TraitSwarmerDescription",
+            shapeAlly: "ZWOLF.TraitShapeAllyDescription"
+        };
+        const key = descriptions[trait];
+        return key ? game.i18n.localize(key) : "";
+    }
+
+    /**
+     * Get available base creatures for spawns, mooks, and eidolons
+     * Returns PC and NPC actors that can serve as base creatures
+     * @returns {Array} Array of actor objects suitable for base creature selection
+     * @private
+     */
+    _getAvailableBaseCreatures() {
+        // Get all PC and NPC actors that can serve as base creatures
+        const availableTypes = ["pc", "npc"];
+
+        return game.actors.contents
+            .filter(actor => availableTypes.includes(actor.type) && actor.id !== this.actor.id)
+            .map(actor => actor.toObject())
+            .sort((a, b) => a.name.localeCompare(b.name));
     }
 }
 

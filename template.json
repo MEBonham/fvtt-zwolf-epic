@@ -82,13 +82,16 @@
             "templates": ["base", "partialCharacter", "summoned"],
             "ancestryId": null,
             "buildPointsLocked": false,
-            "wealth": 0
+            "wealth": 0,
+            "trait": "gemini"
         },
         "mook": {
-            "templates": ["base", "summoned"]
+            "templates": ["base", "summoned"],
+            "trait": "shapeAlly"
         },
         "spawn": {
-            "templates": ["base", "summoned"]
+            "templates": ["base", "summoned"],
+            "trait": "swarmer"
         }
     },
     "Item": {

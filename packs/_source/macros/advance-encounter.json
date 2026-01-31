@@ -1,0 +1,11 @@
+{
+    "name": "Advance Encounter",
+    "type": "script",
+    "img": "icons/svg/combat.svg",
+    "scope": "global",
+    "command": "/**\n * Z-Wolf Epic - Advance Combat Turn\n * Advances to the next turn in combat and announces the current combatant.\n */\n\nconst combat = game.combat;\n\n// Check if there's an active combat\nif (!combat) {\n    ui.notifications.warn(\"No active combat!\");\n    return;\n}\n\n// Advance to next turn\nawait combat.nextTurn();\n\n// Get current state after advancing\nconst currentRound = combat.round;\nconst currentTurn = combat.turn + 1; // +1 for human-readable (1-based)\nconst currentCombatant = combat.combatant;\nconst tokenName = currentCombatant?.token?.name || \"(Unknown)\";\n\n// Create chat message\nChatMessage.create({\n    content: `<div style=\"text-align: center; padding: 8px; border: 2px solid var(--z-wolf-primary); border-radius: 4px; background: var(--z-wolf-surface);\">\n        <h3 style=\"margin: 0 0 4px 0; color: var(--z-wolf-primary);\">Round ${currentRound}</h3>\n        <p style=\"margin: 0 0 4px 0;\"><strong>Turn:</strong> ${currentTurn}</p>\n        <p style=\"margin: 0;\"><strong>Acting:</strong> ${tokenName}</p>\n    </div>`,\n    speaker: ChatMessage.getSpeaker()\n});",
+    "flags": {},
+    "ownership": {
+        "default": 0
+    }
+}

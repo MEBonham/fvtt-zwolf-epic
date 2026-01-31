@@ -43,6 +43,19 @@
             "path": "lang/en.json"
         }
     ],
+    "packs": [
+        {
+            "name": "macros",
+            "label": "Z-Wolf Macros",
+            "path": "packs/macros",
+            "type": "Macro",
+            "system": "zwolf-epic",
+            "ownership": {
+                "PLAYER": "OBSERVER",
+                "ASSISTANT": "OWNER"
+            }
+        }
+    ],
     "grid": {
         "distance": 1,
         "units": "m"

@@ -356,9 +356,10 @@
 
 .speed-roll-die {
     cursor: pointer;
-    opacity: 0.6;
+    opacity: 0.8;
     transition: all 0.15s ease;
-    color: #4b4a44;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .speed-roll-die:hover {
