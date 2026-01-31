@@ -4,8 +4,8 @@
  */
 
 export function registerConditionLogger() {
-  Hooks.on("createActiveEffect", onEffectCreate);
-  Hooks.on("deleteActiveEffect", onEffectDelete);
+    Hooks.on("createActiveEffect", onEffectCreate);
+    Hooks.on("deleteActiveEffect", onEffectDelete);
 }
 
 /**
@@ -15,13 +15,13 @@ export function registerConditionLogger() {
  * @param {string} userId - ID of user who created the effect
  */
 async function onEffectCreate(effect, options, userId) {
-  // Only log for token actors and status effects (conditions)
-  if (!effect.parent?.isToken || !effect.statuses.size) return;
-  
-  const token = effect.parent.token;
-  const condition = Array.from(effect.statuses)[0]; // Get first status
-  
-  await postConditionMessage(token, condition, "added", userId);
+    // Only log for token actors and status effects (conditions)
+    if (!effect.parent?.isToken || !effect.statuses.size) return;
+
+    const token = effect.parent.token;
+    const condition = Array.from(effect.statuses)[0]; // Get first status
+
+    await postConditionMessage(token, condition, "added", userId);
 }
 
 /**
@@ -31,13 +31,13 @@ async function onEffectCreate(effect, options, userId) {
  * @param {string} userId - ID of user who deleted the effect
  */
 async function onEffectDelete(effect, options, userId) {
-  // Only log for token actors and status effects (conditions)
-  if (!effect.parent?.isToken || !effect.statuses.size) return;
-  
-  const token = effect.parent.token;
-  const condition = Array.from(effect.statuses)[0]; // Get first status
-  
-  await postConditionMessage(token, condition, "removed", userId);
+    // Only log for token actors and status effects (conditions)
+    if (!effect.parent?.isToken || !effect.statuses.size) return;
+
+    const token = effect.parent.token;
+    const condition = Array.from(effect.statuses)[0]; // Get first status
+
+    await postConditionMessage(token, condition, "removed", userId);
 }
 
 /**
@@ -48,21 +48,31 @@ async function onEffectDelete(effect, options, userId) {
  * @param {string} userId - ID of user who made the change
  */
 async function postConditionMessage(token, condition, action, userId) {
-  const user = game.users.get(userId);
-  const conditionLabel = CONFIG.statusEffects.find(e => e.id === condition)?.label || condition;
-  
-  const messageData = {
-    user: userId,
-    speaker: ChatMessage.getSpeaker({ token }),
-    content: `
-      <div class="zwolf-condition-change">
-        <strong>${token.name}</strong> ${action === "added" ? "gained" : "lost"} the 
-        <strong>${conditionLabel}</strong> condition.
-        ${user ? `<div class="zwolf-condition-user">(by ${user.name})</div>` : ""}
-      </div>
-    `,
-    whisper: action === "removed" ? [] : undefined // Public by default, can modify
-  };
-  
-  await ChatMessage.create(messageData);
+    const user = game.users.get(userId);
+
+    // Try to get condition label from our config, fall back to Foundry's status effects
+    let conditionLabel = CONFIG.ZWOLF?.conditions?.[condition]?.label;
+    if (conditionLabel) {
+        conditionLabel = game.i18n.localize(conditionLabel);
+    } else {
+        conditionLabel = CONFIG.statusEffects.find(e => e.id === condition)?.label || condition;
+    }
+
+    const actionText = action === "added"
+        ? game.i18n.localize("ZWOLF.ConditionGained")
+        : game.i18n.localize("ZWOLF.ConditionLost");
+
+    const messageData = {
+        user: userId,
+        speaker: ChatMessage.getSpeaker({ token }),
+        content: `
+            <div class="zwolf-condition-change">
+                <strong>${token.name}</strong> ${actionText}
+                <strong>${conditionLabel}</strong>.
+                ${user ? `<div class="zwolf-condition-user">(${game.i18n.format("ZWOLF.ByUser", { user: user.name })})</div>` : ""}
+            </div>
+        `
+    };
+
+    await ChatMessage.create(messageData);
 }

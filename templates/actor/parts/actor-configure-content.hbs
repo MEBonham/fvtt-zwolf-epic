@@ -207,7 +207,7 @@
             {{#if talentSlots.length}}
               <div class="talents-grid">
                 {{#each talentSlots as |slot|}}
-                  {{> item-slot 
+                  {{> item-slot
                       slotLabel=(concat (localize "ZWOLF.Talent") " " (math slot.index "+" 1))
                       slotClass="talent-slot"
                       dropZoneClass="talent-drop-zone"
@@ -215,9 +215,10 @@
                       slotIndex=slot.index
                       item=slot.item
                       icon="fa-gem"
+                      compact=true
                       isDisabled=(not slot.hasTrack)
                       disabledReason=(localize "ZWOLF.RequiresTrack" trackNumber=slot.trackNumber)
-                      extraInfo=(ternary slot.hasTrack 
+                      extraInfo=(ternary slot.hasTrack
                                   (concat "(" (localize "ZWOLF.Track") " " slot.trackNumber ": " slot.trackName ")")
                                   (concat "(" (localize "ZWOLF.Track") " " slot.trackNumber ": " (localize "ZWOLF.NotAssigned") ")"))}}
                 {{/each}}

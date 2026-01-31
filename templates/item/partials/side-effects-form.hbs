@@ -1,199 +1,245 @@
 {{!-- templates/item/partials/side-effects-form.hbs --}}
 <div class="side-effects-form">
 
-  <!-- Proficiency Grants Section -->
-  <div class="proficiency-grants">
-    <h4><i class="fas fa-certificate"></i> {{localize 'ZWOLF.ProficiencyGrants'}}</h4>
-    <p class="notes">{{localize 'ZWOLF.ProficiencyGrantsHint'}}</p>
-    
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.GrantedProficiency'}}</label>
-      <select name="{{pathPrefix}}.grantedProficiency" data-dtype="String">
-        <option value="" {{selected '' sideEffects.grantedProficiency}}>
-          {{localize 'ZWOLF.None'}}
-        </option>
-        
-        <optgroup label="{{localize 'ZWOLF.SeedProficiencies'}}">
-          {{#each config.proficiencies}}
-            {{#if (eq this.type 'seed')}}
-              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>
-                {{localize this.label}}
-              </option>
+  <!-- Side Effects List -->
+  <div class="side-effects-list">
+    {{#if sideEffectsArray}}
+      {{#each sideEffectsArray}}
+        <div class="side-effect-item" data-effect-index="{{this.index}}">
+          <!-- Hidden ID field to preserve effect identity -->
+          <input type="hidden" name="{{this.pathPrefix}}.id" value="{{this.id}}"/>
+
+          <div class="side-effect-controls">
+            <!-- Type Selection -->
+            <div class="side-effect-type">
+              <label>{{localize 'ZWOLF.SideEffectType'}}</label>
+              <select name="{{this.pathPrefix}}.type" data-dtype="String">
+                <option value="characterTag" {{selected 'characterTag' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeCharacterTag'}}
+                </option>
+                <option value="proficiency" {{selected 'proficiency' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeProficiency'}}
+                </option>
+                <option value="speedProgression" {{selected 'speedProgression' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeSpeedProgression'}}
+                </option>
+                <option value="toughnessTNProgression" {{selected 'toughnessTNProgression' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeToughnessTNProgression'}}
+                </option>
+                <option value="destinyTNProgression" {{selected 'destinyTNProgression' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeDestinyTNProgression'}}
+                </option>
+                <option value="nightsightRadius" {{selected 'nightsightRadius' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeNightsightRadius'}}
+                </option>
+                <option value="darkvisionRadius" {{selected 'darkvisionRadius' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeDarkvisionRadius'}}
+                </option>
+                <option value="bulkCapacityBoost" {{selected 'bulkCapacityBoost' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeBulkCapacityBoost'}}
+                </option>
+                <option value="sizeModifier" {{selected 'sizeModifier' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeSizeModifier'}}
+                </option>
+                <option value="resistance" {{selected 'resistance' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeResistance'}}
+                </option>
+                <option value="vulnerability" {{selected 'vulnerability' this.type}}>
+                  {{localize 'ZWOLF.SideEffectTypeVulnerability'}}
+                </option>
+              </select>
+            </div>
+
+            {{#if (eq ../itemType "track")}}
+              <!-- Tier Selection (Track items only) -->
+              <div class="side-effect-tier">
+                <label>{{localize 'ZWOLF.Tier'}}</label>
+                <select name="{{this.pathPrefix}}.tier" data-dtype="Number">
+                  <option value="1" {{selected 1 this.tier}}>{{localize 'ZWOLF.Tier'}} 1</option>
+                  <option value="2" {{selected 2 this.tier}}>{{localize 'ZWOLF.Tier'}} 2</option>
+                  <option value="3" {{selected 3 this.tier}}>{{localize 'ZWOLF.Tier'}} 3</option>
+                  <option value="4" {{selected 4 this.tier}}>{{localize 'ZWOLF.Tier'}} 4</option>
+                  <option value="5" {{selected 5 this.tier}}>{{localize 'ZWOLF.Tier'}} 5</option>
+                </select>
+              </div>
             {{/if}}
-          {{/each}}
-        </optgroup>
-        
-        <optgroup label="{{localize 'ZWOLF.WeaponProficiencies'}}">
-          {{#each config.proficiencies}}
-            {{#if (eq this.type 'weapon')}}
-              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>
-                {{localize this.label}}
-              </option>
-            {{/if}}
-          {{/each}}
-        </optgroup>
-        
-        <optgroup label="{{localize 'ZWOLF.MiscellaneousProficiencies'}}">
-          {{#each config.proficiencies}}
-            {{#if (eq this.type 'miscellaneous')}}
-              <option value="{{@key}}" {{selected @key ../sideEffects.grantedProficiency}}>
-                {{localize this.label}}
-              </option>
-            {{/if}}
-          {{/each}}
-        </optgroup>
-      </select>
-      <p class="notes">{{localize 'ZWOLF.GrantedProficiencyHint'}}</p>
-    </div>
+
+            <!-- Value Input (dynamic based on type) -->
+            <div class="side-effect-value">
+              <label>{{localize 'ZWOLF.SideEffectValue'}}</label>
+
+              {{#if (eq this.type 'characterTag')}}
+                <!-- Text input for character tags -->
+                <input type="text"
+                       name="{{this.pathPrefix}}.value"
+                       value="{{this.value}}"
+                       placeholder="{{localize 'ZWOLF.CharacterTagsPlaceholder'}}"/>
+
+              {{else if (eq this.type 'proficiency')}}
+                <!-- Dropdown for proficiencies -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="" {{selected '' this.value}}>
+                    {{localize 'ZWOLF.None'}}
+                  </option>
+                  <optgroup label="{{localize 'ZWOLF.SeedProficiencies'}}">
+                    {{#each ../config.proficiencies}}
+                      {{#if (eq this.type 'seed')}}
+                        <option value="{{@key}}" {{selected @key ../this.value}}>
+                          {{this.label}}
+                        </option>
+                      {{/if}}
+                    {{/each}}
+                  </optgroup>
+                  <optgroup label="{{localize 'ZWOLF.WeaponProficiencies'}}">
+                    {{#each ../config.proficiencies}}
+                      {{#if (eq this.type 'weapon')}}
+                        <option value="{{@key}}" {{selected @key ../this.value}}>
+                          {{this.label}}
+                        </option>
+                      {{/if}}
+                    {{/each}}
+                  </optgroup>
+                  <optgroup label="{{localize 'ZWOLF.MiscellaneousProficiencies'}}">
+                    {{#each ../config.proficiencies}}
+                      {{#if (eq this.type 'miscellaneous')}}
+                        <option value="{{@key}}" {{selected @key ../this.value}}>
+                          {{this.label}}
+                        </option>
+                      {{/if}}
+                    {{/each}}
+                  </optgroup>
+                </select>
+
+              {{else if (eq this.type 'speedProgression')}}
+                <!-- Dropdown for speed progression (no "None" - if no progression, don't add effect) -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="mediocre" {{selected 'mediocre' this.value}}>
+                    {{localize 'ZWOLF.Mediocre'}}
+                  </option>
+                  <option value="moderate" {{selected 'moderate' this.value}}>
+                    {{localize 'ZWOLF.Moderate'}}
+                  </option>
+                  <option value="specialty" {{selected 'specialty' this.value}}>
+                    {{localize 'ZWOLF.Specialty'}}
+                  </option>
+                  <option value="awesome" {{selected 'awesome' this.value}}>
+                    {{localize 'ZWOLF.Awesome'}}
+                  </option>
+                </select>
+
+              {{else if (eq this.type 'toughnessTNProgression')}}
+                <!-- Dropdown for Toughness TN (defaults to Mediocre Bonus, so only Moderate/Specialty/Awesome) -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="moderate" {{selected 'moderate' this.value}}>
+                    {{localize 'ZWOLF.Moderate'}}
+                  </option>
+                  <option value="specialty" {{selected 'specialty' this.value}}>
+                    {{localize 'ZWOLF.Specialty'}}
+                  </option>
+                  <option value="awesome" {{selected 'awesome' this.value}}>
+                    {{localize 'ZWOLF.Awesome'}}
+                  </option>
+                </select>
+
+              {{else if (eq this.type 'destinyTNProgression')}}
+                <!-- Dropdown for Destiny TN (defaults to Moderate, so only Specialty/Awesome) -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="specialty" {{selected 'specialty' this.value}}>
+                    {{localize 'ZWOLF.Specialty'}}
+                  </option>
+                  <option value="awesome" {{selected 'awesome' this.value}}>
+                    {{localize 'ZWOLF.Awesome'}}
+                  </option>
+                </select>
+
+              {{else if (or (eq this.type 'nightsightRadius') (eq this.type 'darkvisionRadius'))}}
+                <!-- Number input for vision radii -->
+                <div class="vision-input-group">
+                  <input type="number"
+                         name="{{this.pathPrefix}}.value"
+                         value="{{this.value}}"
+                         data-dtype="Number"
+                         min="0"
+                         step="0.5"
+                         placeholder="0"/>
+                  <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
+                </div>
+
+              {{else if (or (eq this.type 'bulkCapacityBoost') (eq this.type 'sizeModifier'))}}
+                <!-- Number input for bulk/size modifiers -->
+                <input type="number"
+                       name="{{this.pathPrefix}}.value"
+                       value="{{this.value}}"
+                       data-dtype="Number"
+                       step="1"
+                       placeholder="0"/>
+
+              {{else if (eq this.type 'resistance')}}
+                <!-- Dropdown for damage type resistance -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="" {{selected '' this.value}}>
+                    {{localize 'ZWOLF.None'}}
+                  </option>
+                  {{#each ../config.damageTypes}}
+                    <option value="{{@key}}" {{selected @key ../this.value}}>
+                      {{localize this.label}}
+                    </option>
+                  {{/each}}
+                </select>
+
+              {{else if (eq this.type 'vulnerability')}}
+                <!-- Dropdown for damage type vulnerability -->
+                <select name="{{this.pathPrefix}}.value" data-dtype="String">
+                  <option value="" {{selected '' this.value}}>
+                    {{localize 'ZWOLF.None'}}
+                  </option>
+                  {{#each ../config.damageTypes}}
+                    <option value="{{@key}}" {{selected @key ../this.value}}>
+                      {{localize this.label}}
+                    </option>
+                  {{/each}}
+                </select>
+
+              {{else}}
+                <!-- Fallback text input -->
+                <input type="text"
+                       name="{{this.pathPrefix}}.value"
+                       value="{{this.value}}"
+                       placeholder=""/>
+              {{/if}}
+            </div>
+
+            <!-- Delete Button -->
+            <div class="side-effect-delete">
+              <button type="button"
+                      class="delete-side-effect"
+                      data-action="delete-side-effect"
+                      data-tooltip="{{localize 'ZWOLF.DeleteSideEffect'}}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    {{/if}}
+
+    <!-- No side effects message -->
+    {{#unless sideEffectsArray.length}}
+      <p class="no-side-effects">
+        <i class="fas fa-info-circle"></i>
+        {{localize 'ZWOLF.NoSideEffects'}}
+      </p>
+    {{/unless}}
   </div>
 
-  <!-- Knacks Provided (Talents - at system level) -->
-  {{#if (eq itemType "talent")}}
-  <div class="knacks-provided">
-    <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
-      <input type="number" 
-             name="system.knacksProvided" 
-             value="{{system.knacksProvided}}" 
-             data-dtype="Number" 
-             min="0" 
-             max="10" 
-             placeholder="0"/>
-      <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
-    </div>
-  </div>
-  {{/if}}
-
-  <!-- Knacks Provided (Track Tiers - in sideEffects) -->
-  {{#if (or (contains pathPrefix "tiers.tier") (and (eq itemType "track") pathPrefix))}}
-  <div class="knacks-provided">
-    <h4><i class="fas fa-star"></i> {{localize 'ZWOLF.KnacksProvided'}}</h4>
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.KnacksProvided'}}</label>
-      <input type="number" 
-             name="{{pathPrefix}}.knacksProvided" 
-             value="{{sideEffects.knacksProvided}}" 
-             data-dtype="Number" 
-             min="0" 
-             max="10" 
-             placeholder="0"/>
-      <p class="notes">{{localize 'ZWOLF.KnacksProvidedHint'}}</p>
-    </div>
-  </div>
-  {{/if}}
-  
-  <!-- Progression Upgrades Section -->
-  <div class="progression-upgrades">
-    <h4><i class="fas fa-arrow-up"></i> {{localize 'ZWOLF.ProgressionUpgrades'}}</h4>
-    
-    {{> progression-select 
-        label="ZWOLF.SpeedProgression" 
-        name=(concat pathPrefix ".speedProgression")
-        value=sideEffects.speedProgression
-        includeNone=true
-        noneLabel="ZWOLF.NoUpgradeSpeed"
-        notes="ZWOLF.SpeedProgressionHint"}}
-    
-    {{> progression-select 
-        label="ZWOLF.ToughnessTNProgression" 
-        name=(concat pathPrefix ".toughnessTNProgression")
-        value=sideEffects.toughnessTNProgression
-        includeNone=true
-        noneLabel="ZWOLF.NoUpgradeToughness"
-        startLevel=2
-        notes="ZWOLF.ToughnessTNProgressionHint"}}
-    
-    {{> progression-select 
-        label="ZWOLF.DestinyTNProgression" 
-        name=(concat pathPrefix ".destinyTNProgression")
-        value=sideEffects.destinyTNProgression
-        includeNone=true
-        noneLabel="ZWOLF.NoUpgradeDestiny"
-        startLevel=3
-        notes="ZWOLF.DestinyTNProgressionHint"}}
-  </div>
-  
-  <!-- Vision Radius Upgrades Section -->
-  <div class="vision-radius-upgrades">
-    <h4><i class="fas fa-eye"></i> {{localize 'ZWOLF.VisionRadiusUpgrades'}}</h4>
-    <p class="notes">{{localize 'ZWOLF.VisionRadiusUpgradesHint'}}</p>
-    
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.NightsightRadius'}}</label>
-      <div class="vision-input-group">
-        <input type="number" 
-               name="{{pathPrefix}}.nightsightRadius" 
-               value="{{sideEffects.nightsightRadius}}" 
-               data-dtype="Number" 
-               min="0" 
-               step="0.5" 
-               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 1.0"/>
-        <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
-      </div>
-      <p class="notes">{{localize 'ZWOLF.NightsightRadiusHint'}}</p>
-    </div>
-    
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.DarkvisionRadius'}}</label>
-      <div class="vision-input-group">
-        <input type="number" 
-               name="{{pathPrefix}}.darkvisionRadius" 
-               value="{{sideEffects.darkvisionRadius}}" 
-               data-dtype="Number" 
-               min="0" 
-               step="0.5" 
-               placeholder="{{localize 'ZWOLF.DefaultRadius'}}: 0.5"/>
-        <span class="input-suffix">{{localize 'ZWOLF.Meters'}}</span>
-      </div>
-      <p class="notes">{{localize 'ZWOLF.DarkvisionRadiusHint'}}</p>
-    </div>
+  <!-- Add Side Effect Button -->
+  <div class="add-side-effect-container">
+    <button type="button"
+            class="add-side-effect"
+            data-action="add-side-effect">
+      <i class="fas fa-plus"></i>
+      {{localize 'ZWOLF.AddSideEffect'}}
+    </button>
   </div>
 
-  <!-- Bulk Capacity Upgrades Section -->
-  <div class="bulk-upgrades">
-    <h4><i class="fas fa-weight-hanging"></i> {{localize 'ZWOLF.BulkCapacityUpgrades'}}</h4>
-    <p class="notes">{{localize 'ZWOLF.BulkCapacityUpgradesHint'}}</p>
-    
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.MaxBulkBoost'}}</label>
-      <div class="bulk-input-group">
-        <input type="number" 
-               name="{{pathPrefix}}.maxBulkBoost" 
-               value="{{sideEffects.maxBulkBoost}}" 
-               data-dtype="Number" 
-               min="0" 
-               step="1" 
-               placeholder="0"/>
-        <span class="input-suffix">{{localize 'ZWOLF.Bulk'}}</span>
-      </div>
-      <p class="notes">{{localize 'ZWOLF.MaxBulkBoostHint'}}</p>
-    </div>
-  </div>
-
-  <!-- Size Upgrades Section -->
-  <div class="size-upgrades">
-    <h4><i class="fas fa-arrows-alt"></i> {{localize 'ZWOLF.SizeUpgrades'}}</h4>
-    <p class="notes">{{localize 'ZWOLF.SizeUpgradesHint'}}</p>
-    
-    <div class="form-group">
-      <label>{{localize 'ZWOLF.SizeSteps'}}</label>
-      <div class="size-input-group">
-        <input type="number" 
-               name="{{pathPrefix}}.sizeSteps" 
-               value="{{sideEffects.sizeSteps}}" 
-               data-dtype="Number" 
-               step="1" 
-               placeholder="0"/>
-        <span class="input-suffix">{{localize 'ZWOLF.Steps'}}</span>
-      </div>
-      <p class="notes">{{localize 'ZWOLF.SizeStepsHint'}}</p>
-    </div>
-  </div>
-  
-  <!-- Placeholder for Future Side Effects -->
-  <div class="future-side-effects">
-    <h4><i class="fas fa-plus-circle"></i> {{localize 'ZWOLF.FutureSideEffects'}}</h4>
-    <p class="notes">{{localize 'ZWOLF.FutureSideEffectsHint'}}</p>
-  </div>
 </div>

@@ -1,26 +1,38 @@
 {{!-- templates/item/partials/ability-item.hbs --}}
-<div class="ability-item" data-ability-index="{{index}}">
+<div class="ability-item" data-ability-id="{{id}}" data-ability-index="{{index}}" {{#if tierNumber}}data-tier="{{tierNumber}}"{{/if}}>
   <div class="ability-header">
-    <input type="text" 
-           name="{{nameTarget}}" 
-           value="{{ability.name}}" 
+    <input type="text"
+           name="{{nameTarget}}"
+           value="{{ability.name}}"
            placeholder="{{localize 'ZWOLF.AbilityName'}}"
            {{#unless editable}}disabled{{/unless}} />
-    
+
     <select name="{{typeTarget}}" {{#unless editable}}disabled{{/unless}}>
       {{#each (getAbilityTypes) as |abilityType|}}
-        <option value="{{abilityType.value}}" 
+        <option value="{{abilityType.value}}"
                 {{#if (eq abilityType.value ../ability.type)}}selected{{/if}}>
           {{localize abilityType.label}}
         </option>
       {{/each}}
     </select>
 
+    {{#if showTier}}
+      <div class="ability-tier">
+        <label>{{localize 'ZWOLF.Tier'}}:</label>
+        <select name="{{tierTarget}}" data-dtype="Number" {{#unless editable}}disabled{{/unless}}>
+          {{#each (range 1 6) as |tierNum|}}
+            <option value="{{tierNum}}" {{#if (eq tierNum ../ability.tier)}}selected{{/if}}>
+              {{tierNum}}
+            </option>
+          {{/each}}
+        </select>
+      </div>
+    {{/if}}
+
     {{#if editable}}
-    <a class="ability-control delete-ability" 
-       data-action="{{deleteAction}}" 
+    <a class="ability-control delete-ability"
+       data-action="{{deleteAction}}"
        data-ability-index="{{index}}"
-       {{#if tierNumber}}data-tier="{{tierNumber}}"{{/if}}
        title="{{localize 'ZWOLF.DeleteAbility'}}">
       <i class="fas fa-trash"></i>
       <span>{{localize 'ZWOLF.Delete'}}</span>
@@ -39,24 +51,6 @@
 
   <div class="ability-description">
     <label>{{localize 'ZWOLF.Description'}}:</label>
-    
-    {{#if editable}}
-      <div class="form-group editor">
-        {{editor ability.description 
-                target=descriptionTarget 
-                button=true 
-                owner=owner 
-                editable=editable 
-                engine="prosemirror"}}
-      </div>
-    {{else}}
-      <div class="editor-content">
-        {{#if ability.description}}
-          {{{ability.description}}}
-        {{else}}
-          <em>{{localize 'ZWOLF.NoDescription'}}</em>
-        {{/if}}
-      </div>
-    {{/if}}
+    {{> rich-editor value=ability.description target=descriptionTarget editable=editable owner=owner}}
   </div>
 </div>

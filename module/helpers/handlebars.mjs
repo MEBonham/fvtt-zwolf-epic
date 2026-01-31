@@ -114,6 +114,10 @@ export function registerHandlebarsHelpers() {
     return a <= b;
   });
 
+  Handlebars.registerHelper('multiply', function(a, b) {
+    return (parseFloat(a) || 0) * (parseFloat(b) || 0);
+  });
+
   Handlebars.registerHelper('or', function() {
     return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
   });

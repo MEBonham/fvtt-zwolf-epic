@@ -10,7 +10,7 @@ export const ZWOLF = {};
  * @type {Object}
  */
 ZWOLF.attributes = {
-  "agility": "ZWOLF.AttributeAgility", 
+  "agility": "ZWOLF.AttributeAgility",
   "fortitude": "ZWOLF.AttributeFortitude",
   "perception": "ZWOLF.AttributePerception",
   "willpower": "ZWOLF.AttributeWillpower"
@@ -382,7 +382,7 @@ ZWOLF.proficiencies = {
     type: "seed",
     label: "Water Seed"
   },
-  
+
   // Weapon Proficiencies
   "sword": {
     type: "weapon",
@@ -432,7 +432,7 @@ ZWOLF.proficiencies = {
     type: "weapon",
     label: "darts"
   },
-  
+
   // Miscellaneous Proficiencies
   "unarmed": {
     type: "miscellaneous",

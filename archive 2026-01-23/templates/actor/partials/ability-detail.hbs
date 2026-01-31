@@ -1,0 +1,20 @@
+{{!-- templates/actor/partials/ability-detail.hbs --}}
+{{!-- 
+  Reusable ability detail display
+  
+  Parameters:
+  - ability: The ability object with name, tags, description, itemName
+  - abilityClass: Optional CSS class for the ability item
+--}}
+<details class="ability-item {{abilityClass}}">
+  <summary class="ability-name">
+    {{ability.name}}
+    {{#if ability.tags}}
+      <span class="ability-tags"> · &lt;{{ability.tags}}&gt;</span>
+    {{/if}}
+    {{#if ability.itemName}}
+      <span class="ability-source"> • {{ability.itemName}}</span>
+    {{/if}}
+  </summary>
+  <div class="ability-description">{{{ability.description}}}</div>
+</details>

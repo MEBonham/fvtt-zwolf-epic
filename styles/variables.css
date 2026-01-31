@@ -1,45 +1,44 @@
 :root {
-  /* Primary Colors */
-  --z-wolf-primary: #2c5aa0;
-  --z-wolf-primary-light: #4a7bc8;
-  --z-wolf-primary-dark: #1e3d6f;
-  
-  /* Secondary Colors */
-  --z-wolf-secondary: #654b39;
-  --z-wolf-accent: #d4af37;
-  
-  /* UI Colors */
-  --z-wolf-bg: #4a4a4a;
-  --z-wolf-bg-dark: #3a3a3a;
-  --z-wolf-background: #4a4a4a;
-  --z-wolf-background-dark: #3a3a3a;
-  --z-wolf-surface: #ffffff;
-  --z-wolf-border: #cccccc;
-  --z-wolf-text: #333333;
-  --z-wolf-text-muted: #666666;
-  
-  /* Status Colors */
-  --z-wolf-success: #28a745;
-  --z-wolf-warning: #ffc107;
-  --z-wolf-danger: #dc3545;
-  --z-wolf-info: #17a2b8;
-  
-  /* Dice System Colors */
-  --z-wolf-boost: #2c5aa0;
-  --z-wolf-boost-light: #4a7bc8;
-  --z-wolf-jinx: #dc3545;
-  --z-wolf-jinx-light: #ff6b7a;
-  --z-wolf-key-die: #2c5aa0;
-  --z-wolf-crit-trigger: #ffc107;
-  
-  /* Alpha Values for Transparency */
-  --z-wolf-alpha-10: 0.1;
-  --z-wolf-alpha-20: 0.2;
-  --z-wolf-alpha-30: 0.3;
-  --z-wolf-alpha-40: 0.4;
-  --z-wolf-alpha-50: 0.5;
-  --z-wolf-alpha-60: 0.6;
-  --z-wolf-alpha-70: 0.7;
-  --z-wolf-alpha-80: 0.8;
-  --z-wolf-alpha-90: 0.9;
+    /* Colors */
+    --z-wolf-primary: #4a90a4;
+    --z-wolf-secondary: #2c3e50;
+    --z-wolf-accent: #e74c3c;
+    --z-wolf-background: #f5f5f5;
+    --z-wolf-text: #333333;
+    --z-wolf-text-light: #666666;
+    --z-wolf-border: #cccccc;
+
+    /* Spacing */
+    --z-wolf-spacing-xs: 4px;
+    --z-wolf-spacing-sm: 8px;
+    --z-wolf-spacing-md: 16px;
+    --z-wolf-spacing-lg: 24px;
+
+    /* Typography */
+    --z-wolf-font-family: "Roboto", sans-serif;
+    --z-wolf-font-size-sm: 12px;
+    --z-wolf-font-size-md: 14px;
+    --z-wolf-font-size-lg: 18px;
+
+    /* Borders */
+    --z-wolf-border-radius: 4px;
+
+    /* Dice System Colors */
+    --z-wolf-boost-color: #4ade80;
+    --z-wolf-boost-bg: rgba(74, 222, 128, 0.1);
+    --z-wolf-jinx-color: #f87171;
+    --z-wolf-jinx-bg: rgba(248, 113, 113, 0.1);
+    --z-wolf-crit-success: #fbbf24;
+    --z-wolf-crit-failure: #ef4444;
+    --z-wolf-crit-wild: #a855f7;
+    --z-wolf-success: #4ade80;
+    --z-wolf-failure: #f87171;
+
+    /* UI Elements */
+    --z-wolf-surface: #1a1a2e;
+    --z-wolf-button-bg: #2a2a4e;
+    --z-wolf-button-hover: #3a3a6e;
+    --z-wolf-input-bg: #0a0a1e;
+    --z-wolf-text-muted: #a0a0a0;
+    --z-wolf-hover: rgba(99, 102, 241, 0.15);
 }

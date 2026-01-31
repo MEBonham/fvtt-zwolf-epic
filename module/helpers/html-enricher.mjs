@@ -108,7 +108,7 @@ export class HtmlEnricher {
       }
 
       const enrichedAbility = { ...ability };
-      
+
       if (ability.description) {
         enrichedAbility.enrichedDescription = await this.enrichContent(
           ability.description,
@@ -118,7 +118,7 @@ export class HtmlEnricher {
       } else {
         enrichedAbility.enrichedDescription = "";
       }
-      
+
       return enrichedAbility;
     });
   }
@@ -202,7 +202,7 @@ export class HtmlEnricher {
       }
 
       const enrichedMenu = { ...menu };
-      
+
       if (menu.description) {
         enrichedMenu.enrichedDescription = await this.enrichContent(
           menu.description,
@@ -212,7 +212,7 @@ export class HtmlEnricher {
       } else {
         enrichedMenu.enrichedDescription = "";
       }
-      
+
       return enrichedMenu;
     });
   }
@@ -235,7 +235,7 @@ export class HtmlEnricher {
       }
 
       const enrichedItem = { ...collectionItem };
-      
+
       // Enrich main description field
       if (collectionItem.description) {
         enrichedItem.enrichedDescription = await this.enrichContent(
@@ -244,7 +244,7 @@ export class HtmlEnricher {
           `${collectionName} ${index} description`
         );
       }
-      
+
       // Also handle nested descriptions if they exist
       const descriptionFields = ['details', 'effect', 'summary', 'notes'];
       for (const field of descriptionFields) {
@@ -256,7 +256,7 @@ export class HtmlEnricher {
           );
         }
       }
-      
+
       return enrichedItem;
     });
   }
@@ -274,10 +274,10 @@ export class HtmlEnricher {
     }
 
     const enriched = { ...data };
-    
+
     // Standard description fields to enrich
     const descriptionFields = ['description', 'details', 'effect', 'summary', 'notes', 'flavor'];
-    
+
     for (const field of descriptionFields) {
       if (data[field] && typeof data[field] === 'string') {
         const enrichedFieldName = `enriched${field.charAt(0).toUpperCase() + field.slice(1)}`;
@@ -288,7 +288,7 @@ export class HtmlEnricher {
         );
       }
     }
-    
+
     return enriched;
   }
 }

@@ -1,987 +1,1045 @@
 /* ===========================================
-   ITEM SHEETS - CONSOLIDATED STYLING
-   Uses Z-Wolf color variables from variables.css
+   ITEM SHEETS - BASE LAYOUT
+   CSS for item sheet structure matching ApplicationV2 PARTS
    =========================================== */
 
 /* ===================
-   Base Layout & Structure
+   Base Container
    =================== */
 
 .zwolf-epic.sheet.item {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.zwolf-epic.sheet.item .window-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.zwolf-epic.sheet.item .item-sheet-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
-}
-
-/* ===================
-   Header
-   =================== */
-
-.zwolf-epic.sheet.item header.sheet-header {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 1rem !important;
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--z-wolf-primary-light), var(--z-wolf-primary));
-  color: white;
-  border-bottom: 3px solid var(--z-wolf-primary-dark);
-  flex-shrink: 0;
-  flex-wrap: nowrap !important;
-}
-
-.item-sheet .profile-img {
-  border: 2px solid white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
-  width: 64px;
-  height: 64px;
-  overflow: hidden;
-}
-
-.item-sheet .profile-img:hover {
-  transform: scale(1.05);
-}
-
-.item-sheet .header-fields {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.item-sheet .charname {
-  margin: 0;
-  font-weight: 600;
-}
-
-.item-sheet .charname input {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-weight: 600;
-  font-size: 0.74em;
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-.item-sheet .charname input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.item-sheet .item-subtitle {
-  color: rgba(255, 255, 255, 0.9);
-  font-weight: 500;
-  margin-top: 0.25rem;
-}
-
-/* ===================
-   Tab Navigation
-   =================== */
-
-.zwolf-epic.sheet.item .sheet-tabs {
-  padding: 8px 0 0 !important;
-  margin: 0 !important;
-  display: flex !important;
-  flex-wrap: wrap !important;
-  justify-content: flex-start !important;
-  gap: 1rem !important;
-  list-style: none !important;
-  flex-shrink: 0 !important;
-  box-shadow: inset 0 -1px 0 var(--z-wolf-border) !important;
-}
-
-.zwolf-epic.sheet.item .sheet-tabs .item {
-  background: linear-gradient(to bottom, #f5f5f5, #e0e0e0) !important;
-  color: var(--z-wolf-text) !important;
-  border: 1px solid var(--z-wolf-border) !important;
-  border-bottom: none !important;
-  border-radius: 10px 10px 0 0 !important;
-  padding: 0.3rem 1rem !important;
-  margin-right: 1px !important;
-  margin-top: 2px !important;
-  transition: all 0.2s ease !important;
-  cursor: pointer !important;
-  text-decoration: none !important;
-  position: relative !important;
-  bottom: -2px !important;
-  font-weight: 500 !important;
-  box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1) !important;
-}
-
-.zwolf-epic.sheet.item .sheet-tabs .item:hover:not(.active) {
-  background: linear-gradient(to bottom, var(--z-wolf-primary-light), var(--z-wolf-primary)) !important;
-  color: white !important;
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2) !important;
-}
-
-.zwolf-epic.sheet.item .sheet-tabs .item.active {
-  background: var(--z-wolf-bg-dark) !important;
-  color: var(--z-wolf-accent) !important;
-  border-color: var(--z-wolf-primary) !important;
-  border-bottom: 1px solid var(--z-wolf-bg-dark) !important;
-  margin-top: 0 !important;
-  padding-top: 0.4rem !important;
-  z-index: 2 !important;
-  box-shadow: 
-    0 -2px 4px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-}
-
-/* ===================
-   Tab Content & Scrolling
-   =================== */
-
-.zwolf-epic.sheet.item .tab {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem;
-  padding-bottom: 4rem;
-  background: var(--z-wolf-bg-dark);
-  min-height: 0;
-}
-
-.zwolf-epic.sheet.item .tab[style*="display: none"] {
-  display: none !important;
-}
-
-.zwolf-epic.sheet.item .tab[style*="display: block"] {
-  display: block !important;
-  flex: 1;
-  overflow-y: auto;
-}
-
-/* ===================
-   Form Elements - Base Styles
-   =================== */
-
-.item-sheet .form-group {
-  margin-bottom: 1rem;
-}
-
-.item-sheet .form-group label {
-  display: block;
-  font-weight: 600;
-  color: var(--z-wolf-text);
-  margin-bottom: 0.25rem;
-}
-
-.item-sheet .form-group input,
-.item-sheet .form-group select,
-.item-sheet .form-group textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 2px solid var(--z-wolf-border);
-  border-radius: 4px;
-  background: var(--z-wolf-surface);
-  color: var(--z-wolf-text);
-  transition: border-color 0.2s ease;
-  box-sizing: border-box;
-}
-
-.item-sheet .form-group input:focus,
-.item-sheet .form-group select:focus,
-.item-sheet .form-group textarea:focus {
-  outline: none;
-  border-color: var(--z-wolf-primary);
-  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
-}
-
-.item-sheet .form-group input[disabled],
-.item-sheet .form-group select[disabled] {
-  background: var(--z-wolf-bg);
-  color: var(--z-wolf-text-muted);
-  cursor: not-allowed;
-}
-
-.item-sheet .notes {
-  font-size: 0.85em;
-  color: var(--z-wolf-text-muted);
-  margin: 0.25rem 0 0;
-  line-height: 1.4;
-}
-
-/* ===================
-   Input Groups (Vision, Bulk, etc.)
-   =================== */
-
-.vision-input-group,
-.bulk-input-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.vision-input-group input,
-.bulk-input-group input {
-  width: 120px !important;
-}
-
-.input-suffix {
-  color: var(--z-wolf-text-muted);
-  font-weight: 500;
-}
-
-/* ===================
-   Sections & Containers
-   =================== */
-
-.granted-abilities,
-.side-effects,
-.tier-side-effects,
-.tier-granted-abilities {
-  background: var(--z-wolf-bg-dark);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 2rem;
-}
-
-.formulae-section {
-  padding-bottom: 6rem;
-  color: var(--z-wolf-accent);
-}
-
-/* Section Headers */
-.formulae-section h3,
-.formulae-section h4,
-.tier-side-effects h4,
-.tier-granted-abilities h4 {
-  color: var(--z-wolf-accent);
-  margin: 1.5rem 0 1rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--z-wolf-border);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.formulae-section h3:first-child {
-  margin-top: 0;
-}
-
-.formulae-section h4 {
-  margin: 1rem 0 0.5rem 0;
-  border-bottom: none;
-}
-
-.formulae-section label {
-  color: var(--z-wolf-accent) !important;
-}
-
-.formulae-section .notes {
-  color: #999 !important;
-}
-
-/* Abilities Header with Actions */
-.abilities-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--z-wolf-border);
-}
-
-.abilities-header h3,
-.abilities-header h4 {
-  color: var(--z-wolf-accent);
-  margin: 0;
-}
-
-/* ===================
-   Ability Items
-   =================== */
-
-.abilities-list {
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 5px;
-  padding-bottom: 20px;
-}
-
-.no-abilities {
-  padding: 1rem;
-  text-align: center;
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
-}
-
-.ability-item {
-  border: 1px solid var(--z-wolf-border);
-  margin: 10px 0;
-  padding: 10px;
-  background: var(--z-wolf-bg-dark);
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.tier-granted-abilities .ability-item {
-  min-height: 350px;
-}
-
-.ability-header {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.ability-header input[type="text"] {
-  flex: 2;
-}
-
-.ability-header select {
-  flex: 1;
-}
-
-.ability-tags {
-  margin-bottom: 10px;
-}
-
-.ability-tags label {
-  font-weight: bold;
-  margin-bottom: 2px;
-  display: block;
-  font-size: 0.9em;
-}
-
-.ability-tags input {
-  width: 100%;
-}
-
-.zwolf-epic.sheet.item .ability-description {
-  min-height: 120px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dotted var(--z-wolf-border);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.ability-description label {
-  font-weight: bold;
-  display: block;
-  margin-bottom: 5px;
-}
-
-.ability-description .editor-content {
-  padding: 8px;
-  border: 1px solid var(--z-wolf-border);
-  min-height: 80px;
-  border-radius: 4px;
-}
-
-.ability-description .editor-content em {
-  color: var(--z-wolf-text-muted);
-}
-
-/* ===================
-   Buttons & Controls
-   =================== */
-
-.ability-control {
-  background: var(--z-wolf-primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.ability-control:hover {
-  background: var(--z-wolf-primary-dark);
-  color: white;
-}
-
-.ability-control[data-action="delete-ability"],
-.ability-control[data-action="delete-tier-ability"] {
-  background: var(--z-wolf-danger);
-}
-
-.ability-control[data-action="delete-ability"]:hover,
-.ability-control[data-action="delete-tier-ability"]:hover {
-  background: #c82333;
-}
-
-.function-test-controls button {
-  background: var(--z-wolf-primary);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.function-test-controls button:hover {
-  background: var(--z-wolf-primary-dark);
-}
-
-/* ===================
-   Specialized Sections
-   =================== */
-
-/* Side Effects Subsections */
-.progression-upgrades,
-.vision-radius-upgrades,
-.knacks-provided,
-.bulk-upgrades,
-.proficiency-grants {
-  background: rgba(44, 90, 160, 0.05);
-  border: 1px solid rgba(44, 90, 160, 0.2);
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.progression-upgrades h4,
-.vision-radius-upgrades h4,
-.knacks-provided h4,
-.bulk-upgrades h4 {
-  color: var(--z-wolf-primary-light);
-  margin: 0 0 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Proficiency Grants - Enhanced Styling */
-.side-effects-form .proficiency-grants {
-  background: linear-gradient(135deg, 
-    rgba(212, 175, 55, 0.08) 0%,
-    rgba(44, 90, 160, 0.05) 100%);
-  border: 1px solid rgba(212, 175, 55, 0.2);
-  position: relative;
-}
-
-.side-effects-form .proficiency-grants::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  background: linear-gradient(180deg, 
-    var(--z-wolf-accent) 0%, 
-    var(--z-wolf-primary) 100%);
-  border-radius: 4px 0 0 4px;
-}
-
-.side-effects-form .proficiency-grants h4 {
-  color: var(--z-wolf-primary);
-  padding-left: 0.5rem;
-  font-weight: 600;
-}
-
-.side-effects-form .proficiency-grants h4 i {
-  color: var(--z-wolf-accent);
-}
-
-.side-effects-form .proficiency-grants .form-group {
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-  padding: 0.75rem;
-  margin-left: 0.5rem;
-}
-
-.side-effects-form .proficiency-grants select:hover {
-  border-color: var(--z-wolf-primary-light);
-  box-shadow: 0 0 0 2px rgba(44, 90, 160, 0.1);
-}
-
-.side-effects-form .proficiency-grants select:focus {
-  border-color: var(--z-wolf-primary);
-  box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
-}
-
-.side-effects-form .proficiency-grants:hover {
-  box-shadow: 0 2px 8px rgba(44, 90, 160, 0.1);
-  transform: translateY(-1px);
-  transition: all 0.3s ease;
-}
-
-/* Future Side Effects */
-.future-side-effects {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: rgba(120, 46, 34, 0.05);
-  border-radius: 5px;
-  border: 1px dashed var(--z-wolf-secondary);
-}
-
-.future-side-effects h4 {
-  color: var(--z-wolf-secondary);
-  margin: 0 0 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Function Test Controls */
-.function-test-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 1rem;
-  align-items: end;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: rgba(44, 90, 160, 0.05);
-  border: 1px solid rgba(44, 90, 160, 0.2);
-  border-radius: 6px;
-}
-
-.function-test-controls label {
-  display: block;
-  font-size: 0.9em;
-  margin-bottom: 0.25rem;
-  font-weight: 600;
-  color: var(--z-wolf-text);
-}
-
-.function-test-controls input {
-  width: 100%;
-  min-width: 100px;
-}
-
-.test-results {
-  background: var(--z-wolf-surface);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  padding: 1rem;
-  margin-top: 1rem;
-  min-height: 3rem;
-}
-
-.test-result {
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--z-wolf-border);
-}
-
-.test-result:last-child {
-  border-bottom: none;
-}
-
-.test-result.vitality { color: var(--z-wolf-success); font-weight: 500; }
-.test-result.coast { color: var(--z-wolf-info); font-weight: 500; }
-.test-result.error { color: var(--z-wolf-danger); font-weight: 500; }
-
-/* ===================
-   Basics Tab Layouts
-   =================== */
-
-.basics-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.basics-full-width {
-  grid-column: 1 / -1;
-}
-
-.compact-form-group {
-  margin-bottom: 1rem;
-}
-
-.compact-form-group input[type="number"] {
-  max-width: 150px;
-}
-
-.compact-form-group input[type="text"] {
-  max-width: 250px;
-}
-
-.fundament-basics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.fundament-basics .form-group {
-  margin-bottom: 0;
-}
-
-/* ===================
-   Tiers Accordion
-   =================== */
-
-.tiers-accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.tier-accordion-section {
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  background: var(--z-wolf-bg);
-}
-
-.tier-accordion-section[open] {
-  border-color: var(--z-wolf-primary);
-}
-
-.tier-accordion-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  background: var(--z-wolf-bg);
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
-  transition: background-color 0.2s;
-}
-
-.tier-accordion-header:hover {
-  background: var(--z-wolf-primary-light);
-  color: white;
-}
-
-.tier-accordion-section[open] .tier-accordion-header {
-  background: var(--z-wolf-primary);
-  color: white;
-  border-bottom: 1px solid var(--z-wolf-border);
-}
-
-.tier-accordion-header::-webkit-details-marker,
-.tier-accordion-header::marker {
-  display: none;
-}
-
-.accordion-icon {
-  transition: transform 0.2s;
-  flex-shrink: 0;
-}
-
-.tier-accordion-section[open] .accordion-icon {
-  transform: rotate(90deg);
-}
-
-.tier-title {
-  font-weight: bold;
-  flex-shrink: 0;
-  min-width: 60px;
-}
-
-.tier-talent-preview {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  opacity: 0.8;
-  font-style: italic;
-  font-size: 0.9em;
-}
-
-.tier-accordion-section[open] .tier-talent-preview {
-  display: none;
-}
-
-.tier-accordion-content {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-/* ===================
-   Summary Tab
-   =================== */
-
-.summary-tab {
-  padding: 15px;
-  overflow-y: auto;
-  height: calc(100% - 30px);
-  background: var(--z-wolf-surface);
-}
-
-.summary-container h2 {
-  margin: 0 0 20px 0;
-  padding-bottom: 10px;
-  border-bottom: 2px solid var(--z-wolf-primary);
-  color: var(--z-wolf-primary-light);
-  font-size: 1.5em;
-}
-
-.summary-section {
-  background: var(--z-wolf-bg);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  margin-bottom: 15px;
-  padding: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.summary-section h3 {
-  margin: 0 0 12px 0;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--z-wolf-border);
-  color: var(--z-wolf-primary-light);
-  font-size: 1.1em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.summary-section h3 i {
-  color: var(--z-wolf-accent);
-  font-size: 0.9em;
-}
-
-.summary-row {
-  display: flex;
-  padding: 6px 0;
-  border-bottom: 1px dotted var(--z-wolf-border);
-}
-
-.summary-row:last-child {
-  border-bottom: none;
-}
-
-.summary-row.full-width {
-  flex-direction: column;
-  gap: 5px;
-}
-
-.summary-label {
-  font-weight: 600;
-  color: var(--z-wolf-text-on-dark);
-  min-width: 140px;
-  flex-shrink: 0;
-}
-
-.summary-value {
-  color: var(--z-wolf-text-on-dark);
-  flex: 1;
-}
-
-.summary-rich-text {
-  padding: 8px;
-  background: var(--z-wolf-bg-dark);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 3px;
-  margin-top: 5px;
-}
-
-.summary-rich-text p:first-child { margin-top: 0; }
-.summary-rich-text p:last-child { margin-bottom: 0; }
-
-/* Ability Summary Displays */
-.abilities-summary {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.ability-summary {
-  background: var(--z-wolf-bg-dark);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  padding: 10px;
-}
-
-.ability-summary-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.ability-type-badge {
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 0.85em;
-  font-weight: 500;
-  text-transform: capitalize;
-  background: var(--z-wolf-bg);
-  color: var(--z-wolf-text);
-}
-
-.ability-type-badge.active { background: var(--z-wolf-success); color: white; }
-.ability-type-badge.passive { background: var(--z-wolf-info); color: white; }
-.ability-type-badge.reaction { background: var(--z-wolf-warning); color: var(--z-wolf-text); }
-
-.ability-tags {
-  font-size: 0.9em;
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
-  margin: 3px 0;
-}
-
-.ability-tags i {
-  color: var(--z-wolf-accent);
-  margin-right: 3px;
-}
-
-.tier-summary {
-  background: var(--z-wolf-bg-dark);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.tier-summary:last-child {
-  margin-bottom: 0;
-}
-
-.tier-summary h4 {
-  margin: 0 0 10px 0;
-  color: var(--z-wolf-primary-light);
-  font-size: 1em;
-  font-weight: 600;
-}
-
-/* Effect Status Badges */
-.effect-status {
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-size: 0.9em;
-}
-
-.effect-status.enabled { background: var(--z-wolf-success); color: white; }
-.effect-status.disabled { background: var(--z-wolf-text-muted); color: white; }
-
-/* Summary Footer */
-.summary-footer {
-  margin-top: 20px;
-  padding-top: 15px;
-  border-top: 2px solid var(--z-wolf-border);
-}
-
-.summary-metadata {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.9em;
-  color: var(--z-wolf-text-muted);
-}
-
-.lock-status {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--z-wolf-danger);
-  font-weight: 600;
-}
-
-.item-id {
-  font-family: monospace;
-  font-size: 0.85em;
-}
-
-.track-tiers {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.equipment-details .summary-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 8px;
-}
-
-.equipment-details .summary-row {
-  border-bottom: none;
-  padding: 4px 0;
-}
-
-/* ===================
-   Responsive Design
-   =================== */
-
-@media (max-width: 768px) {
-  .item-sheet .sheet-header {
+    height: 100%;
+    background: #2a2a2a;
+    color: #d4d4d4;
+}
+
+/* ApplicationV2 renders parts into window-content */
+.application.item .window-content {
+    height: 100%;
+    overflow: hidden;
+    background: #1e1e1e;
+    display: flex;
     flex-direction: column;
-    text-align: center;
-    gap: 0.5rem;
-  }
-  
-  .item-sheet .sheet-tabs .item {
-    flex: 1;
-    text-align: center;
-    min-width: calc(50% - 2px);
-  }
-  
-  .function-test-controls {
-    grid-template-columns: 1fr;
-  }
-  
-  .vision-input-group,
-  .bulk-input-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .vision-input-group input,
-  .bulk-input-group input {
-    width: 100% !important;
-  }
-  
-  .ability-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .ability-header input,
-  .ability-header select {
-    flex: none;
-    width: 100%;
-  }
 }
 
-@media (max-width: 600px) {
-  .basics-grid,
-  .fundament-basics {
-    grid-template-columns: 1fr;
-  }
-  
-  .compact-form-group input[type="number"],
-  .compact-form-group input[type="text"] {
-    max-width: none;
-    width: 100%;
-  }
-  
-  .summary-label {
-    min-width: 100px;
-  }
-  
-  .equipment-details .summary-content {
-    grid-template-columns: 1fr;
-  }
-  
-  .ability-summary-header {
-    flex-direction: column;
+/* ===================
+   Item Sheet Header
+   =================== */
+
+/* Match actor sheet header pattern */
+.zwolf-epic.sheet.item .sheet-header-wrapper {
+    background: linear-gradient(135deg, #3a4a5a, #2d3d4d);
+    border-bottom: 2px solid #4a5a6a;
+    padding: 1rem;
+}
+
+.zwolf-epic.sheet.item .sheet-header {
+    display: flex;
     align-items: flex-start;
-    gap: 5px;
-  }
+    gap: 1rem;
+}
+
+.zwolf-epic.sheet.item .sheet-header .profile-img {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #5a6a7a;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: #3a3a3a;
+}
+
+.zwolf-epic.sheet.item .sheet-header .profile-img:hover {
+    transform: scale(1.05);
+    border-color: #6a7a8a;
+}
+
+.zwolf-epic.sheet.item .sheet-header .header-fields {
+    flex: 1;
+    min-width: 0;
+}
+
+.zwolf-epic.sheet.item .sheet-header .charname {
+    margin: 0 0 0.5rem 0;
+}
+
+.zwolf-epic.sheet.item .sheet-header .charname input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e4e4e4;
+    font-weight: 600;
+    font-size: 1.2rem;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+.zwolf-epic.sheet.item .sheet-header .charname input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.zwolf-epic.sheet.item .sheet-header .item-subtitle {
+    color: #b4b4b4;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Header tags field */
+.zwolf-epic.sheet.item .header-tags {
+    margin-top: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .header-tags input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #d4d4d4;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.zwolf-epic.sheet.item .header-tags input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Header formulae fields */
+.zwolf-epic.sheet.item .header-formulae {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.zwolf-epic.sheet.item .header-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .header-field label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #b4b4b4;
+    white-space: nowrap;
+}
+
+.zwolf-epic.sheet.item .header-field select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #d4d4d4;
+    padding: 0.4rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    min-width: 120px;
+}
+
+.zwolf-epic.sheet.item .header-field select:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Source indicator */
+.zwolf-epic.sheet.item .source-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+    color: #999;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .source-indicator i {
+    font-size: 0.8rem;
+}
+
+.zwolf-epic.sheet.item .source-name {
+    font-style: italic;
+}
+
+/* ===================
+   Tab Contents - Scrollable
+   =================== */
+
+.zwolf-epic.sheet.item .tab[data-tab] {
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+/* Scrollbar Styling */
+.zwolf-epic.sheet.item .tab[data-tab]::-webkit-scrollbar {
+    width: 8px;
+}
+
+.zwolf-epic.sheet.item .tab[data-tab]::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+.zwolf-epic.sheet.item .tab[data-tab]::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+    border-radius: 4px;
+}
+
+.zwolf-epic.sheet.item .tab[data-tab]::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a;
+}
+
+/* ===================
+   Summary Tab Spacing
+   =================== */
+
+.zwolf-epic.sheet.item .summary-tab .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.zwolf-epic.sheet.item .summary-tab .form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* Size Options Multiselect - Show All Options */
+.zwolf-epic.sheet.item .summary-tab select[name="system.sizeOptions"] {
+    height: auto !important;
+    min-height: 160px !important;
+}
+
+/* ===================
+   Tier Abilities Grouping
+   =================== */
+
+.zwolf-epic.sheet.item .tier-abilities-group {
+    margin-bottom: 2rem;
+}
+
+.zwolf-epic.sheet.item .tier-abilities-group:last-child {
+    margin-bottom: 0;
+}
+
+.zwolf-epic.sheet.item .tier-abilities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.zwolf-epic.sheet.item .tier-abilities-header h4 {
+    margin: 0;
+    color: #d4d4d4;
+    font-size: 1.1rem;
+}
+
+.zwolf-epic.sheet.item .tier-abilities-header h4 i {
+    margin-right: 0.5rem;
+    color: var(--z-wolf-primary);
+}
+
+/* ===================
+   Tier Effects Grouping
+   =================== */
+
+.zwolf-epic.sheet.item .tier-effects-group {
+    margin-bottom: 2rem;
+}
+
+.zwolf-epic.sheet.item .tier-effects-group:last-child {
+    margin-bottom: 0;
+}
+
+.zwolf-epic.sheet.item .tier-effects-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.zwolf-epic.sheet.item .tier-effects-header h4 {
+    margin: 0;
+    color: #d4d4d4;
+    font-size: 1.1rem;
+}
+
+.zwolf-epic.sheet.item .tier-effects-header h4 i {
+    margin-right: 0.5rem;
+    color: var(--z-wolf-primary);
+}
+
+/* ===================
+   Tier Sections (Tiers Tab)
+   =================== */
+
+.zwolf-epic.sheet.item .tier-section {
+    margin-bottom: 2rem;
+}
+
+.zwolf-epic.sheet.item .tier-section:last-child {
+    margin-bottom: 0;
+}
+
+.zwolf-epic.sheet.item .tier-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.zwolf-epic.sheet.item .tier-header h4 {
+    margin: 0;
+    color: #d4d4d4;
+    font-size: 1.1rem;
+}
+
+.zwolf-epic.sheet.item .tier-header h4 i {
+    margin-right: 0.5rem;
+    color: var(--z-wolf-primary);
+}
+
+/* ===================
+   Side Effects List
+   =================== */
+
+.zwolf-epic.sheet.item .side-effects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.zwolf-epic.sheet.item .side-effect-item {
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    padding: 0.75rem;
+}
+
+.zwolf-epic.sheet.item .side-effect-controls {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 0.75rem;
+    align-items: end;
+}
+
+/* Track items have tier dropdown - adjust grid layout */
+.zwolf-epic.sheet.item .side-effect-item:has(.side-effect-tier) .side-effect-controls {
+    grid-template-columns: 1fr 0.5fr 2fr auto;
+}
+
+.zwolf-epic.sheet.item .side-effect-type label,
+.zwolf-epic.sheet.item .side-effect-tier label,
+.zwolf-epic.sheet.item .side-effect-value label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.zwolf-epic.sheet.item .side-effect-type select,
+.zwolf-epic.sheet.item .side-effect-tier select,
+.zwolf-epic.sheet.item .side-effect-value select,
+.zwolf-epic.sheet.item .side-effect-value input {
+    width: 100%;
+    padding: 0.4rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .side-effect-value .vision-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .side-effect-value .vision-input-group input {
+    flex: 1;
+}
+
+.zwolf-epic.sheet.item .side-effect-value .input-suffix {
+    color: #999;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.zwolf-epic.sheet.item .side-effect-delete {
+    display: flex;
+    align-items: flex-end;
+}
+
+.zwolf-epic.sheet.item .delete-side-effect {
+    padding: 0.5rem 0.75rem;
+    background: #3a1f1f;
+    border: 1px solid #5a2f2f;
+    border-radius: 3px;
+    color: #ff6b6b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.zwolf-epic.sheet.item .delete-side-effect:hover {
+    background: #4a2f2f;
+    border-color: #7a3f3f;
+}
+
+.zwolf-epic.sheet.item .delete-side-effect i {
+    font-size: 1rem;
+}
+
+.zwolf-epic.sheet.item .no-side-effects {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
+    font-style: italic;
+}
+
+.zwolf-epic.sheet.item .no-side-effects i {
+    margin-right: 0.5rem;
+    color: #555;
+}
+
+.zwolf-epic.sheet.item .add-side-effect-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.zwolf-epic.sheet.item .add-side-effect {
+    padding: 0.6rem 1.5rem;
+    background: #1f3a1f;
+    border: 1px solid #2f5a2f;
+    border-radius: 4px;
+    color: #6bff6b;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.zwolf-epic.sheet.item .add-side-effect:hover {
+    background: #2f4a2f;
+    border-color: #3f7a3f;
+}
+
+.zwolf-epic.sheet.item .add-side-effect i {
+    margin-right: 0.5rem;
+}
+
+/* ===================
+   Rich Text Editors
+   =================== */
+
+/* Editor container */
+.zwolf-epic.sheet.item .editor {
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    background: #1e1e1e;
+    margin-bottom: 0.5rem;
+}
+
+/* Editor content (view mode) */
+.zwolf-epic.sheet.item .editor-content {
+    padding: 0.75rem 1.25rem;
+    min-height: 100px;
+    color: #d4d4d4;
+    line-height: 1.6;
+    background: #252525;
+    border-bottom: 1px solid #3a3a3a;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.zwolf-epic.sheet.item .editor-content:empty::before,
+.zwolf-epic.sheet.item .editor-content em {
+    color: #777;
+    font-style: italic;
+}
+
+/* Rich text formatting inside editor */
+.zwolf-epic.sheet.item .editor-content p {
+    margin: 0 0 0.5rem 0;
+}
+
+.zwolf-epic.sheet.item .editor-content p:last-child {
+    margin-bottom: 0;
+}
+
+.zwolf-epic.sheet.item .editor-content ul,
+.zwolf-epic.sheet.item .editor-content ol {
+    margin: 0 0 0.5rem 1.5rem;
+    padding: 0;
+}
+
+.zwolf-epic.sheet.item .editor-content li {
+    margin-bottom: 0.25rem;
+}
+
+.zwolf-epic.sheet.item .editor-content strong {
+    font-weight: 600;
+    color: #e4e4e4;
+}
+
+.zwolf-epic.sheet.item .editor-content em {
+    font-style: italic;
+}
+
+.zwolf-epic.sheet.item .editor-content a {
+    color: var(--z-wolf-primary);
+    text-decoration: underline;
+}
+
+.zwolf-epic.sheet.item .editor-content a:hover {
+    color: var(--z-wolf-primary-light);
+}
+
+.zwolf-epic.sheet.item .editor-content h1,
+.zwolf-epic.sheet.item .editor-content h2,
+.zwolf-epic.sheet.item .editor-content h3,
+.zwolf-epic.sheet.item .editor-content h4 {
+    color: #e4e4e4;
+    margin: 0.75rem 0 0.5rem 0;
+    font-weight: 600;
+}
+
+.zwolf-epic.sheet.item .editor-content h1 { font-size: 1.4rem; }
+.zwolf-epic.sheet.item .editor-content h2 { font-size: 1.3rem; }
+.zwolf-epic.sheet.item .editor-content h3 { font-size: 1.2rem; }
+.zwolf-epic.sheet.item .editor-content h4 { font-size: 1.1rem; }
+
+/* Editor toolbar (with Edit button) */
+.zwolf-epic.sheet.item .editor-toolbar {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+    background: #2a2a2a;
+}
+
+.zwolf-epic.sheet.item .editor-edit {
+    padding: 0.4rem 1rem;
+    background: #3a5a7a;
+    border: 1px solid #4a6a8a;
+    border-radius: 3px;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .editor-edit:hover {
+    background: #4a6a8a;
+    border-color: #5a7a9a;
+}
+
+.zwolf-epic.sheet.item .editor-edit i {
+    font-size: 0.9rem;
+}
+
+/* ProseMirror editor container (edit mode) */
+.zwolf-epic.sheet.item .prosemirror-editor-container {
+    margin-bottom: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .prosemirror-editor {
+    border: 1px solid #3a3a3a;
+    border-radius: 4px 4px 0 0;
+    background: #1e1e1e;
+    min-height: 150px;
+}
+
+/* ProseMirror content area */
+.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror {
+    padding: 0.75rem 1.25rem;
+    min-height: 150px;
+    color: #d4d4d4;
+    line-height: 1.6;
+    background: #252525;
+    outline: none;
+}
+
+.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror:focus {
+    background: #2a2a2a;
+}
+
+/* ProseMirror placeholder */
+.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror p.is-editor-empty:first-child::before {
+    color: #777;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+/* Editor controls (Save/Cancel buttons) */
+.zwolf-epic.sheet.item .editor-controls {
+    padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    background: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+.zwolf-epic.sheet.item .save-editor-btn,
+.zwolf-epic.sheet.item .cancel-editor-btn {
+    padding: 0.4rem 1rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .save-editor-btn {
+    background: #2f5a2f;
+    color: #6bff6b;
+    border: 1px solid #3f7a3f;
+}
+
+.zwolf-epic.sheet.item .save-editor-btn:hover {
+    background: #3f6a3f;
+    border-color: #4f8a4f;
+}
+
+.zwolf-epic.sheet.item .cancel-editor-btn {
+    background: #5a2f2f;
+    color: #ff6b6b;
+    border: 1px solid #7a3f3f;
+}
+
+.zwolf-epic.sheet.item .cancel-editor-btn:hover {
+    background: #6a3f3f;
+    border-color: #8a4f4f;
+}
+
+.zwolf-epic.sheet.item .save-editor-btn i,
+.zwolf-epic.sheet.item .cancel-editor-btn i {
+    font-size: 0.9rem;
+}
+
+/* ProseMirror Menu System */
+.zwolf-epic.sheet.item .editor-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    margin: 0;
+    background: #2a2a2a;
+    border-bottom: 1px solid #3a3a3a;
+    list-style: none;
+}
+
+.zwolf-epic.sheet.item .editor-menu > li {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.zwolf-epic.sheet.item .editor-menu > li.right {
+    margin-left: auto;
+}
+
+.zwolf-epic.sheet.item .editor-menu button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #d4d4d4;
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    transition: all 0.15s;
+}
+
+.zwolf-epic.sheet.item .editor-menu button:hover {
+    background: #3a3a3a;
+    border-color: #4a4a4a;
+}
+
+.zwolf-epic.sheet.item .editor-menu button.active {
+    background: #3a5a7a;
+    border-color: #4a6a8a;
+    color: #ffffff;
+}
+
+/* Dropdown menus */
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown {
+    position: relative;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown > ul {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: #2a2a2a;
+    border: 1px solid #4a4a4a;
+    border-radius: 3px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    list-style: none;
+    margin: 0.25rem 0 0 0;
+    padding: 0.25rem 0;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown:hover > ul,
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown.open > ul {
+    display: block;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li {
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li:hover {
+    background: #3a3a3a;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > span {
+    display: block;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li.divider {
+    height: 1px;
+    background: #4a4a4a;
+    margin: 0.25rem 0;
+    padding: 0;
+}
+
+/* Nested submenus */
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > ul {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    min-width: 160px;
+    background: #2a2a2a;
+    border: 1px solid #4a4a4a;
+    border-radius: 3px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    list-style: none;
+    margin: 0 0 0 -0.25rem;
+    padding: 0.25rem 0;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li:hover > ul {
+    display: block;
+}
+
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > i {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    color: #999;
+}
+
+/* ProseMirror toolbar (if present) */
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container {
+    background: #2a2a2a;
+    border-bottom: 1px solid #3a3a3a;
+    padding: 0.25rem 0.5rem;
+}
+
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: #d4d4d4;
+    padding: 0.25rem 0.5rem;
+    margin: 0.125rem;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container button:hover {
+    background: #3a3a3a;
+    border-color: #4a4a4a;
+}
+
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container button.active {
+    background: #3a5a7a;
+    border-color: #4a6a8a;
+    color: #ffffff;
+}
+
+/* Readonly editor content */
+.zwolf-epic.sheet.item .editor-content-readonly {
+    padding: 0.75rem 1.25rem;
+    min-height: 60px;
+    color: #999;
+    line-height: 1.6;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+}
+
+.zwolf-epic.sheet.item .editor-content-readonly em {
+    color: #666;
+    font-style: italic;
+}
+
+/* Compact editor variant (for abilities) */
+.zwolf-epic.sheet.item .ability-description .editor-content {
+    min-height: 60px;
+    max-height: 300px;
+}
+
+.zwolf-epic.sheet.item .ability-description .prosemirror-editor .ProseMirror {
+    padding: 0.75rem 1.25rem;
+    min-height: 60px;
+}
+
+/* Expanded editor variant (for main description) */
+.zwolf-epic.sheet.item .main-description .editor-content {
+    min-height: 150px;
+    max-height: 600px;
+}
+
+.zwolf-epic.sheet.item .main-description .prosemirror-editor .ProseMirror {
+    padding: 0.75rem 1.25rem;
+    min-height: 150px;
+}
+
+/* ===================
+   Granted Abilities
+   =================== */
+
+.zwolf-epic.sheet.item .abilities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.zwolf-epic.sheet.item .abilities-header h3 {
+    margin: 0;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .ability-control {
+    padding: 0.4rem 0.75rem;
+    background: #1f3a1f;
+    border: 1px solid #2f5a2f;
+    border-radius: 3px;
+    color: #6bff6b;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .ability-control:hover {
+    background: #2f4a2f;
+    border-color: #3f7a3f;
+}
+
+.zwolf-epic.sheet.item .ability-control i {
+    font-size: 0.9rem;
+}
+
+.zwolf-epic.sheet.item .track-add-abilities-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #999;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.zwolf-epic.sheet.item .track-add-abilities-info i {
+    color: var(--z-wolf-primary);
+}
+
+.zwolf-epic.sheet.item .no-abilities,
+.zwolf-epic.sheet.item .no-abilities-tier {
+    text-align: center;
+    padding: 2rem;
+    color: #777;
+    font-style: italic;
+}
+
+.zwolf-epic.sheet.item .no-abilities i,
+.zwolf-epic.sheet.item .no-abilities-tier i {
+    margin-right: 0.5rem;
+    color: #555;
+}
+
+/* Individual Ability Item */
+.zwolf-epic.sheet.item .ability-item {
+    background: #252525;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.zwolf-epic.sheet.item .ability-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Ability Header Row - Name, Action Type, Delete */
+.zwolf-epic.sheet.item .ability-header {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.zwolf-epic.sheet.item .ability-header input[type="text"] {
+    flex: 2;
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+    font-weight: 500;
+}
+
+.zwolf-epic.sheet.item .ability-header input[type="text"]:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+.zwolf-epic.sheet.item .ability-header input[type="text"]::placeholder {
+    color: #666;
+}
+
+.zwolf-epic.sheet.item .ability-header select {
+    flex: 1;
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .ability-header select:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+/* Tier selector (only for track items) */
+.zwolf-epic.sheet.item .ability-tier {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.zwolf-epic.sheet.item .ability-tier label {
+    color: #999;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.zwolf-epic.sheet.item .ability-tier select {
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+    min-width: 60px;
+}
+
+.zwolf-epic.sheet.item .ability-tier select:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+/* Delete ability button */
+.zwolf-epic.sheet.item .delete-ability {
+    padding: 0.5rem 0.75rem;
+    background: #3a1f1f;
+    border: 1px solid #5a2f2f;
+    border-radius: 3px;
+    color: #ff6b6b;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.zwolf-epic.sheet.item .delete-ability:hover {
+    background: #4a2f2f;
+    border-color: #7a3f3f;
+}
+
+.zwolf-epic.sheet.item .delete-ability i {
+    font-size: 0.9rem;
+}
+
+.zwolf-epic.sheet.item .delete-ability span {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Ability Tags */
+.zwolf-epic.sheet.item .ability-tags {
+    margin-bottom: 0.75rem;
+}
+
+.zwolf-epic.sheet.item .ability-tags label {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.zwolf-epic.sheet.item .ability-tags input {
+    width: 100%;
+    padding: 0.5rem;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    color: #d4d4d4;
+}
+
+.zwolf-epic.sheet.item .ability-tags input:focus {
+    border-color: var(--z-wolf-primary);
+    outline: none;
+}
+
+.zwolf-epic.sheet.item .ability-tags input::placeholder {
+    color: #666;
+}
+
+/* Ability Description */
+.zwolf-epic.sheet.item .ability-description {
+    margin-bottom: 0;
+}
+
+.zwolf-epic.sheet.item .ability-description label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #999;
+    font-size: 0.85rem;
+    font-weight: 500;
 }

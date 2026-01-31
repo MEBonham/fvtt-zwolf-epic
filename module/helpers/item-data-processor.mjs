@@ -14,7 +14,7 @@ export class ItemDataProcessor {
     if (!knackMenus) {
       return 0;
     }
-    
+
     // Handle both object and array formats
     let menusArray;
     if (Array.isArray(knackMenus)) {
@@ -24,7 +24,7 @@ export class ItemDataProcessor {
     } else {
       return 0;
     }
-    
+
     return menusArray.reduce((total, menu) => {
       const selectionCount = parseInt(menu?.selectionCount) || 0;
       return total + selectionCount;
@@ -32,14 +32,14 @@ export class ItemDataProcessor {
   }
 
   /**
-   * Ensure granted abilities array has proper structure
+   * Ensure granted abilities object has proper structure
    * @param {Array|Object} abilities - Raw abilities array or object
-   * @returns {Object} - Validated abilities as object (not array)
+   * @returns {Object} - Validated abilities as object with random ID keys
    */
   static validateGrantedAbilities(abilities) {
     // Always return an object, not an array - this matches your data structure
     const result = {};
-    
+
     if (Array.isArray(abilities)) {
       // Convert array to object
       abilities.forEach((ability, index) => {
@@ -47,27 +47,27 @@ export class ItemDataProcessor {
           result[index.toString()] = {
             name: ability.name || "",
             tags: typeof ability.tags === 'string' ? ability.tags : "",
-            type: ability.type || "passive", 
-            description: ability.description || ""
+            type: ability.type || "passive",
+            description: ability.description || "",
+            tier: typeof ability.tier === 'number' ? ability.tier : 0
           };
         }
       });
     } else if (abilities && typeof abilities === 'object') {
       // Clean up object, preserving existing structure
       Object.keys(abilities).forEach(key => {
-        const index = parseInt(key);
-        if (!isNaN(index) && abilities[key]) {  // Only include valid indices with data
+        if (abilities[key]) {  // Only include entries with data
           result[key] = {
             name: abilities[key].name || "",
             tags: typeof abilities[key].tags === 'string' ? abilities[key].tags : "",
             type: abilities[key].type || "passive",
-            description: abilities[key].description || ""
+            description: abilities[key].description || "",
+            tier: typeof abilities[key].tier === 'number' ? abilities[key].tier : 0
           };
         }
       });
     }
-    
-    // Don't auto-fill missing indices - let deletions stay deleted
+
     return result;
   }
 
@@ -79,11 +79,11 @@ export class ItemDataProcessor {
    */
   static preserveGrantedAbilities(formData, currentAbilities) {
     const processedData = foundry.utils.duplicate(formData);
-    
+
     // Get the current abilities array as our base
     const updatedAbilities = foundry.utils.duplicate(currentAbilities || []);
     let hasAbilityUpdates = false;
-    
+
     // Process all form data keys to find ability-related updates
     Object.keys(processedData).forEach(key => {
       const abilityMatch = key.match(/^system\.grantedAbilities\.(\d+)\.(.+)$/);
@@ -91,7 +91,7 @@ export class ItemDataProcessor {
         const index = parseInt(abilityMatch[1]);
         const field = abilityMatch[2];
         const value = processedData[key];
-        
+
         // Ensure we have an ability object at this index
         while (updatedAbilities.length <= index) {
           updatedAbilities.push({
@@ -101,92 +101,41 @@ export class ItemDataProcessor {
             description: ""
           });
         }
-        
+
         // Update the specific field
         updatedAbilities[index][field] = value;
         hasAbilityUpdates = true;
-        
+
         // Remove the individual field update from form data
         delete processedData[key];
       }
     });
-    
+
     // If we had any ability updates, replace with the complete updated array
     if (hasAbilityUpdates) {
       processedData['system.grantedAbilities'] = updatedAbilities;
     }
-    
+
     return processedData;
   }
 
   /**
-   * Process track-specific tier abilities
-   * @param {Object} formData - Form data to process
-   * @param {Object} currentTierData - Current tier data from item
-   * @returns {Object} - Processed form data
-   */
-  static preserveTrackTierAbilities(formData, currentTierData) {
-    const processedData = foundry.utils.duplicate(formData);
-  console.log("preserveGrantedAbilities input:", formData);
-  console.log("preserveGrantedAbilities output:", processedData);
-    
-    // Handle each tier (1-5)
-    for (let tierNum = 1; tierNum <= 5; tierNum++) {
-      const currentTierAbilities = foundry.utils.duplicate(
-        foundry.utils.getProperty(currentTierData, `tiers.tier${tierNum}.grantedAbilities`) || []
-      );
-      
-      const updatedTierAbilities = foundry.utils.duplicate(currentTierAbilities);
-      let hasTierUpdates = false;
-      
-      // Process form data for this tier
-      Object.keys(processedData).forEach(key => {
-        const tierAbilityMatch = key.match(new RegExp(`^system\\.tiers\\.tier${tierNum}\\.grantedAbilities\\.(\\d+)\\.(.+)$`));
-        if (tierAbilityMatch) {
-          const index = parseInt(tierAbilityMatch[1]);
-          const field = tierAbilityMatch[2];
-          const value = processedData[key];
-          
-          // Ensure we have an ability object at this index
-          while (updatedTierAbilities.length <= index) {
-            updatedTierAbilities.push({
-              name: "",
-              tags: "",
-              type: "passive",
-              description: ""
-            });
-          }
-          
-          // Update the specific field
-          updatedTierAbilities[index][field] = value;
-          hasTierUpdates = true;
-          
-          // Remove the individual field update from form data
-          delete processedData[key];
-        }
-      });
-      
-      // If we had any tier ability updates, replace with the complete updated array
-      if (hasTierUpdates) {
-        processedData[`system.tiers.tier${tierNum}.grantedAbilities`] = updatedTierAbilities;
-      }
-    }
-    
-    return processedData;
-  }
-
-  /**
-   * Handle multi-select form fields (only for sizeOptions)
+   * Handle all multi-select form fields automatically
    * @param {HTMLFormElement} form - The form element
    * @param {Object} formData - Form data to modify
    */
   static processMultiSelectFields(form, formData) {
-    const sizeOptionsSelect = form.querySelector('select[name="system.sizeOptions"]');
-    
-    if (sizeOptionsSelect) {
-      const selectedValues = Array.from(sizeOptionsSelect.selectedOptions).map(option => option.value);
-      formData['system.sizeOptions'] = selectedValues;
-    }
+    // Find all multi-select elements (select elements with 'multiple' attribute)
+    const multiSelects = form.querySelectorAll("select[multiple]");
+
+    multiSelects.forEach(select => {
+      const fieldName = select.name;
+      if (fieldName) {
+        // Get all selected values as an array
+        const selectedValues = Array.from(select.selectedOptions).map(option => option.value);
+        formData[fieldName] = selectedValues;
+      }
+    });
   }
 
   /**
@@ -198,14 +147,14 @@ export class ItemDataProcessor {
   static evaluateFunction(functionString, data) {
     // Extract variables from data for the function scope
     const { level, attributes, skills, vitalityBoostCount } = data;
-    
+
     // Create a safe function wrapper
     const functionWrapper = `
       (function() {
         ${functionString}
       })();
     `;
-    
+
     // Evaluate the function in a controlled scope
     return eval(functionWrapper);
   }

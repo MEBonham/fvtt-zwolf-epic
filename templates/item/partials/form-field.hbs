@@ -67,9 +67,7 @@
     </select>
   
   {{else if (eq type "editor")}}
-    <div class="editor-container">
-      {{editor value target=name button=true owner=owner editable=editable}}
-    </div>
+    {{> rich-editor value=value target=name editable=editable owner=owner}}
   {{/if}}
   
   {{#if notes}}

@@ -1,0 +1,30 @@
+/* Z-Wolf Epic System - Global Styles */
+
+/* ===========================================
+   NOTE: Actor-specific styles are in actor-sheets.css
+   This file is for global overrides and shared patterns
+   =========================================== */
+
+/* Global sheet font settings (if using variables) */
+.zwolf-epic.sheet {
+    font-family: var(--z-wolf-font-family, "Signika", sans-serif);
+    font-size: var(--z-wolf-font-size-md, 14px);
+    color: var(--z-wolf-text, #d4d4d4);
+}
+
+/* Common editor styles (used in biography, descriptions, etc.) */
+.zwolf-epic .editor-content {
+    min-height: 200px;
+    padding: 0.5rem;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    background: #1a1a1a;
+}
+
+.zwolf-epic .editor-content p {
+    margin: 0 0 0.5rem 0;
+}
+
+.zwolf-epic .editor-content p:last-child {
+    margin-bottom: 0;
+}

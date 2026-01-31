@@ -1,24 +1,32 @@
 /* ===========================================
-   ACTOR SHEETS - CONSOLIDATED STYLING
-   Uses Z-Wolf color variables from variables.css
+   ACTOR SHEETS - BASE LAYOUT
+   CSS Grid layout matching ApplicationV2 PARTS structure
    =========================================== */
 
 /* ===================
-   Base Layout & Structure
+   Base Container
    =================== */
 
 .zwolf-epic.sheet.actor {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+    height: 100%;
+    background: #2a2a2a;
+    color: #d4d4d4;
 }
 
+/* ApplicationV2 renders parts into window-content */
 .application.actor .window-content {
-  height: 100%;
-  display: grid !important;
-  grid-template-columns: 200px 1fr;
-  grid-template-rows: auto auto 1fr;
-  overflow: hidden;
+    height: 100%;
+    overflow: hidden;
+    background: #1e1e1e;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    grid-template-columns: 200px 1fr;
+}
+
+/* Form should fill its container */
+.application.actor form {
+    height: 100%;
+    display: contents;
 }
 
 /* ===================
@@ -26,363 +34,258 @@
    =================== */
 
 .sheet-header-wrapper {
-  background: linear-gradient(135deg, var(--z-wolf-primary-light), var(--z-wolf-primary));
-  border-bottom: 3px solid var(--z-wolf-primary-dark);
-  grid-column: 1 / -1;
-  grid-row: 1;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    background: linear-gradient(135deg, #3a4a5a, #2d3d4d);
+    border-bottom: 2px solid #4a5a6a;
 }
 
 .sheet-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  color: white;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
 }
 
 .sheet-header .profile-img {
-  width: 80px;
-  height: 80px;
-  border: 3px solid white;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-  flex-shrink: 0;
-  object-fit: cover;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #5a6a7a;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: #3a3a3a;
 }
 
 .sheet-header .profile-img:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
+    border-color: #6a7a8a;
 }
 
 .sheet-header .header-fields {
-  flex: 1;
-  min-width: 0;
+    flex: 1;
+    min-width: 0;
 }
 
 .sheet-header .charname {
-  margin: 0 0 0.5rem 0;
+    margin: 0 0 0.5rem 0;
 }
 
 .sheet-header .charname input {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-weight: 600;
-  font-size: 0.74em;
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e4e4e4;
+    font-weight: 600;
+    font-size: 0.74em;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 4px;
 }
 
 .sheet-header .charname input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Header Lines & Fields */
-.header-line-base,
-.header-line-2 {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .header-line-2 {
-  margin-top: 0.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .header-field {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .header-field label {
-  font-weight: 600;
-  white-space: nowrap;
-  font-size: 0.9em;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #b4b4b4;
 }
 
 .header-field input,
 .header-field select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.9em;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #d4d4d4;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+    line-height: normal;
 }
 
 .header-field input[type="number"] {
-  width: 60px;
+    width: 60px;
 }
 
 .header-field select {
-  min-width: 100px;
+    min-width: 100px;
 }
 
 .header-field.tags-field {
-  flex-grow: 1;
+    align-self: stretch;
+    flex-grow: 1;
 }
 
 .size-source {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9em;
-}
-
-.tags-display {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  min-width: 150px;
-  flex: 1;
-  font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9em;
 }
 
 .effective-size-display {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-left: 8px;
-  padding: 2px 8px;
-  background: var(--z-wolf-accent);
-  border-radius: 3px;
-  font-size: 0.85em;
-  font-weight: bold;
-  color: #333;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 8px;
+    padding: 2px 8px;
+    background: var(--z-wolf-accent);
+    border-radius: 3px;
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #333;
 }
 
 .effective-size-display i {
-  font-size: 0.8em;
-  opacity: 0.7;
+    font-size: 0.8em;
+    opacity: 0.7;
 }
 
-/* Base Creature Selector */
-.base-creature-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.tags-display {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    min-width: 150px;
+    height: 100%;
+    font-size: 0.9em;
+    line-height: normal;
+    display: inline-flex;
+    align-items: center;
+    flex-grow: 1;
 }
 
-.base-creature-dropdown {
-  min-width: 200px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.9em;
-}
-
-.base-creature-dropdown option {
-  background: var(--z-wolf-bg-dark);
-  color: white;
-}
-
-.base-creature-info {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 1.1em;
-}
-
-/* ===================
-   Header Resources & Stats
-   =================== */
-
+/* Header Resources Bar */
 .header-resources {
-  display: flex;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  flex-wrap: wrap;
-  justify-content: space-between;
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+}
+
+/* Rest Buttons */
+.resource.rest-buttons-resource {
+    flex-grow: 1;
+    justify-content: flex-end;
+}
+
+.rest-button-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.rest-button {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.rest-button:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.rest-button i {
+    font-size: 1.1em;
 }
 
 .resource {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .resource label {
-  font-weight: 600;
-  font-size: 0.9em;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #b4b4b4;
 }
 
 .resource-values {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .resource-values input {
-  width: 50px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 0.25rem;
-  text-align: center;
-  border-radius: 3px;
+    width: 50px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #d4d4d4;
+    padding: 0.25rem;
+    text-align: center;
+    border-radius: 3px;
 }
 
 .resource-values .sep {
-  color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .resource-values .max-value,
 .resource-value-single .calculated-value,
 .resource-value-single .static-value {
-  font-weight: 600;
-  min-width: 30px;
-  text-align: center;
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+    color: #d4d4d4;
 }
 
-.speed-with-roll {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.speed-roll-die {
-  cursor: pointer;
-  transition: color 0.2s ease;
-  font-size: 1.1em;
-}
-
-.speed-roll-die:hover {
-  color: var(--z-wolf-accent);
-}
-
-/* Rest Buttons */
-.rest-button-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.rest-button {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85em;
-}
-
-.rest-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.rest-button i {
-  font-size: 1.1em;
-}
-
-/* ===================
-   Header Target Numbers
-   =================== */
-
+/* Header TNs Bar */
 .header-tns {
-  display: flex;
-  gap: 2rem;
-  padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.15);
-  flex-wrap: wrap;
-  align-items: center;
+    display: flex;
+    gap: 2rem;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 .tn-group {
-  display: flex;
-  gap: 2rem;
-}
-
-.tn-divider {
-  width: 1px;
-  background: rgba(255, 255, 255, 0.3);
-  margin: 0 0.5rem;
+    display: flex;
+    gap: 2rem;
 }
 
 .tn-item {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .tn-item label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 0.8em;
-  font-weight: 500;
-  white-space: nowrap;
+    color: #b4b4b4;
+    font-size: 0.85em;
+    font-weight: 500;
 }
 
 .tn-value {
-  color: white;
-  font-weight: 700;
-  font-size: 1.2em;
-}
-
-/* Exotic Senses */
-.exotic-senses-icon {
-  margin-left: auto;
-  color: var(--z-wolf-accent);
-  cursor: help;
-  font-size: 1.2em;
-  transition: color 0.2s ease;
-  display: flex;
-  align-items: center;
-}
-
-.exotic-senses-icon:hover {
-  color: var(--z-wolf-primary-light);
-}
-
-.exotic-senses-icon i {
-  filter: drop-shadow(0 0 3px rgba(212, 175, 55, 0.5));
-}
-
-.exotic-senses-tooltip {
-  background: rgba(0, 0, 0, 0.95);
-  border: 1px solid var(--z-wolf-primary);
-  border-radius: 6px;
-  padding: 0.75rem;
-  color: white;
-  max-width: 400px;
-  z-index: 10000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-.exotic-senses-tooltip strong {
-  color: var(--z-wolf-accent);
-}
-
-.exotic-senses-tooltip ul {
-  margin: 0.5rem 0 0 0;
-  padding-left: 1.25rem;
-  list-style: none;
-}
-
-.exotic-senses-tooltip li {
-  margin: 0.5rem 0;
-  padding: 0.25rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.exotic-senses-tooltip li:last-child {
-  border-bottom: none;
-}
-
-.exotic-senses-tooltip small {
-  color: rgba(255, 255, 255, 0.8);
-  display: block;
-  margin-top: 0.25rem;
+    color: #d4d4d4;
+    font-weight: 700;
+    font-size: 1.2em;
 }
 
 /* ===================
@@ -390,160 +293,166 @@
    =================== */
 
 .progressions-sidebar {
-  width: 200px;
-  background: var(--z-wolf-secondary);
-  border-right: 2px solid var(--z-wolf-border);
-  grid-column: 1;
-  grid-row: 2 / -1;
-  overflow-y: auto;
-  min-height: 0;
+    grid-column: 1;
+    grid-row: 2 / 4;
+    background: #252525;
+    border-right: 2px solid #3a3a3a;
+    overflow-y: auto;
+    padding: 0.9rem 0.5rem 0.5rem;
 }
 
 .progressions-container {
-  padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-left: 1.5rem;
 }
 
 .progression-group {
-  margin-bottom: 0.75rem;
-  margin-left: 29px;
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.2);
-  position: relative;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .progression-group.collapsed .progression-content {
-  display: none;
+    display: none;
 }
 
 .progression-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  background: var(--z-wolf-primary);
-  font-weight: 600;
-  font-size: 0.9em;
-  cursor: pointer;
-  user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: #3a4a5a;
+    font-weight: 600;
+    font-size: 0.9em;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px 4px 0 0;
+    position: relative;
 }
 
 .progression-header:hover {
-  background: var(--z-wolf-primary-light);
-}
-
-.progression-header .progression-die {
-  position: absolute;
-  color: var(--z-wolf-surface);
-  top: 8px;
-  left: -21px;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.progression-header .progression-die:hover {
-  color: var(--z-wolf-accent);
+    background: #4a5a6a;
 }
 
 .progression-name {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .progression-header i.fa-chevron-down {
-  transition: transform 0.2s ease;
+    transition: transform 0.2s ease;
 }
 
 .progression-group.collapsed .progression-header i.fa-chevron-down {
-  transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
 
-.progression-bonus {
-  font-weight: 700;
+.progression-header .progression-die {
+    position: absolute;
+    left: -1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.progression-content {
-  padding: 0.5rem;
+.progression-header .progression-die:hover {
+    color: var(--z-wolf-primary, #4a90a4);
+    transform: translateY(-50%) scale(1.15);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
-.progression-stats {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+/* Color-coded progression headers matching slider colors */
+.progression-group.mediocre .progression-header {
+    background: linear-gradient(135deg, #a31d1d, #8b1515);
 }
 
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.25rem;
-  border-radius: 3px;
-  transition: background-color 0.2s ease;
-}
-
-.stat-item:hover {
-  background: rgba(44, 90, 160, 0.2);
-}
-
-.stat-rollable {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  flex: 1;
-}
-
-.stat-icon {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.stat-icon.attribute { background: var(--z-wolf-primary-light); }
-.stat-icon.skill { background: var(--z-wolf-accent); }
-
-.stat-name {
-  font-size: 0.85em;
-  color: var(--z-wolf-accent);
-}
-
-.stat-value {
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-  font-size: 0.9em;
-}
-
-.stat-placeholder {
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
-  font-size: 0.85em;
-  text-align: center;
-  padding: 0.5rem;
-}
-
-/* Progression Type Colors */
-.progression-group.mediocre .progression-header,
-.progression-group.poor .progression-header {
-  background: var(--z-wolf-danger);
-  color: var(--z-wolf-text);
+.progression-group.mediocre .progression-header:hover {
+    background: linear-gradient(135deg, #b71c1c, #a31d1d);
 }
 
 .progression-group.moderate .progression-header {
-  background: var(--z-wolf-warning);
-  color: var(--z-wolf-text);
+    background: linear-gradient(135deg, #c79100, #a67900);
 }
 
-.progression-group.specialty .progression-header,
-.progression-group.good .progression-header {
-  background: var(--z-wolf-success);
-  color: var(--z-wolf-text);
+.progression-group.moderate .progression-header:hover {
+    background: linear-gradient(135deg, #d9a000, #c79100);
+}
+
+.progression-group.specialty .progression-header {
+    background: linear-gradient(135deg, #388e3c, #2e7d32);
+}
+
+.progression-group.specialty .progression-header:hover {
+    background: linear-gradient(135deg, #43a047, #388e3c);
 }
 
 .progression-group.awesome .progression-header {
-  background: var(--z-wolf-info);
-  color: var(--z-wolf-text);
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+}
+
+.progression-group.awesome .progression-header:hover {
+    background: linear-gradient(135deg, #1e88e5, #1976d2);
+}
+
+.progression-bonus {
+    font-weight: 700;
+    color: #9ab;
+}
+
+.progression-content {
+    padding: 0.5rem;
+}
+
+.progression-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.25rem;
+    font-size: 0.85em;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+}
+
+.stat-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.stat-rollable {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+.stat-icon {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: #5a6a7a;
+}
+
+.stat-name {
+    color: #a4a4a4;
+}
+
+.stat-value {
+    font-weight: 600;
+    color: #b4b4b4;
 }
 
 /* ===================
@@ -551,821 +460,101 @@
    =================== */
 
 .sheet-tabs {
-  grid-column: 2;
-  grid-row: 2;
-  gap: 0.5rem;
-  display: flex;
-  padding: 0.5rem 1rem 0;
-  background: var(--z-wolf-secondary);
-  border-bottom: 2px solid var(--z-wolf-border);
+    grid-column: 2;
+    grid-row: 2;
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem 0;
+    background: #252525;
+    border-bottom: 2px solid #3a3a3a;
+    border-top: none;
 }
 
 .sheet-tabs .item {
-  background: var(--z-wolf-surface);
-  color: var(--z-wolf-text);
-  border: 1px solid var(--z-wolf-border);
-  border-bottom: none;
-  border-radius: 6px 6px 0 0;
-  padding: 0 1.4rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-weight: 500;
-  text-decoration: none;
-  position: relative;
-  bottom: -2px;
+    background: #2a2a2a;
+    color: #a4a4a4;
+    border: 1px solid #3a3a3a;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 0 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    text-decoration: none;
+    position: relative;
+    bottom: -2px;
 }
 
 .sheet-tabs .item:hover:not(.active) {
-  background: var(--z-wolf-primary-light);
-  color: white;
+    background: #3a4a5a;
+    color: #d4d4d4;
 }
 
 .sheet-tabs .item.active {
-  background: var(--z-wolf-background-dark);
-  color: var(--z-wolf-accent);
-  border-color: var(--z-wolf-primary);
-  border-bottom: 2px solid var(--z-wolf-background-dark);
-  z-index: 1;
+    background: #1e1e1e;
+    color: #9ab;
+    border-color: #4a5a6a;
+    border-bottom: 2px solid #1e1e1e;
+    z-index: 1;
 }
 
 /* ===================
    Tab Content
    =================== */
 
-.tab {
-  grid-column: 2;
-  grid-row: 3;
-  overflow-y: auto;
-  padding: 1rem;
-  background: var(--z-wolf-background-dark);
-  min-height: 0;
-  display: none;
+/* All tab parts share grid position */
+.tab[data-tab] {
+    grid-column: 2;
+    grid-row: 3;
+    overflow-y: auto;
+    background: #1e1e1e;
+    padding: 1rem;
+    display: none;
 }
 
-.tab.active {
-  display: block;
-}
-
-/* ===================
-   Abilities Accordion (Main Tab)
-   =================== */
-
-.abilities-accordion {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.ability-category {
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-}
-
-.ability-category[open] {
-  border-color: var(--z-wolf-primary);
-}
-
-.ability-category-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  user-select: none;
-  list-style: none;
-  transition: background-color 0.2s;
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-}
-
-.ability-category-header::-webkit-details-marker,
-.ability-category-header::marker {
-  display: none;
-}
-
-.ability-category-header:hover {
-  background: var(--z-wolf-primary-light);
-  color: white;
-}
-
-.ability-category[open] .ability-category-header {
-  background: var(--z-wolf-primary);
-  color: white;
-}
-
-.ability-category-header i {
-  font-size: 1.1em;
-}
-
-.ability-count {
-  margin-left: auto;
-  font-weight: 500;
-  opacity: 0.9;
-}
-
-.ability-list {
-  padding: 0 1rem;
-}
-
-.ability-subsection {
-  margin-bottom: 1rem;
-}
-
-.ability-subsection:last-child {
-  margin-bottom: 0;
-}
-
-.ability-subsection-header {
-  color: var(--z-wolf-accent);
-  margin: 0 0 0.5rem 0;
-  padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--z-wolf-border);
-  font-size: 0.95em;
-}
-
-.ability-item {
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.ability-item[open] {
-  border-color: var(--z-wolf-primary-light);
-}
-
-.ability-item.strike-ability {
-  border-left: 3px solid var(--z-wolf-danger);
-}
-
-.ability-name {
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  list-style: none;
-  color: var(--z-wolf-accent);
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.ability-name::-webkit-details-marker,
-.ability-name::marker {
-  display: none;
-}
-
-.ability-name:hover {
-  background: rgba(44, 90, 160, 0.2);
-}
-
-.ability-item[open] .ability-name {
-  background: var(--z-wolf-primary);
-  color: white;
-}
-
-.ability-tags {
-  color: var(--z-wolf-text-muted);
-  font-size: 0.9em;
-  font-style: italic;
-}
-
-.ability-description {
-  padding: 0.35rem 0.75rem;
-  color: rgba(255, 255, 255, 0.9);
-  border-top: 1px solid var(--z-wolf-border);
-  line-height: 1.3;
-}
-
-.no-abilities {
-  padding: 1rem;
-  text-align: center;
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
+.tab[data-tab].active {
+    display: block;
 }
 
 /* ===================
-   Biography Tab
+   Placeholder Content Styles
    =================== */
 
-.biography-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.tab h3 {
+    color: #9ab;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
 }
 
-.languages-section,
-.liabilities-section,
-.notes-section,
-.journey-abilities,
-.miscellaneous-abilities {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-.languages-section h3,
-.liabilities-section h3,
-.notes-section h3 {
-  color: var(--z-wolf-accent);
-  margin: 0 0 0.75rem 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.language-count {
-  font-size: 0.9em;
-  font-weight: normal;
-  color: var(--z-wolf-text-muted);
-}
-
-.languages-title {
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-}
-
-.no-content-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 2rem;
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
+.tab p {
+    color: #a4a4a4;
+    line-height: 1.6;
 }
 
 /* ===================
-   Inventory Tab
+   Scrollbar Styling
    =================== */
 
-.inventory-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+.progressions-sidebar::-webkit-scrollbar,
+.tab[data-tab]::-webkit-scrollbar {
+    width: 8px;
 }
 
-.inventory-summary {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
+.progressions-sidebar::-webkit-scrollbar-track,
+.tab[data-tab]::-webkit-scrollbar-track {
+    background: #1a1a1a;
 }
 
-.bulk-section,
-.wealth-section {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.progressions-sidebar::-webkit-scrollbar-thumb,
+.tab[data-tab]::-webkit-scrollbar-thumb {
+    background: #4a4a4a;
+    border-radius: 4px;
 }
 
-.summary-label {
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-}
-
-.bulk-display {
-  color: var(--z-wolf-accent);
-  font-weight: 600;
-}
-
-.wealth-input-group input {
-  width: 100px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--z-wolf-border);
-  color: var(--z-wolf-accent);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-}
-
-.inventory-categories {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.equipment-category {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-.category-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--z-wolf-accent);
-  margin: 0 0 0.75rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--z-wolf-border);
-}
-
-.equipment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/* Equipment & Slotted Items - Shared Styles */
-.equipment-item,
-.slotted-item {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0 1rem;
-  width: 100%;
-  padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-  transition: border-color 0.2s ease;
-}
-
-.equipment-item:hover,
-.slotted-item:hover {
-  border-color: var(--z-wolf-primary-light);
-}
-
-.equipment-item.invalid-placement {
-  border-color: var(--z-wolf-danger);
-  background: rgba(220, 53, 69, 0.1);
-}
-
-.equipment-item .item-image,
-.slotted-item .item-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 4px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.slotted-item .item-image {
-  width: 50px;
-  height: 50px;
-}
-
-.compact-slotted-item {
-  padding: 0.35rem;
-}
-
-.compact-item-image {
-  width: 35px;
-  height: 35px;
-}
-
-.equipment-item .item-info,
-.slotted-item .item-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.equipment-item .item-name,
-.slotted-item .item-name {
-  color: var(--z-wolf-accent);
-  font-weight: 600;
-}
-
-.compact-item-info .item-name {
-  font-size: 0.9em;
-}
-
-.equipment-item .item-name {
-  margin-bottom: 0.25rem;
-}
-
-.equipment-item .item-details,
-.slotted-item .item-details {
-  color: var(--z-wolf-text-muted);
-  font-size: 0.85em;
-}
-
-.slotted-item .item-details {
-  margin-top: 0.25rem;
-}
-
-.equipment-item .item-controls,
-.slotted-item .item-controls {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.equipment-item .item-control,
-.slotted-item .item-control {
-  color: var(--z-wolf-text-muted);
-  cursor: pointer;
-  transition: color 0.2s ease;
-  text-decoration: none;
-}
-
-.equipment-item .item-control:hover,
-.slotted-item .item-control:hover {
-  color: var(--z-wolf-primary-light);
-}
-
-.equipment-item .item-control[data-action="deleteItem"]:hover,
-.slotted-item .item-control[data-action="deleteItem"]:hover {
-  color: var(--z-wolf-danger);
-}
-
-.item-placement {
-  margin-top: 0.25rem;
-}
-
-.equipment-placement-select {
-  width: 100%;
-  padding: 0.25rem;
-  font-size: 0.85rem;
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 3px;
-  background: var(--z-wolf-bg);
-}
-
-/* Drop Zones - Shared Styles */
-.equipment-drop-zone,
-.foundation-drop-zone,
-.knack-drop-zone,
-.track-drop-zone,
-.talent-drop-zone,
-.attunement-drop-zone {
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px dashed var(--z-wolf-border);
-  border-radius: 6px;
-  min-height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.equipment-drop-zone {
-  min-height: 120px;
-  padding: 2rem;
-  text-align: center;
-}
-
-.foundation-drop-zone {
-  min-height: 100px;
-}
-
-/* .compact-drop-zone {
-  min-height: 60px;
-  padding: 0 1rem;
-} */
-
-.equipment-drop-zone:hover,
-.foundation-drop-zone:hover,
-.knack-drop-zone:hover,
-.track-drop-zone:hover,
-.talent-drop-zone:hover,
-.attunement-drop-zone:hover {
-  border-color: var(--z-wolf-primary-light);
-  background: rgba(44, 90, 160, 0.1);
-}
-
-.talent-drop-zone.track-missing {
-  border-color: var(--z-wolf-warning);
-  opacity: 0.6;
-}
-
-.drop-prompt,
-.compact-drop-prompt {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--z-wolf-text-muted);
-}
-
-.compact-drop-prompt {
-  font-size: 0.85em;
-}
-
-.drop-prompt i {
-  font-size: 2em;
-  opacity: 0.5;
-}
-
-.drop-hint {
-  font-size: 0.85em;
-  font-style: italic;
-}
-
-.drop-requirement {
-  font-size: 0.75em;
-  color: var(--z-wolf-warning);
-  margin-top: 0.25rem;
-}
-
-.equipment-drop-section {
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px dashed var(--z-wolf-border);
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-.equipment-drop-section h4 {
-  color: var(--z-wolf-accent);
-  margin: 0 0 0.75rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.no-equipment-message {
-  text-align: center;
-  padding: 2rem;
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
-}
-
-/* ===================
-   Configure Tab
-   =================== */
-
-.configure-content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.build-sections {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.build-category {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
-  padding: 1rem;
-}
-
-.build-category h4 {
-  color: var(--z-wolf-accent);
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--z-wolf-border);
-}
-
-/* Foundation */
-.foundation-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.foundation-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.foundation-label {
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-}
-
-/* Build Points */
-.build-points-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
-}
-
-.build-points-display {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.bp-label {
-  color: var(--z-wolf-text-muted);
-  font-size: 0.9em;
-  font-weight: 600;
-}
-
-.bp-total {
-  font-size: 1.5em;
-  font-weight: 700;
-  color: var(--z-wolf-accent);
-}
-
-.bp-total.negative { color: var(--z-wolf-danger); }
-.bp-total.over-max { color: var(--z-wolf-warning); }
-.bp-total.at-max { color: var(--z-wolf-success); }
-
-.bp-breakdown {
-  display: flex;
-  gap: 0.5rem;
-  font-size: 0.85em;
-  color: var(--z-wolf-text-muted);
-}
-
-.bp-breakdown-divider {
-  color: var(--z-wolf-border);
-}
-
-.build-points-lock-btn {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--z-wolf-border);
-  color: var(--z-wolf-accent);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
-}
-
-.build-points-lock-btn:hover {
-  background: var(--z-wolf-primary-light);
-  color: white;
-  border-color: var(--z-wolf-primary);
-}
-
-.build-points-lock-btn.locked {
-  background: var(--z-wolf-danger);
-  color: white;
-  border-color: var(--z-wolf-danger);
-}
-
-.build-points-lock-btn.locked:hover {
-  background: #c82333;
-}
-
-/* Progression Config */
-.progression-config {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.config-section h5 {
-  color: var(--z-wolf-accent);
-  margin: 0 0 1rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.config-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.config-row,
-.config-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 4px;
-}
-
-.config-row-alt {
-  background: rgba(0, 0, 0, 0.4);
-}
-
-.stat-label {
-  color: var(--z-wolf-accent);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 100px;
-}
-
-.awesome-warning {
-  color: var(--z-wolf-warning);
-  cursor: help;
-}
-
-.progression-slider-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-  max-width: 300px;
-}
-
-.progression-slider {
-  width: 100%;
-  cursor: pointer;
-}
-
-.progression-slider:disabled,
-.progression-slider.locked {
-  cursor: not-allowed !important;
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.progression-slider-container:has(.progression-slider:disabled),
-.progression-slider-container:has(.progression-slider.locked) {
-  opacity: 0.6;
-  pointer-events: none;
-}
-
-.config-row:has(.progression-slider:disabled),
-.config-item:has(.progression-slider:disabled) {
-  position: relative;
-}
-
-.config-row:has(.progression-slider:disabled)::after,
-.config-item:has(.progression-slider:disabled)::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.1);
-  pointer-events: none;
-  border-radius: 4px;
-}
-
-.slider-labels {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 0.25rem;
-}
-
-.slider-label {
-  font-size: 0.75em;
-  color: var(--z-wolf-text-muted);
-}
-
-/* Slots Grids */
-.knacks-grid,
-.tracks-grid,
-.talents-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.compact-grid {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0.75rem;
-}
-
-.knack-slot,
-.track-slot,
-.talent-slot {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.slot-label {
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-  font-size: 0.9em;
-}
-
-.track-source {
-  font-size: 0.85em;
-  color: var(--z-wolf-text-muted);
-  font-weight: normal;
-}
-
-.track-missing {
-  color: var(--z-wolf-warning);
-}
-
-.no-slots-message {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 2rem;
-  color: var(--z-wolf-text-muted);
-  font-style: italic;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+.progressions-sidebar::-webkit-scrollbar-thumb:hover,
+.tab[data-tab]::-webkit-scrollbar-thumb:hover {
+    background: #5a5a5a;
 }
 
 /* ===================
@@ -1373,47 +562,1193 @@
    =================== */
 
 @media (max-width: 768px) {
-  .sheet-header {
+    .application.actor form {
+        grid-template-rows: auto auto auto 1fr;
+        grid-template-columns: 1fr;
+    }
+
+    .sheet-header-wrapper {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .progressions-sidebar {
+        grid-column: 1;
+        grid-row: 2;
+        border-right: none;
+        border-bottom: 2px solid #3a3a3a;
+        max-height: 200px;
+    }
+
+    .sheet-tabs {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .tab[data-tab] {
+        grid-column: 1;
+        grid-row: 4;
+    }
+
+    .sheet-header {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+/* ===========================================
+   DROP ZONES - Phase 11
+   Drag-and-drop visual feedback
+   =========================================== */
+
+/* ===================
+   Base Drop Zone Styles
+   =================== */
+
+.drop-zone {
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.drop-zone.compact-drop-zone {
+    min-height: 60px;
+}
+
+/* Add padding when filled */
+.drop-zone:has(.slotted-item) {
+    padding: 0 0.5rem;
+}
+
+/* Drop Prompt (empty state) */
+.drop-prompt {
+    display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.4);
     text-align: center;
-  }
-  
-  .foundation-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .header-resources,
-  .header-tns {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  
-  .tn-group {
+    padding: 0.5rem;
+}
+
+.drop-prompt.compact-drop-prompt {
+    flex-direction: row;
+    gap: 0.25rem;
+    font-size: 0.85em;
+}
+
+.drop-prompt i {
+    font-size: 1.5em;
+    opacity: 0.6;
+}
+
+.drop-prompt.compact-drop-prompt i {
+    font-size: 1em;
+}
+
+.drop-prompt span {
+    font-size: 0.9em;
+}
+
+.drop-prompt .drop-requirement {
+    font-size: 0.8em;
+    color: rgba(255, 200, 100, 0.7);
+    margin-top: 0.25rem;
+}
+
+.drop-prompt .tier-capacity {
+    font-size: 0.8em;
+    color: rgba(100, 200, 255, 0.7);
+    margin-top: 0.25rem;
+}
+
+/* ===================
+   Drag-Over Feedback
+   =================== */
+
+/* Valid drop */
+.drop-zone.drag-over {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.15);
+    border-style: solid;
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+}
+
+.drop-zone.drag-over .drop-prompt {
+    color: #4caf50;
+}
+
+/* Invalid drop */
+.drop-zone.invalid-drop {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.15);
+    border-style: solid;
+    cursor: not-allowed;
+}
+
+.drop-zone.invalid-drop .drop-prompt {
+    color: #f44336;
+}
+
+/* ===================
+   Disabled Drop Zones
+   =================== */
+
+.drop-zone.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.drop-zone.disabled .drop-prompt {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* ===================
+   Foundation Drop Zones
+   =================== */
+
+.foundation-drop-zone {
+    min-height: 100px;
+    background: rgba(58, 74, 90, 0.2);
+    border-color: rgba(90, 106, 122, 0.4);
+}
+
+/* Reduce height when filled */
+.foundation-drop-zone:has(.slotted-item) {
+    min-height: 70px;
+}
+
+.foundation-drop-zone.drag-over {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.2);
+}
+
+/* ===================
+   Slot Drop Zones (Knacks, Tracks, Talents)
+   =================== */
+
+.knack-drop-zone,
+.track-drop-zone,
+.talent-drop-zone {
+    min-height: 70px;
+}
+
+.knack-drop-zone.compact-drop-zone,
+.track-drop-zone.compact-drop-zone {
+    min-height: 60px;
+}
+
+/* Knack-specific styling */
+.knack-drop-zone {
+    background: rgba(255, 215, 0, 0.05);
+    border-color: rgba(255, 215, 0, 0.2);
+}
+
+.knack-drop-zone.drag-over {
+    border-color: #ffd700;
+    background: rgba(255, 215, 0, 0.15);
+}
+
+/* Track-specific styling */
+.track-drop-zone {
+    background: rgba(139, 69, 19, 0.1);
+    border-color: rgba(139, 69, 19, 0.3);
+}
+
+.track-drop-zone.drag-over {
+    border-color: #8b4513;
+    background: rgba(139, 69, 19, 0.2);
+}
+
+/* Talent-specific styling */
+.talent-drop-zone {
+    background: rgba(147, 112, 219, 0.1);
+    border-color: rgba(147, 112, 219, 0.3);
+}
+
+.talent-drop-zone.drag-over {
+    border-color: #9370db;
+    background: rgba(147, 112, 219, 0.2);
+}
+
+/* ===================
+   Attunement Drop Zones
+   =================== */
+
+.attunement-drop-zone {
+    min-height: 90px;
+    background: rgba(64, 224, 208, 0.05);
+    border-color: rgba(64, 224, 208, 0.2);
+}
+
+.attunement-drop-zone.drag-over {
+    border-color: #40e0d0;
+    background: rgba(64, 224, 208, 0.15);
+}
+
+.attunement-drop-zone.overextended-zone {
+    border-color: rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.1);
+}
+
+.attunement-drop-zone.overextended-zone .drop-prompt {
+    color: rgba(255, 152, 0, 0.8);
+}
+
+.overextended-warning {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #ff9800;
+    font-size: 0.75em;
+    margin-top: 0.25rem;
+}
+
+/* ===================
+   Equipment Drop Zones (Phase 12)
+   =================== */
+
+.equipment-drop-zone {
+    min-height: 100px;
+    background: rgba(96, 125, 139, 0.1);
+    border-color: rgba(96, 125, 139, 0.3);
+}
+
+.equipment-drop-zone.drag-over {
+    border-color: #607d8b;
+    background: rgba(96, 125, 139, 0.2);
+}
+
+/* ===================
+   Slotted Items in Drop Zones
+   =================== */
+
+.slotted-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
     width: 100%;
-    justify-content: space-around;
-  }
-  
-  .inventory-summary {
+}
+
+.slotted-item.compact-slotted-item {
+    padding: 0.25rem;
+    gap: 0.25rem;
+}
+
+.slotted-item .item-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.slotted-item.compact-slotted-item .item-image {
+    width: 32px;
+    height: 32px;
+}
+
+.slotted-item .item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.slotted-item.compact-slotted-item .item-info {
+    font-size: 0.85em;
+}
+
+.slotted-item .item-name {
+    font-weight: 600;
+    color: #e4e4e4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.slotted-item .item-details {
+    font-size: 0.8em;
+    color: #a4a4a4;
+}
+
+.slotted-item .item-controls {
+    display: flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.slotted-item.compact-slotted-item .item-controls {
+    gap: 0.15rem;
+}
+
+.slotted-item .item-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    color: #d4d4d4;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slotted-item.compact-slotted-item .item-control {
+    padding: 0.15rem 0.35rem;
+    font-size: 0.85em;
+}
+
+.slotted-item .item-control:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.slotted-item .item-control i {
+    font-size: 0.9em;
+}
+
+/* ===================
+   Slot Labels and Containers
+   =================== */
+
+.knack-slot,
+.track-slot,
+.talent-slot,
+.foundation-item,
+.attunement-slot {
+    margin-bottom: 0.75rem;
+}
+
+.knack-slot.compact-slot,
+.track-slot.compact-slot {
+    margin-bottom: 0.5rem;
+}
+
+.slot-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9em;
+    color: #b4b4b4;
+    margin-bottom: 0.25rem;
+}
+
+.slot-extra-info {
+    font-weight: 400;
+    font-size: 0.85em;
+    color: #888;
+    margin-left: 0.5rem;
+}
+
+.foundation-label {
+    display: block;
+    font-weight: 600;
+    font-size: 1em;
+    color: #b4b4b4;
+    margin-bottom: 0.5rem;
+}
+
+/* ===================
+   Grid Layouts for Slots
+   =================== */
+
+.knacks-grid,
+.tracks-grid,
+.talents-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.knacks-grid.compact-grid,
+.tracks-grid.compact-grid {
+    gap: 0.5rem;
+}
+
+.talents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.knacks-grid.compact-grid,
+.tracks-grid.compact-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+.foundation-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* ===================
+   No Slots Message
+   =================== */
+
+.no-slots-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+}
+
+.no-slots-message i {
+    font-size: 1.2em;
+}
+
+/* ===================
+   Build Category Sections
+   =================== */
+
+.build-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.build-category {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.build-category h4 {
+    color: #9ab;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.build-category h4 i {
+    font-size: 0.9em;
+}
+
+.section-hint {
+    font-size: 0.8em;
+    font-weight: 400;
+    color: #888;
+    font-style: italic;
+}
+
+/* ===================
+   Build Points Header & Lock
+   =================== */
+
+.build-points-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.build-points-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bp-label {
+    color: #888;
+    font-size: 0.9em;
+    font-weight: 600;
+}
+
+.bp-total {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #9ab;
+}
+
+.bp-total.negative {
+    color: #f44336;
+}
+
+.bp-total.over-max {
+    color: #ff9800;
+}
+
+.bp-total.at-max {
+    color: #4caf50;
+}
+
+.bp-breakdown {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.85em;
+    color: #888;
+}
+
+.bp-breakdown-divider {
+    color: #555;
+}
+
+.bp-penalty {
+    color: #ff9800;
+}
+
+.bp-source-breakdown {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.bp-source-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.build-points-controls {
+    display: flex;
+    align-items: center;
+}
+
+.build-points-lock-btn {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #9ab;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.build-points-lock-btn:hover {
+    background: rgba(58, 74, 90, 0.5);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.build-points-lock-btn.locked {
+    background: #c62828;
+    color: white;
+    border-color: #b71c1c;
+}
+
+.build-points-lock-btn.locked:hover {
+    background: #d32f2f;
+}
+
+/* ===================
+   Progression Config Sections
+   =================== */
+
+.progression-config {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.config-section h5 {
+    color: #9ab;
+    margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1em;
+}
+
+.config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.config-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.config-row:hover {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.config-row-alt {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.config-row-alt:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.stat-label {
+    color: #9ab;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 100px;
+}
+
+.awesome-warning {
+    color: #ff9800;
+    cursor: help;
+}
+
+/* ===================
+   Progression Slider Styles
+   =================== */
+
+.progression-slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+    max-width: 300px;
+    margin-left: 1rem;
+}
+
+.progression-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right,
+        #a31d1d 0%, #a31d1d 25%,
+        #c79100 25%, #c79100 50%,
+        #388e3c 50%, #388e3c 75%,
+        #1976d2 75%, #1976d2 100%);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    padding: 0 25px;
+}
+
+.progression-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #e4e4e4;
+    border: 2px solid #3a4a5a;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    transform: translateY(-4px);
+}
+
+.progression-slider::-webkit-slider-thumb:hover {
+    transform: translateY(-6px) scale(1.1);
+    background: #fff;
+}
+
+.progression-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #e4e4e4;
+    border: 2px solid #3a4a5a;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    transform: translateY(-6px);
+}
+
+.progression-slider::-moz-range-thumb:hover {
+    transform: translateY(-6px) scale(1.1);
+    background: #fff;
+}
+
+/* Locked slider state */
+.progression-slider:disabled,
+.progression-slider.locked {
+    cursor: not-allowed;
+    opacity: 0.5;
+    filter: grayscale(50%);
+}
+
+.progression-slider:disabled::-webkit-slider-thumb,
+.progression-slider.locked::-webkit-slider-thumb {
+    cursor: not-allowed;
+    background: #888;
+}
+
+.progression-slider:disabled::-moz-range-thumb,
+.progression-slider.locked::-moz-range-thumb {
+    cursor: not-allowed;
+    background: #888;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2px;
+}
+
+.slider-label {
+    font-size: 0.75em;
+    color: #888;
+    text-align: center;
+    flex: 1;
+}
+
+/* ===========================================
+   INVENTORY TAB - Phase 12
+   Equipment, bulk, wealth management
+   =========================================== */
+
+/* ===================
+   Inventory Container
+   =================== */
+
+.inventory-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ===================
+   Inventory Summary
+   =================== */
+
+.inventory-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+}
+
+.bulk-section,
+.wealth-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-label {
+    font-weight: 600;
+    color: #9ab;
+    font-size: 0.9em;
+}
+
+.bulk-display {
+    color: #9ab;
+    font-weight: 700;
+    font-size: 1.1em;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    min-width: 80px;
+    text-align: center;
+}
+
+/* Bulk warning states */
+.bulk-display.over-capacity {
+    color: #f44336;
+    background: rgba(244, 67, 54, 0.15);
+    border-color: #f44336;
+}
+
+.bulk-display.near-capacity {
+    color: #ff9800;
+    background: rgba(255, 152, 0, 0.1);
+    border-color: #ff9800;
+}
+
+/* Wealth input group */
+.wealth-input-group {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.wealth-input-group input[type="number"] {
+    width: 70px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a3a;
+    color: #9ab;
+    padding: 0.35rem 0.5rem;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.wealth-gain-button,
+.wealth-loss-button {
+    padding: 0.35rem 0.5rem;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+}
+
+.wealth-gain-button {
+    background: #4caf50;
+}
+
+.wealth-gain-button:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+.wealth-loss-button {
+    background: #f44336;
+}
+
+.wealth-loss-button:hover {
+    background: #da190b;
+    transform: translateY(-1px);
+}
+
+.wealth-gain-button:active,
+.wealth-loss-button:active {
+    transform: translateY(0);
+}
+
+/* ===================
+   Equipment Categories
+   =================== */
+
+.inventory-categories {
+    display: flex;
     flex-direction: column;
     gap: 1rem;
-    align-items: stretch;
-  }
-  
-  .knacks-grid,
-  .tracks-grid,
-  .talents-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .progressions-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 2px solid var(--z-wolf-border);
-  }
-  
-  .zwolf-epic.sheet.actor .sheet-body {
+}
+
+.equipment-category {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #9ab;
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+    font-size: 0.95em;
+    font-weight: 600;
+}
+
+.category-header i {
+    opacity: 0.8;
+    font-size: 0.9em;
+}
+
+.equipment-list {
+    display: flex;
     flex-direction: column;
-  }
+    gap: 0.5rem;
+}
+
+/* ===================
+   Equipment Items
+   =================== */
+
+.equipment-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.equipment-item:hover {
+    border-color: #5a6a7a;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.equipment-item.invalid-placement {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.1);
+}
+
+.equipment-item .item-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #2a2a2a;
+}
+
+.equipment-item .item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.equipment-item .item-name {
+    color: #e4e4e4;
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 0.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.equipment-item .item-details {
+    color: #888;
+    font-size: 0.8em;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.equipment-item .item-details span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.item-placement {
+    margin-top: 0.25rem;
+}
+
+.equipment-placement-select {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid #3a3a3a;
+    border-radius: 3px;
+    background: #2a2a2a;
+    color: #d4d4d4;
+    cursor: pointer;
+}
+
+.equipment-placement-select:hover {
+    border-color: #5a6a7a;
+}
+
+.equipment-placement-select:focus {
+    border-color: #6a7a8a;
+    outline: none;
+}
+
+.equipment-item .item-controls {
+    display: flex;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.equipment-item .item-control {
+    color: #888;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+    text-decoration: none;
+}
+
+.equipment-item .item-control:hover {
+    color: #9ab;
+}
+
+.equipment-item .item-control[data-action="deleteItem"]:hover {
+    color: #f44336;
+}
+
+/* ===================
+   Attunement Stars
+   =================== */
+
+.attunement-stars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    color: #4a9eff;
+    font-size: 0.7em;
+}
+
+.attunement-stars i {
+    filter: drop-shadow(0 0 2px rgba(74, 158, 255, 0.5));
+}
+
+.attunement-stars.inactive {
+    color: #555;
+    opacity: 0.6;
+}
+
+.attunement-stars.inactive i {
+    filter: none;
+}
+
+/* ===================
+   No Equipment Message
+   =================== */
+
+.no-equipment-message {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
+}
+
+.no-equipment-message i {
+    margin-right: 0.5rem;
+    opacity: 0.7;
+}
+
+/* ===================
+   Equipment Drop Section
+   =================== */
+
+.equipment-drop-section {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.equipment-drop-section h4 {
+    color: #9ab;
+    margin: 0 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95em;
+}
+
+.equipment-drop-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.equipment-drop-zone,
+.equipment-buy-zone {
+    min-height: 100px;
+    border: 2px dashed #3a3a3a;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    padding: 1rem;
+}
+
+.equipment-drop-zone:hover,
+.equipment-buy-zone:hover {
+    border-color: #5a6a7a;
+    background: rgba(58, 74, 90, 0.15);
+}
+
+.equipment-drop-zone .drop-prompt,
+.equipment-buy-zone .drop-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    color: #888;
+    user-select: none;
+}
+
+.equipment-drop-zone .drop-prompt i,
+.equipment-buy-zone .drop-prompt i {
+    font-size: 1.8em;
+    opacity: 0.5;
+}
+
+.equipment-drop-zone .drop-prompt span,
+.equipment-buy-zone .drop-prompt span {
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.drop-hint {
+    font-size: 0.75em;
+    font-style: italic;
+    opacity: 0.7;
+    margin-top: 0.25rem;
+}
+
+/* Buy zone gold accent */
+.equipment-buy-zone {
+    border-color: rgba(212, 175, 55, 0.4);
+}
+
+.equipment-buy-zone:hover {
+    border-color: rgba(212, 175, 55, 0.7);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.equipment-buy-zone .drop-prompt i {
+    color: #d4af37;
+}
+
+/* Drag-over states */
+.equipment-drop-zone.drag-over,
+.equipment-buy-zone.drag-over {
+    border-color: #4caf50;
+    background: rgba(76, 175, 80, 0.15);
+    border-style: solid;
+}
+
+.equipment-drop-zone.drag-over .drop-prompt i,
+.equipment-buy-zone.drag-over .drop-prompt i {
+    opacity: 1;
+    color: #4caf50;
+}
+
+/* Invalid drop state */
+.equipment-drop-zone.invalid-drop,
+.equipment-buy-zone.invalid-drop {
+    border-color: #f44336;
+    background: rgba(244, 67, 54, 0.15);
+    cursor: not-allowed;
+}
+
+.equipment-drop-zone.invalid-drop .drop-prompt i,
+.equipment-buy-zone.invalid-drop .drop-prompt i {
+    color: #f44336;
 }
 
 /* ===================
@@ -1421,605 +1756,662 @@
    =================== */
 
 .attunements-section {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--z-wolf-border);
-  border-radius: 6px;
-  padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
 }
 
 .attunements-section .section-header {
-  color: var(--z-wolf-accent);
-  margin: 0 0 1rem 0;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--z-wolf-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.1em;
+    color: #9ab;
+    margin: 0 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #3a3a3a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1em;
 }
 
 .attunements-section .attunement-info {
-  font-size: 0.9em;
-  color: var(--z-wolf-text-muted);
-  font-weight: normal;
-  margin-left: auto;
+    font-size: 0.85em;
+    color: #888;
+    font-weight: normal;
+    margin-left: auto;
 }
 
 .attunement-slots {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .attunement-slot {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-/* Overextended slot styling */
 .attunement-slot.overextended {
-  background: rgba(255, 193, 7, 0.15);
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 2px solid var(--z-wolf-warning);
+    background: rgba(255, 152, 0, 0.1);
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 152, 0, 0.4);
 }
 
 .attunement-slot .slot-label {
-  font-weight: 600;
-  color: var(--z-wolf-accent);
-  font-size: 0.9em;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    font-weight: 600;
+    color: #9ab;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .overextended-badge {
-  color: var(--z-wolf-warning);
-  font-weight: bold;
-  font-size: 0.85em;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background: rgba(255, 193, 7, 0.2);
-  border-radius: 3px;
+    color: #ff9800;
+    font-weight: bold;
+    font-size: 0.8em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.4rem;
+    background: rgba(255, 152, 0, 0.2);
+    border-radius: 3px;
 }
 
-/* Overextended drop zone warning colors */
+.attunement-drop-zone {
+    min-height: 70px;
+    background: rgba(64, 224, 208, 0.05);
+    border: 2px dashed rgba(64, 224, 208, 0.3);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.attunement-drop-zone:hover {
+    border-color: rgba(64, 224, 208, 0.5);
+    background: rgba(64, 224, 208, 0.1);
+}
+
+.attunement-drop-zone.drag-over {
+    border-color: #40e0d0;
+    background: rgba(64, 224, 208, 0.2);
+    border-style: solid;
+}
+
 .attunement-drop-zone.overextended-zone {
-  border-color: var(--z-wolf-warning);
-  background: rgba(255, 193, 7, 0.08);
+    border-color: rgba(255, 152, 0, 0.4);
+    background: rgba(255, 152, 0, 0.08);
 }
 
-.attunement-drop-zone.overextended-zone:hover {
-  background: rgba(255, 193, 7, 0.15);
-}
-
-.overextended-warning {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: rgba(255, 193, 7, 0.2);
-  border-radius: 4px;
-  text-align: center;
-  font-size: 0.85em;
-  color: var(--z-wolf-warning);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
+/* Attunement warning (Shaken from overextended slot) */
 .attunement-warning {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  background: rgba(255, 193, 7, 0.15);
-  border-left: 4px solid var(--z-wolf-warning);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--z-wolf-warning);
-  font-size: 0.9em;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 152, 0, 0.15);
+    border: 1px solid rgba(255, 152, 0, 0.5);
+    border-radius: 4px;
+    color: #ff9800;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .attunement-warning i {
-  font-size: 1.2em;
-  flex-shrink: 0;
+    font-size: 1.1em;
 }
 
-/* Attunement Stars on Equipment */
-.attunement-stars {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 0.5rem;
-  color: #4a9eff;
-  font-size: 0.75em;
-  gap: 0.1rem;
+/* ===================
+   Responsive Design
+   =================== */
+
+@media (max-width: 768px) {
+    .inventory-summary {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+
+    .bulk-section,
+    .wealth-section {
+        justify-content: space-between;
+    }
+
+    .equipment-drop-zones {
+        grid-template-columns: 1fr;
+    }
 }
 
-.attunement-stars i {
-  filter: drop-shadow(0 0 2px rgba(74, 158, 255, 0.5));
+/* ===========================================
+   ABILITIES ACCORDION - Phase 13
+   Granted abilities display with categories
+   =========================================== */
+
+/* ===================
+   Exotic Senses Icon (Header)
+   =================== */
+
+.exotic-senses-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: rgba(147, 112, 219, 0.2);
+    border: 1px solid rgba(147, 112, 219, 0.5);
+    border-radius: 50%;
+    color: #9370db;
+    cursor: help;
+    transition: all 0.2s ease;
+    margin-left: auto;
 }
 
-/* Attunement Stars - Inactive State */
-.attunement-stars.inactive {
-  color: #666;
-  opacity: 0.5;
+.exotic-senses-icon:hover {
+    background: rgba(147, 112, 219, 0.35);
+    border-color: rgba(147, 112, 219, 0.8);
+    transform: scale(1.1);
 }
 
-.attunement-stars.inactive i {
-  filter: none;
+.exotic-senses-icon i {
+    font-size: 1em;
+}
+
+/* ===================
+   Abilities Accordion Container
+   =================== */
+
+.abilities-accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* ===================
+   Ability Category (Accordion Section)
+   =================== */
+
+.ability-category {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.ability-category[open] {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.ability-category-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(58, 74, 90, 0.3);
+    color: #9ab;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+    list-style: none;
+}
+
+.ability-category-header::-webkit-details-marker {
+    display: none;
+}
+
+.ability-category-header .accordion-chevron {
+    font-size: 0.7em;
+    transition: transform 0.2s ease;
+    width: 12px;
+    text-align: center;
+}
+
+.ability-category[open] > .ability-category-header .accordion-chevron {
+    transform: rotate(90deg);
+}
+
+.ability-category-header:hover {
+    background: rgba(58, 74, 90, 0.5);
+}
+
+.ability-category-header i {
+    font-size: 0.9em;
+    opacity: 0.8;
+    width: 18px;
+    text-align: center;
+}
+
+.ability-count {
+    margin-left: auto;
+    font-size: 0.85em;
+    font-weight: normal;
+    color: #888;
+}
+
+/* Drawback category styling */
+.ability-category.drawback-category {
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.ability-category.drawback-category > .ability-category-header {
+    background: rgba(244, 67, 54, 0.15);
+    color: #ff8a80;
+}
+
+.ability-category.drawback-category > .ability-category-header:hover {
+    background: rgba(244, 67, 54, 0.25);
+}
+
+/* ===================
+   Ability List
+   =================== */
+
+.ability-list {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.no-abilities {
+    padding: 1rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* ===================
+   Ability Subsection (e.g., Strike Actions under Dominant)
+   =================== */
+
+.ability-subsection {
+    margin-bottom: 0.5rem;
+}
+
+.ability-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.ability-subsection-header {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0.5rem 0.25rem;
+    margin: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===================
+   Ability Item (Individual Ability)
+   =================== */
+
+.ability-item {
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+}
+
+.ability-item[open] {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.ability-name {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.9em;
+    color: #d4d4d4;
+    list-style: none;
+    transition: background-color 0.15s ease;
+}
+
+.ability-name::-webkit-details-marker {
+    display: none;
+}
+
+.ability-name:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.ability-name .accordion-chevron {
+    font-size: 0.65em;
+    transition: transform 0.2s ease;
+    width: 10px;
+    text-align: center;
+    color: #666;
+}
+
+.ability-item[open] > .ability-name .accordion-chevron {
+    transform: rotate(90deg);
+}
+
+.ability-tags {
+    font-size: 0.85em;
+    color: #888;
+    font-style: italic;
 }
 
 .ability-source {
-  color: var(--z-wolf-text-muted);
-  font-size: 0.85em;
-  font-weight: normal;
-  font-style: italic;
+    font-size: 0.8em;
+    color: #666;
+    margin-left: auto;
 }
 
-/* ============================================
-   EQUIPMENT DROP ZONES - Split Layout
-   ============================================ */
-
-.equipment-drop-section {
-  margin-top: 1rem;
-  padding: 1rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 6px;
-}
-
-.equipment-drop-section h4 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--z-wolf-text, #333);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.equipment-drop-zones {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-/* Wealth input group with gain button */
-.wealth-input-group {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.wealth-input-group input[type="number"] {
-  flex: 1;
-}
-
-.wealth-gain-button,
-.wealth-loss-button {
-  padding: 0.25rem 0.5rem;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2rem;
-  height: 2rem;
-}
-
-.wealth-gain-button {
-  background: var(--z-wolf-success, #28a745);
-}
-
-.wealth-gain-button:hover {
-  background: #218838;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.wealth-loss-button {
-  background: var(--z-wolf-danger, #dc3545);
-}
-
-.wealth-loss-button:hover {
-  background: #c82333;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.wealth-gain-button:active,
-.wealth-loss-button:active {
-  transform: translateY(0);
-}
-
-.wealth-gain-button i,
-.wealth-loss-button i {
-  font-size: 0.9rem;
-}
-
-/* Base drop zone styling */
-.equipment-drop-zone,
-.equipment-buy-zone {
-  min-height: 100px;
-  border: 2px dashed var(--z-wolf-border, #ccc);
-  border-radius: 6px;
-  background: var(--z-wolf-surface, #fff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  padding: 1rem;
-}
-
-/* Drop prompt styling */
-.equipment-drop-zone .drop-prompt,
-.equipment-buy-zone .drop-prompt {
-  text-align: center;
-  color: var(--z-wolf-text-muted, #666);
-  user-select: none;
-}
-
-.equipment-drop-zone .drop-prompt i,
-.equipment-buy-zone .drop-prompt i {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  display: block;
-  opacity: 0.5;
-}
-
-.equipment-drop-zone .drop-prompt span,
-.equipment-buy-zone .drop-prompt span {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  font-size: 0.9rem;
-}
-
-.equipment-drop-zone .drop-hint,
-.equipment-buy-zone .drop-hint {
-  font-size: 0.75rem;
-  font-style: italic;
-  opacity: 0.7;
-  margin-top: 0.25rem;
+/* Drawback ability styling */
+.ability-item.drawback-ability {
+    border-color: rgba(244, 67, 54, 0.2);
 }
 
-/* Hover states */
-.equipment-drop-zone:hover,
-.equipment-buy-zone:hover {
-  border-color: var(--z-wolf-primary, #2c5aa0);
-  background: var(--z-wolf-bg-dark, #f8f9fa);
+.ability-item.drawback-ability .ability-name {
+    color: #ff8a80;
 }
 
-/* Drag over states */
-.equipment-drop-zone.drag-over,
-.equipment-buy-zone.drag-over {
-  border-color: var(--z-wolf-success, #28a745);
-  background: rgba(40, 167, 69, 0.1);
-  border-style: solid;
+/* Strike ability styling */
+.ability-item.strike-ability {
+    border-left: 3px solid rgba(255, 152, 0, 0.5);
 }
 
-.equipment-drop-zone.drag-over .drop-prompt i,
-.equipment-buy-zone.drag-over .drop-prompt i {
-  opacity: 1;
-  color: var(--z-wolf-success, #28a745);
-}
-
-/* Invalid drop state */
-.equipment-drop-zone.invalid-drop,
-.equipment-buy-zone.invalid-drop {
-  border-color: var(--z-wolf-danger, #dc3545);
-  background: rgba(220, 53, 69, 0.1);
-}
+/* ===================
+   Ability Description
+   =================== */
 
-.equipment-drop-zone.invalid-drop .drop-prompt i,
-.equipment-buy-zone.invalid-drop .drop-prompt i {
-  opacity: 1;
-  color: var(--z-wolf-danger, #dc3545);
+.ability-description {
+    padding: 0.75rem;
+    font-size: 0.85em;
+    line-height: 1.5;
+    color: #b4b4b4;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.1);
 }
 
-/* Specific styling for buy zone */
-.equipment-buy-zone {
-  border-color: var(--z-wolf-accent, #d4af37);
+.ability-description p {
+    margin: 0 0 0.5rem 0;
 }
 
-.equipment-buy-zone .drop-prompt i {
-  color: var(--z-wolf-accent, #d4af37);
+.ability-description p:last-child {
+    margin-bottom: 0;
 }
 
-.equipment-buy-zone:hover {
-  border-color: var(--z-wolf-accent, #d4af37);
-  background: rgba(212, 175, 55, 0.05);
+.ability-description ul,
+.ability-description ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
 }
 
-.equipment-buy-zone.drag-over {
-  border-color: var(--z-wolf-accent, #d4af37);
-  background: rgba(212, 175, 55, 0.15);
+.ability-description li {
+    margin-bottom: 0.25rem;
 }
 
-.equipment-buy-zone.drag-over .drop-prompt i {
-  color: var(--z-wolf-accent, #d4af37);
-}
+/* ===================
+   Empty State
+   =================== */
 
-/* Responsive - stack on smaller screens */
-@media (max-width: 768px) {
-  .equipment-drop-zones {
-    grid-template-columns: 1fr;
-  }
+.abilities-accordion:empty::before {
+    content: "No abilities available";
+    display: block;
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
 }
 
-/* ============================================
-   WEALTH ROLL CHAT MESSAGES
-   ============================================ */
+/* ===========================================
+   BIOGRAPHY TAB
+   Liabilities, languages, notes sections
+   =========================================== */
 
-.zwolf-wealth-roll {
-  padding: 0.75rem;
-  background: var(--z-wolf-surface, #fff);
-  border-radius: 6px;
-  border: 1px solid var(--z-wolf-border, #ccc);
+.biography-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.zwolf-wealth-roll.failed {
-  border-color: var(--z-wolf-danger, #dc3545);
-  background: rgba(220, 53, 69, 0.05);
+.languages-section,
+.liabilities-section,
+.notes-section {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    padding: 1rem;
 }
 
-.zwolf-wealth-roll.gain {
-  border-color: var(--z-wolf-success, #28a745);
-  background: rgba(40, 167, 69, 0.05);
+/* Override generic tab h3 underline for biography sections */
+.biography-content h3 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0.75rem;
 }
 
-.zwolf-wealth-roll.loss {
-  border-color: var(--z-wolf-warning, #ffc107);
-  background: rgba(255, 193, 7, 0.05);
+/* Languages collapsible section */
+.languages-section {
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
 }
 
-.zwolf-wealth-roll .wealth-header {
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--z-wolf-border, #ccc);
+.languages-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
 }
 
-.zwolf-wealth-roll .wealth-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+.languages-header::-webkit-details-marker {
+    display: none;
 }
 
-.zwolf-wealth-roll .wealth-stat {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 4px;
+.languages-header .accordion-chevron {
+    font-size: 0.7em;
+    transition: transform 0.2s ease;
+    width: 12px;
+    text-align: center;
 }
 
-.zwolf-wealth-roll .wealth-stat .label {
-  font-size: 0.85rem;
-  color: var(--z-wolf-text-muted, #666);
+.languages-section[open] > .languages-header .accordion-chevron {
+    transform: rotate(90deg);
 }
 
-.zwolf-wealth-roll .wealth-stat .value {
-  font-weight: 600;
-  font-size: 1rem;
+.languages-title {
+    font-weight: 600;
+    color: #9ab;
 }
 
-.zwolf-wealth-roll .wealth-roll-results {
-  margin: 0.75rem 0;
-  padding: 0.75rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 4px;
-  cursor: help;
+.language-count {
+    font-size: 0.9em;
+    font-weight: normal;
+    color: #888;
 }
 
-.zwolf-wealth-roll .dice-rolled {
-  font-size: 0.95rem;
+.languages-content {
+    padding: 0 1rem 1rem;
 }
 
-.zwolf-wealth-roll .no-wealth {
-  text-align: center;
-  padding: 0.5rem;
-  color: var(--z-wolf-danger, #dc3545);
+/* No content message */
+.no-content-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    color: #888;
+    font-style: italic;
 }
 
-.zwolf-wealth-roll .wealth-cost {
-  margin-top: 0.75rem;
-  padding: 0.5rem;
-  background: var(--z-wolf-info, #17a2b8);
-  color: white;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 0.9rem;
+.no-content-message i {
+    font-size: 1.2em;
+    opacity: 0.7;
 }
 
-.zwolf-wealth-roll .wealth-cost .cost-value {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-left: 0.25rem;
-}
+/* ===========================================
+   PHASE 17: ACTOR TYPE TRAITS
+   Eidolon (Gemini), Spawn (Swarmer), Mook (Shape Ally)
+   =========================================== */
 
-.zwolf-wealth-roll .wealth-failure {
-  margin-top: 0.75rem;
-  padding: 0.75rem;
-  background: var(--z-wolf-danger, #dc3545);
-  color: white;
-  border-radius: 4px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
+/* ===================
+   Trait Badges
+   =================== */
 
-.zwolf-wealth-roll .wealth-failure i {
-  font-size: 1.25rem;
+.trait-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.75rem;
+    vertical-align: middle;
+    cursor: help;
+    transition: all 0.2s ease;
 }
 
-.zwolf-wealth-roll .wealth-gain-amount {
-  margin-top: 0.75rem;
-  padding: 0.5rem;
-  background: var(--z-wolf-success, #28a745);
-  color: white;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 0.9rem;
+.trait-badge i {
+    font-size: 0.9em;
 }
 
-.zwolf-wealth-roll .wealth-gain-amount .gain-value {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-left: 0.25rem;
+/* Gemini trait (Eidolon) */
+.trait-badge.trait-gemini {
+    background: linear-gradient(135deg, rgba(147, 112, 219, 0.3), rgba(106, 90, 205, 0.3));
+    border: 1px solid rgba(147, 112, 219, 0.6);
+    color: #c9b8f0;
 }
 
-/* ============================================
-   WEALTH PURCHASE DIALOG
-   ============================================ */
-
-.zwolf-purchase-dialog {
-  font-size: 0.95rem;
+.trait-badge.trait-gemini:hover {
+    background: linear-gradient(135deg, rgba(147, 112, 219, 0.5), rgba(106, 90, 205, 0.5));
+    border-color: rgba(147, 112, 219, 0.9);
+    transform: translateY(-1px);
 }
 
-.zwolf-purchase-dialog .purchase-summary {
-  margin: 1rem 0;
-  padding: 0.75rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 4px;
+/* Swarmer trait (Spawn) */
+.trait-badge.trait-swarmer {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.3), rgba(56, 142, 60, 0.3));
+    border: 1px solid rgba(76, 175, 80, 0.6);
+    color: #a5d6a7;
 }
 
-.zwolf-purchase-dialog .summary-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--z-wolf-border, #ddd);
+.trait-badge.trait-swarmer:hover {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.5), rgba(56, 142, 60, 0.5));
+    border-color: rgba(76, 175, 80, 0.9);
+    transform: translateY(-1px);
 }
 
-.zwolf-purchase-dialog .summary-row:last-child {
-  border-bottom: none;
+/* Shape Ally trait (Mook) */
+.trait-badge.trait-shapeAlly {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.3), rgba(245, 124, 0, 0.3));
+    border: 1px solid rgba(255, 152, 0, 0.6);
+    color: #ffcc80;
 }
 
-.zwolf-purchase-dialog .summary-row.total {
-  font-weight: 600;
-  font-size: 1.05rem;
-  padding-top: 0.75rem;
-  margin-top: 0.25rem;
-  border-top: 2px solid var(--z-wolf-border, #ccc);
+.trait-badge.trait-shapeAlly:hover {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.5), rgba(245, 124, 0, 0.5));
+    border-color: rgba(255, 152, 0, 0.9);
+    transform: translateY(-1px);
 }
 
-.zwolf-purchase-dialog .summary-row .label {
-  color: var(--z-wolf-text-muted, #666);
-}
+/* ===================
+   Mirroring Base Indicator (Spawns)
+   =================== */
 
-.zwolf-purchase-dialog .summary-row .value.loss {
-  color: var(--z-wolf-danger, #dc3545);
+.mirroring-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid rgba(76, 175, 80, 0.4);
+    border-radius: 4px;
+    color: #81c784;
+    font-size: 0.85em;
+    margin-left: auto;
 }
 
-.zwolf-purchase-dialog .summary-row .value.gain {
-  color: var(--z-wolf-success, #28a745);
+.mirroring-indicator i {
+    animation: spin 3s linear infinite;
 }
-
-/* ============================================
-   WEALTH PURCHASE COMPLETE MESSAGE
-   ============================================ */
 
-.zwolf-purchase-complete {
-  padding: 0.75rem;
-  background: var(--z-wolf-surface, #fff);
-  border-radius: 6px;
-  border: 1px solid var(--z-wolf-success, #28a745);
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-.zwolf-purchase-complete .purchase-success {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--z-wolf-success, #28a745);
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
+/* ===================
+   No Base Creature Warning
+   =================== */
 
-.zwolf-purchase-complete .purchase-success i {
-  font-size: 1.25rem;
+.no-base-warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    background: rgba(244, 67, 54, 0.15);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    border-radius: 4px;
+    color: #ef9a9a;
+    font-size: 0.85em;
+    margin-left: auto;
 }
 
-.zwolf-purchase-complete .wealth-change {
-  font-size: 0.9rem;
-  color: var(--z-wolf-text-muted, #666);
-  padding: 0.5rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 4px;
-  text-align: center;
+.no-base-warning i {
+    color: #f44336;
 }
 
-/* ============================================
-   WEALTH GAIN COMPLETE MESSAGE
-   ============================================ */
-
-.zwolf-wealth-gain-complete {
-  padding: 0.75rem;
-  background: var(--z-wolf-surface, #fff);
-  border-radius: 6px;
-  border: 1px solid var(--z-wolf-success, #28a745);
-}
+/* ===================
+   Spawn Header Adjustments
+   =================== */
 
-.zwolf-wealth-gain-complete .gain-success {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--z-wolf-success, #28a745);
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
+.spawn-header .header-line-2 {
+    flex-wrap: wrap;
 }
 
-.zwolf-wealth-gain-complete .gain-success i {
-  font-size: 1.25rem;
-}
+/* ===================
+   Mook Header Adjustments
+   =================== */
 
-.zwolf-wealth-gain-complete .wealth-change {
-  font-size: 0.9rem;
-  color: var(--z-wolf-text-muted, #666);
-  padding: 0.5rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 4px;
-  text-align: center;
+.mook-header .header-line-2 {
+    flex-wrap: wrap;
 }
 
-/* ============================================
-   WEALTH LOSS COMPLETE MESSAGE
-   ============================================ */
-
-.zwolf-wealth-loss-complete {
-  padding: 0.75rem;
-  background: var(--z-wolf-surface, #fff);
-  border-radius: 6px;
-  border: 1px solid var(--z-wolf-warning, #ffc107);
+/* Mook combined TN styling */
+.tn-group-mook .tn-combined .tn-value {
+    font-size: 1.4em;
+    color: #ffd54f;
 }
 
-.zwolf-wealth-loss-complete .loss-success {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--z-wolf-warning, #ffc107);
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
+/* ===================
+   Character Name with Trait Badge Alignment
+   =================== */
 
-.zwolf-wealth-loss-complete .loss-success i {
-  font-size: 1.25rem;
+.sheet-header .charname {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.zwolf-wealth-loss-complete .wealth-change {
-  font-size: 0.9rem;
-  color: var(--z-wolf-text-muted, #666);
-  padding: 0.5rem;
-  background: var(--z-wolf-bg-dark, #f8f9fa);
-  border-radius: 4px;
-  text-align: center;
+.sheet-header .charname input {
+    flex: 1;
+    min-width: 150px;
 }

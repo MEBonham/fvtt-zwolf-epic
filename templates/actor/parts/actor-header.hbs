@@ -9,10 +9,20 @@
     
     <div class="header-fields">
       <h1 class="charname">
-        <input name="name" 
-               type="text" 
-               value="{{document.name}}" 
+        <input name="name"
+               type="text"
+               value="{{document.name}}"
                placeholder="{{localize (getActorNamePlaceholder document.type)}}" />
+        {{!-- Trait badge for eidolons, mooks, and spawns --}}
+        {{#if (or isEidolon isMook isSpawn)}}
+          <span class="trait-badge trait-{{document.system.trait}}"
+                title="{{traitDescription}}">
+            {{#if isEidolon}}<i class="fas fa-link"></i>{{/if}}
+            {{#if isMook}}<i class="fas fa-users"></i>{{/if}}
+            {{#if isSpawn}}<i class="fas fa-clone"></i>{{/if}}
+            {{traitLabel}}
+          </span>
+        {{/if}}
       </h1>
       
       <div class="header-line-2">
@@ -76,6 +86,22 @@
           <label>{{localize "ZWOLF.Tags"}}</label>
           <div class="tags-display">{{characterTags}}</div>
         </div>
+
+        {{!-- Mirroring indicator for spawns --}}
+        {{#if (and isSpawn mirroringBase)}}
+          <div class="header-field mirroring-indicator" title="{{localize 'ZWOLF.MirroringBaseTooltip'}}">
+            <i class="fas fa-sync-alt"></i>
+            <span>{{localize "ZWOLF.MirroringBase"}}</span>
+          </div>
+        {{/if}}
+
+        {{!-- Warning when no base creature is selected --}}
+        {{#if (and (or isSpawn isMook) (not hasBaseCreature))}}
+          <div class="header-field no-base-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{#if isSpawn}}{{localize "ZWOLF.SpawnNoBaseWarning"}}{{else}}{{localize "ZWOLF.MookNoBaseWarning"}}{{/if}}</span>
+          </div>
+        {{/if}}
       </div>
     </div>
   </header>
@@ -121,40 +147,26 @@
       </div>
     </div>
     
-    {{#unless sideEffects.speedProgression}}
-      <div class="resource speed-resource">
-        <label>{{localize "ZWOLF.Speed"}}</label>
-        <div class="resource-value-single">
-          <div class="speed-with-roll">
+    <div class="resource speed-resource">
+      <label>{{localize "ZWOLF.Speed"}}</label>
+      <div class="resource-value-single">
+        <div class="speed-with-roll">
+          {{#if sideEffects.speedProgression}}
+            <span class="calculated-value">{{formatBonus speedBonus}}</span>
+          {{else}}
             <span class="static-value">+0</span>
-            <i class="fas fa-dice-d12 speed-roll-die" 
-               data-action="rollSpeed"
-               data-modifier="0" 
-               data-flavor="{{localize 'ZWOLF.SpeedCheck'}}"
-               title="{{localize 'ZWOLF.RollSpeedCheck'}}"></i>
-          </div>
+          {{/if}}
+          <i class="fas fa-dice-d12 speed-roll-die"
+             data-action="rollSpeed"
+             title="{{localize 'ZWOLF.RollSpeedCheck'}}"></i>
         </div>
       </div>
-    {{/unless}}
+    </div>
 
-    {{#if isCharacter}}
-      <div class="resource rest-buttons-resource">
-        <div class="rest-button-stack">
-          <button type="button" 
-                  class="rest-button short-rest-btn" 
-                  data-action="shortRest" 
-                  title="{{localize 'ZWOLF.ShortRestTooltip'}}">
-            <i class="fas fa-moon"></i>
-            <span class="rest-label">{{localize "ZWOLF.ShortRest"}}</span>
-          </button>
-          <button type="button" 
-                  class="rest-button extended-rest-btn" 
-                  data-action="extendedRest" 
-                  title="{{localize 'ZWOLF.ExtendedRestTooltip'}}">
-            <i class="fas fa-bed"></i>
-            <span class="rest-label">{{localize "ZWOLF.ExtendedRest"}}</span>
-          </button>
-        </div>
+    {{#if exoticSensesDisplay.hasContent}}
+      <div class="exotic-senses-icon"
+           title="{{#each exoticSensesDisplay.items}}{{name}}{{#if tags}} ({{tags}}){{/if}}{{#if source}} — {{source}}{{/if}}{{#unless @last}}&#10;{{/unless}}{{/each}}">
+        <i class="fas fa-eye"></i>
       </div>
     {{/if}}
   </div>
@@ -198,10 +210,24 @@
       </div>
     {{/if}}
     
-    {{#if abilityCategories.exoticSenses.length}}
-      <div class="exotic-senses-icon" 
-           title="{{#each abilityCategories.exoticSenses}}{{name}}{{#if tags}} · {{tags}}{{/if}}{{#unless @last}}, {{/unless}}{{/each}}">
-        <i class="fas fa-eye"></i>
+    {{#if isCharacter}}
+      <div class="resource rest-buttons-resource">
+        <div class="rest-button-stack">
+          <button type="button"
+                  class="rest-button short-rest-btn"
+                  data-action="shortRest"
+                  title="{{localize 'ZWOLF.ShortRestTooltip'}}">
+            <i class="fas fa-moon"></i>
+            <span class="rest-label">{{localize "ZWOLF.ShortRest"}}</span>
+          </button>
+          <button type="button"
+                  class="rest-button extended-rest-btn"
+                  data-action="extendedRest"
+                  title="{{localize 'ZWOLF.ExtendedRestTooltip'}}">
+            <i class="fas fa-bed"></i>
+            <span class="rest-label">{{localize "ZWOLF.ExtendedRest"}}</span>
+          </button>
+        </div>
       </div>
     {{/if}}
   </div>

@@ -1,0 +1,26 @@
+<form class="zwolf-epic sheet actor" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{actor.img}}" data-action="editImage" alt="{{actor.name}}" />
+        <div class="header-fields">
+            <h1 class="charname">
+                <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
+            </h1>
+        </div>
+    </header>
+
+    <section class="sheet-body">
+        <div class="resources">
+            <div class="resource">
+                <label>Health</label>
+                <input type="number" name="system.health.value" value="{{system.health.value}}" />
+                <span>/</span>
+                <input type="number" name="system.health.max" value="{{system.health.max}}" />
+            </div>
+        </div>
+
+        <div class="biography">
+            <label>Biography</label>
+            {{formInput (formField fields.biography value=system.biography)}}
+        </div>
+    </section>
+</form>

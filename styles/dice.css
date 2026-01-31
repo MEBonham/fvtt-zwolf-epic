@@ -1,0 +1,394 @@
+/**
+ * Z-Wolf Epic Dice System Styles
+ * Styles for the dice rolling UI and chat messages
+ */
+
+/* ========================================
+   CHAT SIDEBAR LAYOUT (Move controls to bottom)
+   ======================================== */
+
+/* Make chat sidebar use flexbox column layout - ONLY when active */
+#chat.active,
+#sidebar [data-tab="chat"].active,
+.chat-sidebar.active {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Chat log takes up available space and scrolls */
+#chat.active #chat-log,
+#chat.active .chat-log {
+    flex: 1 1 auto;
+    order: 0;
+    overflow-y: auto;
+}
+
+/* Chat form goes to bottom */
+#chat.active #chat-form,
+#chat.active form.chat-form,
+#chat.active [id$="-chat-form"] {
+    order: 2;
+    flex: 0 0 auto;
+}
+
+/* Dice control panel between chat log and form */
+#chat.active .zwolf-boost-control {
+    order: 1;
+    flex: 0 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    pointer-events: auto !important;
+}
+
+/* ========================================
+   BOOST CONTROL PANEL (Chat Sidebar)
+   ======================================== */
+
+.zwolf-boost-control {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    margin: 8px 0;
+    background: #1a1a2e;
+    border: 1px solid #3a3a5e;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: #e0e0e0;
+}
+
+.zwolf-boost-control.boost-active {
+    border-color: #4ade80;
+    background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), #1a1a2e);
+    box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+.zwolf-boost-control.jinx-active {
+    border-color: #f87171;
+    background: linear-gradient(135deg, rgba(248, 113, 113, 0.2), #1a1a2e);
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.4);
+}
+
+.zwolf-boost-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.zwolf-icon-button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid #3a3a5e;
+    border-radius: 4px;
+    background: #2a2a4e;
+    color: #e0e0e0;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-size: 1.1em;
+}
+
+.zwolf-icon-button:hover {
+    background: #3a3a6e;
+    border-color: #4a90a4;
+    color: #4a90a4;
+    transform: scale(1.05);
+}
+
+.zwolf-icon-button:active {
+    transform: scale(0.95);
+}
+
+.zwolf-boost-label {
+    font-weight: 600;
+    font-size: 0.95em;
+    color: #e0e0e0;
+    flex: 1;
+}
+
+.zwolf-boost-inputs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.zwolf-boost-inputs button {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #3a3a5e;
+    border-radius: 4px;
+    background: #2a2a4e;
+    color: #e0e0e0;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    font-size: 0.9em;
+}
+
+.zwolf-boost-inputs button:hover {
+    background: #3a3a6e;
+    border-color: #4a90a4;
+}
+
+.zwolf-boost-inputs button:active {
+    transform: scale(0.95);
+}
+
+/* Minus button - red tint on hover */
+#zwolf-boost-minus:hover {
+    border-color: #f87171;
+    color: #f87171;
+}
+
+/* Plus button - green tint on hover */
+#zwolf-boost-plus:hover {
+    border-color: #4ade80;
+    color: #4ade80;
+}
+
+.zwolf-boost-inputs input[type="number"] {
+    width: 50px;
+    height: 28px;
+    text-align: center;
+    border: 1px solid #3a3a5e;
+    border-radius: 4px;
+    background: #0a0a1e;
+    color: #e0e0e0;
+    font-weight: 700;
+    font-size: 1em;
+}
+
+.zwolf-boost-inputs input[type="number"]:focus {
+    outline: none;
+    border-color: #4a90a4;
+    box-shadow: 0 0 3px rgba(74, 144, 164, 0.5);
+}
+
+/* Hide number input spinners */
+.zwolf-boost-inputs input[type="number"]::-webkit-inner-spin-button,
+.zwolf-boost-inputs input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.zwolf-boost-inputs input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.zwolf-boost-quick {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.zwolf-quick-boost {
+    flex: 1;
+    max-width: 38px;
+    height: 26px;
+    padding: 0 4px;
+    border: 1px solid #3a3a5e;
+    border-radius: 4px;
+    background: #2a2a4e;
+    font-size: 0.85em;
+    font-weight: 700;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    transition: all 0.15s ease;
+}
+
+.zwolf-quick-boost:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.zwolf-quick-boost:active {
+    transform: translateY(0);
+}
+
+/* Jinx buttons (negative values) */
+.zwolf-quick-boost[data-value^="-"] {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.5);
+}
+
+.zwolf-quick-boost[data-value^="-"]:hover {
+    background: rgba(248, 113, 113, 0.25);
+    border-color: #f87171;
+}
+
+/* Boost buttons (positive values) */
+.zwolf-quick-boost:not([data-value^="-"]) {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.5);
+}
+
+.zwolf-quick-boost:not([data-value^="-"]):hover {
+    background: rgba(74, 222, 128, 0.25);
+    border-color: #4ade80;
+}
+
+/* ========================================
+   ROLL RESULT CHAT MESSAGE
+   ======================================== */
+
+.zwolf-roll-compact {
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #e8e8e8;
+    border: 1px solid var(--color-border-light-primary, #b5b3a4);
+    margin: 4px 0;
+    color: #191813;
+}
+
+.zwolf-roll-compact.crit-success-chance {
+    border-color: var(--z-wolf-crit-success, #f59e0b);
+    border-width: 2px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), #e8e8e8);
+}
+
+.zwolf-roll-compact.crit-failure-chance {
+    border-color: var(--z-wolf-crit-failure, #ef4444);
+    border-width: 2px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), #e8e8e8);
+}
+
+.zwolf-roll-compact.crit-both {
+    border-color: var(--z-wolf-crit-wild, #a855f7);
+    border-width: 2px;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), #e8e8e8);
+}
+
+.roll-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: help;
+}
+
+.roll-stat {
+    font-weight: 600;
+    font-size: 1em;
+    color: #191813;
+}
+
+.roll-result-big {
+    font-size: 1.6em;
+    font-weight: 700;
+    color: var(--z-wolf-primary, #4a90a4);
+    min-width: 50px;
+    text-align: right;
+}
+
+.crit-notification {
+    margin-top: 8px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.crit-notification .crit-success {
+    color: var(--z-wolf-crit-success, #d97706);
+    text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+.crit-notification .crit-failure {
+    color: var(--z-wolf-crit-failure, #dc2626);
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.crit-notification .crit-both {
+    color: var(--z-wolf-crit-wild, #9333ea);
+    text-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
+}
+
+.roll-outcome-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border-light-primary, #b5b3a4);
+    font-size: 0.9em;
+}
+
+.roll-outcome-compact .target {
+    color: #4b4a44;
+}
+
+.roll-outcome-compact .outcome {
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+}
+
+.roll-outcome-compact .outcome.success {
+    color: #166534;
+    background: rgba(74, 222, 128, 0.25);
+    border: 1px solid rgba(74, 222, 128, 0.5);
+}
+
+.roll-outcome-compact .outcome.failure {
+    color: #991b1b;
+    background: rgba(248, 113, 113, 0.25);
+    border: 1px solid rgba(248, 113, 113, 0.5);
+}
+
+/* ========================================
+   ROLLABLE ELEMENTS IN ACTOR SHEET
+   ======================================== */
+
+.speed-roll-die {
+    cursor: pointer;
+    opacity: 0.8;
+    transition: all 0.15s ease;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.speed-roll-die:hover {
+    opacity: 1;
+    color: var(--z-wolf-primary, #4a90a4);
+    transform: scale(1.15);
+}
+
+.stat-rollable {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+}
+
+.stat-rollable:hover {
+    background: rgba(74, 144, 164, 0.15);
+}
+
+/* Speed with roll die in header */
+.speed-with-roll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.speed-with-roll .speed-roll-die {
+    font-size: 1.1em;
+}
