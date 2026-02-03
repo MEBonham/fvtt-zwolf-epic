@@ -437,7 +437,8 @@
    =================== */
 
 /* Editor container */
-.zwolf-epic.sheet.item .editor {
+.zwolf-epic.sheet.item .editor,
+.zwolf-epic.sheet.actor .editor {
     border: 1px solid #3a3a3a;
     border-radius: 4px;
     background: #1e1e1e;
@@ -445,7 +446,8 @@
 }
 
 /* Editor content (view mode) */
-.zwolf-epic.sheet.item .editor-content {
+.zwolf-epic.sheet.item .editor-content,
+.zwolf-epic.sheet.actor .editor-content {
     padding: 0.75rem 1.25rem;
     min-height: 100px;
     color: #d4d4d4;
@@ -457,71 +459,92 @@
 }
 
 .zwolf-epic.sheet.item .editor-content:empty::before,
-.zwolf-epic.sheet.item .editor-content em {
+.zwolf-epic.sheet.item .editor-content em,
+.zwolf-epic.sheet.actor .editor-content:empty::before,
+.zwolf-epic.sheet.actor .editor-content em {
     color: #777;
     font-style: italic;
 }
 
 /* Rich text formatting inside editor */
-.zwolf-epic.sheet.item .editor-content p {
+.zwolf-epic.sheet.item .editor-content p,
+.zwolf-epic.sheet.actor .editor-content p {
     margin: 0 0 0.5rem 0;
 }
 
-.zwolf-epic.sheet.item .editor-content p:last-child {
+.zwolf-epic.sheet.item .editor-content p:last-child,
+.zwolf-epic.sheet.actor .editor-content p:last-child {
     margin-bottom: 0;
 }
 
 .zwolf-epic.sheet.item .editor-content ul,
-.zwolf-epic.sheet.item .editor-content ol {
+.zwolf-epic.sheet.item .editor-content ol,
+.zwolf-epic.sheet.actor .editor-content ul,
+.zwolf-epic.sheet.actor .editor-content ol {
     margin: 0 0 0.5rem 1.5rem;
     padding: 0;
 }
 
-.zwolf-epic.sheet.item .editor-content li {
+.zwolf-epic.sheet.item .editor-content li,
+.zwolf-epic.sheet.actor .editor-content li {
     margin-bottom: 0.25rem;
 }
 
-.zwolf-epic.sheet.item .editor-content strong {
+.zwolf-epic.sheet.item .editor-content strong,
+.zwolf-epic.sheet.actor .editor-content strong {
     font-weight: 600;
     color: #e4e4e4;
 }
 
-.zwolf-epic.sheet.item .editor-content em {
+.zwolf-epic.sheet.item .editor-content em,
+.zwolf-epic.sheet.actor .editor-content em {
     font-style: italic;
 }
 
-.zwolf-epic.sheet.item .editor-content a {
+.zwolf-epic.sheet.item .editor-content a,
+.zwolf-epic.sheet.actor .editor-content a {
     color: var(--z-wolf-primary);
     text-decoration: underline;
 }
 
-.zwolf-epic.sheet.item .editor-content a:hover {
+.zwolf-epic.sheet.item .editor-content a:hover,
+.zwolf-epic.sheet.actor .editor-content a:hover {
     color: var(--z-wolf-primary-light);
 }
 
 .zwolf-epic.sheet.item .editor-content h1,
 .zwolf-epic.sheet.item .editor-content h2,
 .zwolf-epic.sheet.item .editor-content h3,
-.zwolf-epic.sheet.item .editor-content h4 {
+.zwolf-epic.sheet.item .editor-content h4,
+.zwolf-epic.sheet.actor .editor-content h1,
+.zwolf-epic.sheet.actor .editor-content h2,
+.zwolf-epic.sheet.actor .editor-content h3,
+.zwolf-epic.sheet.actor .editor-content h4 {
     color: #e4e4e4;
     margin: 0.75rem 0 0.5rem 0;
     font-weight: 600;
 }
 
-.zwolf-epic.sheet.item .editor-content h1 { font-size: 1.4rem; }
-.zwolf-epic.sheet.item .editor-content h2 { font-size: 1.3rem; }
-.zwolf-epic.sheet.item .editor-content h3 { font-size: 1.2rem; }
-.zwolf-epic.sheet.item .editor-content h4 { font-size: 1.1rem; }
+.zwolf-epic.sheet.item .editor-content h1,
+.zwolf-epic.sheet.actor .editor-content h1 { font-size: 1.4rem; }
+.zwolf-epic.sheet.item .editor-content h2,
+.zwolf-epic.sheet.actor .editor-content h2 { font-size: 1.3rem; }
+.zwolf-epic.sheet.item .editor-content h3,
+.zwolf-epic.sheet.actor .editor-content h3 { font-size: 1.2rem; }
+.zwolf-epic.sheet.item .editor-content h4,
+.zwolf-epic.sheet.actor .editor-content h4 { font-size: 1.1rem; }
 
 /* Editor toolbar (with Edit button) */
-.zwolf-epic.sheet.item .editor-toolbar {
+.zwolf-epic.sheet.item .editor-toolbar,
+.zwolf-epic.sheet.actor .editor-toolbar {
     padding: 0.5rem;
     display: flex;
     justify-content: flex-end;
     background: #2a2a2a;
 }
 
-.zwolf-epic.sheet.item .editor-edit {
+.zwolf-epic.sheet.item .editor-edit,
+.zwolf-epic.sheet.actor .editor-edit {
     padding: 0.4rem 1rem;
     background: #3a5a7a;
     border: 1px solid #4a6a8a;
@@ -535,21 +558,25 @@
     gap: 0.5rem;
 }
 
-.zwolf-epic.sheet.item .editor-edit:hover {
+.zwolf-epic.sheet.item .editor-edit:hover,
+.zwolf-epic.sheet.actor .editor-edit:hover {
     background: #4a6a8a;
     border-color: #5a7a9a;
 }
 
-.zwolf-epic.sheet.item .editor-edit i {
+.zwolf-epic.sheet.item .editor-edit i,
+.zwolf-epic.sheet.actor .editor-edit i {
     font-size: 0.9rem;
 }
 
 /* ProseMirror editor container (edit mode) */
-.zwolf-epic.sheet.item .prosemirror-editor-container {
+.zwolf-epic.sheet.item .prosemirror-editor-container,
+.zwolf-epic.sheet.actor .prosemirror-editor-container {
     margin-bottom: 0.5rem;
 }
 
-.zwolf-epic.sheet.item .prosemirror-editor {
+.zwolf-epic.sheet.item .prosemirror-editor,
+.zwolf-epic.sheet.actor .prosemirror-editor {
     border: 1px solid #3a3a3a;
     border-radius: 4px 4px 0 0;
     background: #1e1e1e;
@@ -557,7 +584,8 @@
 }
 
 /* ProseMirror content area */
-.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror {
+.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror,
+.zwolf-epic.sheet.actor .prosemirror-editor .ProseMirror {
     padding: 0.75rem 1.25rem;
     min-height: 150px;
     color: #d4d4d4;
@@ -566,12 +594,14 @@
     outline: none;
 }
 
-.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror:focus {
+.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror:focus,
+.zwolf-epic.sheet.actor .prosemirror-editor .ProseMirror:focus {
     background: #2a2a2a;
 }
 
 /* ProseMirror placeholder */
-.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror p.is-editor-empty:first-child::before {
+.zwolf-epic.sheet.item .prosemirror-editor .ProseMirror p.is-editor-empty:first-child::before,
+.zwolf-epic.sheet.actor .prosemirror-editor .ProseMirror p.is-editor-empty:first-child::before {
     color: #777;
     content: attr(data-placeholder);
     float: left;
@@ -580,7 +610,8 @@
 }
 
 /* Editor controls (Save/Cancel buttons) */
-.zwolf-epic.sheet.item .editor-controls {
+.zwolf-epic.sheet.item .editor-controls,
+.zwolf-epic.sheet.actor .editor-controls {
     padding: 0.5rem;
     display: flex;
     gap: 0.5rem;
@@ -592,7 +623,9 @@
 }
 
 .zwolf-epic.sheet.item .save-editor-btn,
-.zwolf-epic.sheet.item .cancel-editor-btn {
+.zwolf-epic.sheet.item .cancel-editor-btn,
+.zwolf-epic.sheet.actor .save-editor-btn,
+.zwolf-epic.sheet.actor .cancel-editor-btn {
     padding: 0.4rem 1rem;
     border: none;
     border-radius: 3px;
@@ -604,35 +637,42 @@
     gap: 0.5rem;
 }
 
-.zwolf-epic.sheet.item .save-editor-btn {
+.zwolf-epic.sheet.item .save-editor-btn,
+.zwolf-epic.sheet.actor .save-editor-btn {
     background: #2f5a2f;
     color: #6bff6b;
     border: 1px solid #3f7a3f;
 }
 
-.zwolf-epic.sheet.item .save-editor-btn:hover {
+.zwolf-epic.sheet.item .save-editor-btn:hover,
+.zwolf-epic.sheet.actor .save-editor-btn:hover {
     background: #3f6a3f;
     border-color: #4f8a4f;
 }
 
-.zwolf-epic.sheet.item .cancel-editor-btn {
+.zwolf-epic.sheet.item .cancel-editor-btn,
+.zwolf-epic.sheet.actor .cancel-editor-btn {
     background: #5a2f2f;
     color: #ff6b6b;
     border: 1px solid #7a3f3f;
 }
 
-.zwolf-epic.sheet.item .cancel-editor-btn:hover {
+.zwolf-epic.sheet.item .cancel-editor-btn:hover,
+.zwolf-epic.sheet.actor .cancel-editor-btn:hover {
     background: #6a3f3f;
     border-color: #8a4f4f;
 }
 
 .zwolf-epic.sheet.item .save-editor-btn i,
-.zwolf-epic.sheet.item .cancel-editor-btn i {
+.zwolf-epic.sheet.item .cancel-editor-btn i,
+.zwolf-epic.sheet.actor .save-editor-btn i,
+.zwolf-epic.sheet.actor .cancel-editor-btn i {
     font-size: 0.9rem;
 }
 
 /* ProseMirror Menu System */
-.zwolf-epic.sheet.item .editor-menu {
+.zwolf-epic.sheet.item .editor-menu,
+.zwolf-epic.sheet.actor .editor-menu {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
@@ -643,17 +683,20 @@
     list-style: none;
 }
 
-.zwolf-epic.sheet.item .editor-menu > li {
+.zwolf-epic.sheet.item .editor-menu > li,
+.zwolf-epic.sheet.actor .editor-menu > li {
     position: relative;
     display: flex;
     align-items: center;
 }
 
-.zwolf-epic.sheet.item .editor-menu > li.right {
+.zwolf-epic.sheet.item .editor-menu > li.right,
+.zwolf-epic.sheet.actor .editor-menu > li.right {
     margin-left: auto;
 }
 
-.zwolf-epic.sheet.item .editor-menu button {
+.zwolf-epic.sheet.item .editor-menu button,
+.zwolf-epic.sheet.actor .editor-menu button {
     background: transparent;
     border: 1px solid transparent;
     color: #d4d4d4;
@@ -667,23 +710,27 @@
     transition: all 0.15s;
 }
 
-.zwolf-epic.sheet.item .editor-menu button:hover {
+.zwolf-epic.sheet.item .editor-menu button:hover,
+.zwolf-epic.sheet.actor .editor-menu button:hover {
     background: #3a3a3a;
     border-color: #4a4a4a;
 }
 
-.zwolf-epic.sheet.item .editor-menu button.active {
+.zwolf-epic.sheet.item .editor-menu button.active,
+.zwolf-epic.sheet.actor .editor-menu button.active {
     background: #3a5a7a;
     border-color: #4a6a8a;
     color: #ffffff;
 }
 
 /* Dropdown menus */
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown {
     position: relative;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown > ul {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown > ul,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown > ul {
     display: none;
     position: absolute;
     top: 100%;
@@ -700,28 +747,34 @@
 }
 
 .zwolf-epic.sheet.item .editor-menu .pm-dropdown:hover > ul,
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown.open > ul {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown.open > ul,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown:hover > ul,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown.open > ul {
     display: block;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li {
     position: relative;
     padding: 0;
     margin: 0;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li:hover {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li:hover,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li:hover {
     background: #3a3a3a;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > span {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > span,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li > span {
     display: block;
     padding: 0.5rem 1rem;
     cursor: pointer;
     white-space: nowrap;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li.divider {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li.divider,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li.divider {
     height: 1px;
     background: #4a4a4a;
     margin: 0.25rem 0;
@@ -729,7 +782,8 @@
 }
 
 /* Nested submenus */
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > ul {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > ul,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li > ul {
     display: none;
     position: absolute;
     top: 0;
@@ -744,11 +798,13 @@
     padding: 0.25rem 0;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li:hover > ul {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li:hover > ul,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li:hover > ul {
     display: block;
 }
 
-.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > i {
+.zwolf-epic.sheet.item .editor-menu .pm-dropdown ul li > i,
+.zwolf-epic.sheet.actor .editor-menu .pm-dropdown ul li > i {
     position: absolute;
     right: 0.5rem;
     top: 50%;
@@ -758,13 +814,15 @@
 }
 
 /* ProseMirror toolbar (if present) */
-.zwolf-epic.sheet.item .prosemirror-editor .editor-container {
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container,
+.zwolf-epic.sheet.actor .prosemirror-editor .editor-container {
     background: #2a2a2a;
     border-bottom: 1px solid #3a3a3a;
     padding: 0.25rem 0.5rem;
 }
 
-.zwolf-epic.sheet.item .prosemirror-editor .editor-container button {
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container button,
+.zwolf-epic.sheet.actor .prosemirror-editor .editor-container button {
     background: transparent;
     border: 1px solid transparent;
     color: #d4d4d4;
@@ -774,19 +832,22 @@
     border-radius: 3px;
 }
 
-.zwolf-epic.sheet.item .prosemirror-editor .editor-container button:hover {
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container button:hover,
+.zwolf-epic.sheet.actor .prosemirror-editor .editor-container button:hover {
     background: #3a3a3a;
     border-color: #4a4a4a;
 }
 
-.zwolf-epic.sheet.item .prosemirror-editor .editor-container button.active {
+.zwolf-epic.sheet.item .prosemirror-editor .editor-container button.active,
+.zwolf-epic.sheet.actor .prosemirror-editor .editor-container button.active {
     background: #3a5a7a;
     border-color: #4a6a8a;
     color: #ffffff;
 }
 
 /* Readonly editor content */
-.zwolf-epic.sheet.item .editor-content-readonly {
+.zwolf-epic.sheet.item .editor-content-readonly,
+.zwolf-epic.sheet.actor .editor-content-readonly {
     padding: 0.75rem 1.25rem;
     min-height: 60px;
     color: #999;
@@ -796,29 +857,34 @@
     border-radius: 4px;
 }
 
-.zwolf-epic.sheet.item .editor-content-readonly em {
+.zwolf-epic.sheet.item .editor-content-readonly em,
+.zwolf-epic.sheet.actor .editor-content-readonly em {
     color: #666;
     font-style: italic;
 }
 
 /* Compact editor variant (for abilities) */
-.zwolf-epic.sheet.item .ability-description .editor-content {
+.zwolf-epic.sheet.item .ability-description .editor-content,
+.zwolf-epic.sheet.actor .ability-description .editor-content {
     min-height: 60px;
     max-height: 300px;
 }
 
-.zwolf-epic.sheet.item .ability-description .prosemirror-editor .ProseMirror {
+.zwolf-epic.sheet.item .ability-description .prosemirror-editor .ProseMirror,
+.zwolf-epic.sheet.actor .ability-description .prosemirror-editor .ProseMirror {
     padding: 0.75rem 1.25rem;
     min-height: 60px;
 }
 
 /* Expanded editor variant (for main description) */
-.zwolf-epic.sheet.item .main-description .editor-content {
+.zwolf-epic.sheet.item .main-description .editor-content,
+.zwolf-epic.sheet.actor .main-description .editor-content {
     min-height: 150px;
     max-height: 600px;
 }
 
-.zwolf-epic.sheet.item .main-description .prosemirror-editor .ProseMirror {
+.zwolf-epic.sheet.item .main-description .prosemirror-editor .ProseMirror,
+.zwolf-epic.sheet.actor .main-description .prosemirror-editor .ProseMirror {
     padding: 0.75rem 1.25rem;
     min-height: 150px;
 }

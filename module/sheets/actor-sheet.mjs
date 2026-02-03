@@ -3,7 +3,10 @@ const { HandlebarsApplicationMixin } = foundry.applications.api;
 import { SheetStateManager } from "../helpers/sheet-state-manager.mjs";
 import { calculateProgressionBonuses, calculateTn } from "../helpers/calculation-utils.mjs";
 import { DropZoneHandler } from "../helpers/drop-zone-handler.mjs";
+import { EditorSaveHandler } from "../helpers/editor-save-handler.mjs";
 import { ZWolfDice } from "../dice/dice-system.mjs";
+import { ShoppingListDialog } from "../applications/shopping-list-dialog.mjs";
+import { getVirtualItems } from "../data/default-items.mjs";
 
 /**
  * Actor sheet for Z-Wolf Epic actors.
@@ -46,7 +49,8 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             rollSpeed: ZWolfActorSheet.#onRollSpeed,
             rollProgression: ZWolfActorSheet.#onRollProgression,
             rollStat: ZWolfActorSheet.#onRollStat,
-            toggleProgression: ZWolfActorSheet.#onToggleProgression
+            toggleProgression: ZWolfActorSheet.#onToggleProgression,
+            openShoppingList: ZWolfActorSheet.#onOpenShoppingList
         },
         form: {
             submitOnChange: true
@@ -101,6 +105,8 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         context.isMook = this.actor.type === "mook";
         context.isSpawn = this.actor.type === "spawn";
         context.isGM = game.user.isGM;
+        context.owner = this.actor.isOwner;
+        context.editable = this.isEditable;
 
         // Ensure tabGroups.primary has a value
         if (!this.tabGroups.primary) {
@@ -610,6 +616,14 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
                 if (item.system?.grantedAbilities) {
                     processAbilities(item, item.system.grantedAbilities);
                 }
+            }
+        });
+
+        // Process virtual items (like Slam Strike)
+        const virtualItems = getVirtualItems();
+        virtualItems.forEach(item => {
+            if (item.system?.grantedAbilities) {
+                processAbilities(item, item.system.grantedAbilities);
             }
         });
 
@@ -1535,6 +1549,9 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         // Bind equipment placement change events
         this._bindEquipmentPlacementSelects();
 
+        // Activate rich text editors with Edit/Save workflow
+        EditorSaveHandler.activateEditors(this);
+
         // Restore state AFTER everything else
         if (this.stateManager) {
             this.stateManager.restoreState();
@@ -1825,8 +1842,16 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             const placement = item.system.placement || "stowed";
             // Not carried items don't count toward bulk
             if (placement !== "not_carried") {
-                const itemBulk = parseFloat(item.system.bulk) || 0;
+                let itemBulk = parseFloat(item.system.bulk) || 0;
                 const quantity = parseInt(item.system.quantity) || 1;
+
+                // Worn clothing reduces its effective bulk by 1 (to a minimum of 0)
+                const tags = item.system.tags || "";
+                const hasClothingTag = tags.split(",").map(t => t.trim().toLowerCase()).includes("clothing");
+                if (placement === "worn" && hasClothingTag) {
+                    itemBulk = Math.max(0, itemBulk - 1);
+                }
+
                 totalBulk += itemBulk * quantity;
             }
         });
@@ -2036,6 +2061,27 @@ export class ZWolfActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             await this.document.update({ "system.wealth": newWealth });
             ui.notifications.info(`${game.i18n.localize("ZWOLF.Wealth")}: ${currentWealth} → ${newWealth}`);
         }
+    }
+
+    /**
+     * Handle opening the shopping list dialog
+     * @param {Event} event - The triggering event
+     * @param {HTMLElement} target - The element that was clicked
+     */
+    static async #onOpenShoppingList(event, target) {
+        // Check if dialog already exists for this actor
+        const existingDialog = Object.values(ui.windows).find(
+            w => w instanceof ShoppingListDialog && w.actor === this.document
+        );
+
+        if (existingDialog) {
+            existingDialog.bringToFront();
+            return;
+        }
+
+        // Create and render new shopping list dialog
+        const dialog = new ShoppingListDialog(this.document);
+        dialog.render(true);
     }
 
     // ========================================

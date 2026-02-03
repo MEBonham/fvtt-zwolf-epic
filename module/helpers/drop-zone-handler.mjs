@@ -47,6 +47,13 @@ export class DropZoneHandler {
             zone.addEventListener("drop", (e) => this._onAttunementDrop(e));
             zone.addEventListener("dragleave", (e) => this._onDragLeave(e));
         });
+
+        // Equipment buy zones (purchase with wealth)
+        html.querySelectorAll(".equipment-buy-zone").forEach(zone => {
+            zone.addEventListener("dragover", (e) => this._onEquipmentBuyDragOver(e));
+            zone.addEventListener("drop", (e) => this._onEquipmentBuyDrop(e));
+            zone.addEventListener("dragleave", (e) => this._onDragLeave(e));
+        });
     }
 
     // ========================================
@@ -524,5 +531,274 @@ export class DropZoneHandler {
                 this.sheet._processingCustomDrop = false;
             }, 100);
         }
+    }
+
+    // ========================================
+    // EQUIPMENT BUY ZONE HANDLERS
+    // ========================================
+
+    /**
+     * Handle dragover for equipment buy zone
+     * @param {DragEvent} event
+     * @private
+     */
+    async _onEquipmentBuyDragOver(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const zone = event.currentTarget;
+
+        // Get drag data
+        let data;
+        try {
+            data = TextEditor.getDragEventData(event);
+        } catch (err) {
+            zone.classList.add("invalid-drop");
+            return;
+        }
+
+        // Must be an Item
+        if (data.type !== "Item") {
+            zone.classList.add("invalid-drop");
+            return;
+        }
+
+        // Get the item
+        let item;
+        try {
+            item = await fromUuid(data.uuid);
+        } catch (err) {
+            zone.classList.add("invalid-drop");
+            return;
+        }
+
+        // Only accept equipment and commodity
+        if (!["equipment", "commodity"].includes(item.type)) {
+            zone.classList.add("invalid-drop");
+            return;
+        }
+
+        // Valid drop
+        zone.classList.remove("invalid-drop");
+        zone.classList.add("drag-over");
+    }
+
+    /**
+     * Handle drop for equipment buy zone - triggers purchase with wealth roll
+     * @param {DragEvent} event
+     * @private
+     */
+    async _onEquipmentBuyDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const zone = event.currentTarget;
+
+        // Remove visual feedback
+        zone.classList.remove("drag-over", "invalid-drop");
+
+        // Flag to prevent default drop handler
+        this.sheet._processingCustomDrop = true;
+
+        try {
+            // Get drag data
+            const data = TextEditor.getDragEventData(event);
+            if (data.type !== "Item") return;
+
+            // Get the item
+            const item = await fromUuid(data.uuid);
+            if (!item) {
+                ui.notifications.error(game.i18n.localize("ZWOLF.ItemNotFound"));
+                return;
+            }
+
+            // Validate type
+            if (!["equipment", "commodity"].includes(item.type)) {
+                ui.notifications.warn(game.i18n.localize("ZWOLF.ShoppingListInvalidType"));
+                return;
+            }
+
+            // Attempt purchase
+            await this._attemptPurchase(item);
+
+        } catch (err) {
+            console.error("Z-Wolf Epic | Error handling equipment buy drop:", err);
+            ui.notifications.error(`Error purchasing item: ${err.message}`);
+        } finally {
+            // Reset flag after a delay
+            setTimeout(() => {
+                this.sheet._processingCustomDrop = false;
+            }, 100);
+        }
+    }
+
+    /**
+     * Attempt to purchase an item using the wealth system
+     * @param {Item} item - The item to purchase
+     * @private
+     */
+    async _attemptPurchase(item) {
+        const wealth = this.actor.system.wealth || 0;
+        const price = parseFloat(item.system.price) || 0;
+
+        // If price is 0, just add it free
+        if (price === 0) {
+            await this._completePurchase(item, 0);
+            ui.notifications.info(game.i18n.format("ZWOLF.ItemFree", { name: item.name }));
+            return;
+        }
+
+        // Check if actor has any wealth
+        if (wealth <= 0) {
+            ui.notifications.warn(game.i18n.localize("ZWOLF.NotEnoughWealth"));
+            return;
+        }
+
+        // Roll wealth dice
+        const roll = await new Roll(`${wealth}d12`).evaluate();
+        const dice = roll.terms[0].results.map(r => r.result);
+        const successes = dice.filter(d => d >= 8).length;
+        const actualCost = Math.max(0, price - successes);
+
+        // Create chat message showing the roll
+        await this._createPurchaseRollMessage(item, dice, successes, actualCost, wealth);
+
+        // Check if we can afford it
+        if (actualCost > wealth) {
+            ui.notifications.warn(game.i18n.format("ZWOLF.CannotAffordItem", { name: item.name }));
+            return;
+        }
+
+        // Show confirmation dialog
+        const confirmed = await this._showPurchaseConfirmDialog(item, actualCost, wealth);
+
+        if (confirmed) {
+            await this._completePurchase(item, actualCost);
+        }
+    }
+
+    /**
+     * Create a chat message for the purchase roll
+     * @param {Item} item - The item being purchased
+     * @param {number[]} dice - Array of dice results
+     * @param {number} successes - Number of successes (8+)
+     * @param {number} actualCost - The actual wealth cost
+     * @param {number} currentWealth - Current wealth before purchase
+     * @private
+     */
+    async _createPurchaseRollMessage(item, dice, successes, actualCost, currentWealth) {
+        const diceHtml = dice.map(d => {
+            const isSuccess = d >= 8;
+            return `<span class="die d12 ${isSuccess ? "success" : "failure"}">${d}</span>`;
+        }).join(" ");
+
+        const canAfford = actualCost <= currentWealth;
+        const price = parseFloat(item.system.price) || 0;
+
+        const content = `
+            <div class="zwolf-purchase-roll">
+                <div class="purchase-header">
+                    <img src="${item.img}" class="item-image" />
+                    <span class="item-name">${item.name}</span>
+                    <span class="item-price">(${game.i18n.localize("ZWOLF.Price")}: ${price})</span>
+                </div>
+                <div class="purchase-dice">
+                    <span class="dice-label">${game.i18n.localize("ZWOLF.WealthRoll")}:</span>
+                    <span class="dice-results">${diceHtml}</span>
+                </div>
+                <div class="purchase-result">
+                    <span class="successes">${game.i18n.format("ZWOLF.PurchaseSuccesses", { count: successes })}</span>
+                    <span class="cost">${game.i18n.format("ZWOLF.PurchaseCost", { cost: actualCost })}</span>
+                    <span class="outcome ${canAfford ? "affordable" : "failure"}">${canAfford
+                        ? game.i18n.localize("ZWOLF.CanAfford")
+                        : game.i18n.localize("ZWOLF.CannotAfford")
+                    }</span>
+                </div>
+            </div>
+        `;
+
+        await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+            content: content,
+            type: CONST.CHAT_MESSAGE_STYLES.OTHER,
+            rolls: [await new Roll(`${dice.length}d12`).evaluate()]
+        });
+    }
+
+    /**
+     * Show purchase confirmation dialog
+     * @param {Item} item - The item to purchase
+     * @param {number} cost - The wealth cost
+     * @param {number} currentWealth - Current wealth
+     * @returns {Promise<boolean>} True if confirmed
+     * @private
+     */
+    async _showPurchaseConfirmDialog(item, cost, currentWealth) {
+        const newWealth = currentWealth - cost;
+
+        const content = `
+            <div class="zwolf-purchase-dialog">
+                <p>${game.i18n.format("ZWOLF.ConfirmPurchase", { name: item.name })}</p>
+                <div class="purchase-summary">
+                    <div class="summary-row">
+                        <span class="label">${game.i18n.localize("ZWOLF.CurrentWealth")}:</span>
+                        <span class="value">${currentWealth}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="label">${game.i18n.localize("ZWOLF.Cost")}:</span>
+                        <span class="value loss">-${cost}</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span class="label">${game.i18n.localize("ZWOLF.NewWealth")}:</span>
+                        <span class="value">${newWealth}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        return await Dialog.confirm({
+            title: game.i18n.format("ZWOLF.PurchaseItem", { name: item.name }),
+            content,
+            yes: () => true,
+            no: () => false,
+            defaultYes: true
+        });
+    }
+
+    /**
+     * Complete the purchase - add item to actor and deduct wealth
+     * @param {Item} item - The item to add
+     * @param {number} cost - The wealth cost to deduct
+     * @private
+     */
+    async _completePurchase(item, cost) {
+        // Create item on actor
+        const itemData = item.toObject();
+        await this.actor.createEmbeddedDocuments("Item", [itemData]);
+
+        // Deduct wealth
+        const currentWealth = this.actor.system.wealth || 0;
+        const newWealth = currentWealth - cost;
+        await this.actor.update({ "system.wealth": newWealth });
+
+        // Create success message in chat
+        const content = `
+            <div class="zwolf-purchase-complete">
+                <div class="purchase-success">
+                    <i class="fas fa-check-circle"></i>
+                    <strong>${this.actor.name}</strong> ${game.i18n.format("ZWOLF.PurchasedItem", { name: item.name })}
+                </div>
+                <div class="wealth-change">
+                    ${game.i18n.localize("ZWOLF.Wealth")}: ${currentWealth} → ${newWealth} (-${cost})
+                </div>
+            </div>
+        `;
+
+        await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+            content
+        });
+
+        ui.notifications.info(game.i18n.format("ZWOLF.ItemPurchased", { name: item.name }));
     }
 }

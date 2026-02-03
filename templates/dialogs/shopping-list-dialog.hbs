@@ -1,0 +1,124 @@
+{{!-- templates/dialogs/shopping-list-dialog.hbs --}}
+<div class="shopping-list-content">
+    <!-- Header with wealth display -->
+    <div class="shopping-list-header">
+        <div class="wealth-display">
+            <i class="fas fa-coins"></i>
+            <span class="wealth-label">{{localize "ZWOLF.CurrentWealth"}}:</span>
+            <span class="wealth-value">{{wealth}}</span>
+        </div>
+        <div class="total-cost" title="{{localize 'ZWOLF.MaxCostTooltip'}}">
+            <span class="cost-label">{{localize "ZWOLF.MaxCost"}}:</span>
+            <span class="cost-value">{{totalCost}}</span>
+        </div>
+    </div>
+
+    <!-- Drop zone for adding items -->
+    <div class="shopping-list-drop-zone drop-zone">
+        <div class="drop-prompt">
+            <i class="fas fa-shopping-cart"></i>
+            <span>{{localize "ZWOLF.DragItemsHere"}}</span>
+        </div>
+    </div>
+
+    <!-- Shopping list items -->
+    <div class="shopping-list-items">
+        {{#if hasItems}}
+            <ul class="item-list">
+                {{#each shoppingList as |item|}}
+                    <li class="shopping-item" data-uuid="{{item.uuid}}">
+                        <img class="item-image" src="{{item.img}}" alt="{{item.name}}" />
+                        <div class="item-details">
+                            <span class="item-name">{{item.name}}</span>
+                            <span class="item-type">({{item.type}})</span>
+                        </div>
+                        <div class="item-price">
+                            <i class="fas fa-coins"></i>
+                            {{item.price}}
+                        </div>
+                        <div class="item-quantity">
+                            <button type="button"
+                                    class="quantity-btn decrease"
+                                    data-action="changeQuantity"
+                                    data-uuid="{{item.uuid}}"
+                                    data-delta="-1"
+                                    title="{{localize 'ZWOLF.DecreaseQuantity'}}">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="quantity-value">{{item.quantity}}</span>
+                            <button type="button"
+                                    class="quantity-btn increase"
+                                    data-action="changeQuantity"
+                                    data-uuid="{{item.uuid}}"
+                                    data-delta="1"
+                                    title="{{localize 'ZWOLF.IncreaseQuantity'}}">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="item-subtotal">
+                            = {{multiply item.price item.quantity}}
+                        </div>
+                        <button type="button"
+                                class="remove-btn"
+                                data-action="removeItem"
+                                data-uuid="{{item.uuid}}"
+                                title="{{localize 'ZWOLF.RemoveFromList'}}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <div class="no-items-message">
+                <p>
+                    <i class="fas fa-info-circle"></i>
+                    {{localize "ZWOLF.ShoppingListEmpty"}}
+                </p>
+            </div>
+        {{/if}}
+    </div>
+
+    <!-- Purchase info -->
+    <div class="purchase-info">
+        <i class="fas fa-dice"></i>
+        {{localize "ZWOLF.PurchaseRollExplanation"}}
+    </div>
+
+    <!-- Action buttons -->
+    <div class="shopping-list-actions">
+        <button type="button" class="add-item-btn" data-action="addItem">
+            <i class="fas fa-plus"></i>
+            {{localize "ZWOLF.AddItem"}}
+        </button>
+        <button type="button" class="load-bundle-btn" data-action="loadBundle">
+            <i class="fas fa-folder-open"></i>
+            {{localize "ZWOLF.LoadBundle"}}
+        </button>
+        {{#if isGM}}
+        <button type="button" class="save-bundle-btn" data-action="saveBundle" {{#unless hasItems}}disabled{{/unless}}>
+            <i class="fas fa-save"></i>
+            {{localize "ZWOLF.SaveBundle"}}
+        </button>
+        {{/if}}
+        <button type="button" class="clear-btn" data-action="clearList" {{#unless hasItems}}disabled{{/unless}}>
+            <i class="fas fa-broom"></i>
+            {{localize "ZWOLF.ClearList"}}
+        </button>
+        <button type="button"
+                class="buy-btn"
+                data-action="buyAll"
+                {{#unless hasItems}}disabled{{/unless}}
+                {{#if (eq wealth 0)}}disabled{{/if}}>
+            <i class="fas fa-dice-d12"></i>
+            {{localize "ZWOLF.BuyAll"}}
+        </button>
+        <button type="button"
+                class="buy-btn fair-buy-btn"
+                data-action="fairBuyAll"
+                {{#unless hasItems}}disabled{{/unless}}
+                {{#if (eq wealth 0)}}disabled{{/if}}>
+            <i class="fas fa-balance-scale"></i>
+            {{localize "ZWOLF.FairBuyAll"}}
+        </button>
+    </div>
+</div>

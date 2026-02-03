@@ -49,9 +49,10 @@ Hooks.once("init", async function () {
     CONFIG.Token.documentClass = ZWolfTokenDocument;
 
     // Register data models
+    // Note: Using "character" as a placeholder key since ZWolfActorBase is incomplete.
+    // The actual "pc" and "npc" types use template.json schema until the data model is fleshed out.
     CONFIG.Actor.dataModels = {
-        character: ZWolfActorBase,
-        npc: ZWolfActorBase
+        character: ZWolfActorBase
     };
 
     CONFIG.Item.dataModels = {

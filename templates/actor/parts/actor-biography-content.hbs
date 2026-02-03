@@ -11,12 +11,12 @@
         <h3>{{localize "ZWOLF.Liabilities"}}</h3>
         <div class="form-group">
           <div class="form-fields">
-            {{editor system.liabilities 
-                    target="system.liabilities" 
-                    button=true 
-                    owner=owner 
-                    editable=editable 
-                    height=120}}
+            {{> rich-editor
+                value=system.liabilities
+                target="system.liabilities"
+                editable=editable
+                owner=owner
+                placeholder="ZWOLF.NoLiabilities"}}
           </div>
         </div>
       </div>
@@ -32,12 +32,12 @@
           <div class="languages-content">
             <div class="form-group">
               <div class="form-fields">
-                {{editor system.languages 
-                        target="system.languages" 
-                        button=true 
-                        owner=owner 
-                        editable=editable 
-                        height=120}}
+                {{> rich-editor
+                    value=system.languages
+                    target="system.languages"
+                    editable=editable
+                    owner=owner
+                    placeholder="ZWOLF.NoLanguages"}}
               </div>
             </div>
           </div>
@@ -61,12 +61,12 @@
         <h3>{{localize "ZWOLF.Notes"}}</h3>
         <div class="form-group">
           <div class="form-fields">
-            {{editor system.notes 
-                    target="system.notes" 
-                    button=true 
-                    owner=owner 
-                    editable=editable 
-                    height=200}}
+            {{> rich-editor
+                value=system.notes
+                target="system.notes"
+                editable=editable
+                owner=owner
+                placeholder="ZWOLF.NoNotes"}}
           </div>
         </div>
       </div>

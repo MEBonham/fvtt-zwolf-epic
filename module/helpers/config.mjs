@@ -436,7 +436,7 @@ ZWOLF.proficiencies = {
   // Miscellaneous Proficiencies
   "unarmed": {
     type: "miscellaneous",
-    label: "<Unarmed> weapons"
+    label: "Unarmed"
   },
   "improvised": {
     type: "miscellaneous",

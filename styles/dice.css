@@ -392,3 +392,124 @@
 .speed-with-roll .speed-roll-die {
     font-size: 1.1em;
 }
+
+/* ========================================
+   PURCHASE ROLL CHAT MESSAGE
+   ======================================== */
+
+.zwolf-purchase-roll {
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #e8e8e8;
+    border: 1px solid var(--color-border-light-primary, #b5b3a4);
+    margin: 4px 0;
+    color: #191813;
+}
+
+.zwolf-purchase-roll .purchase-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.zwolf-purchase-roll .item-image {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.zwolf-purchase-roll .item-name {
+    font-weight: 600;
+    flex: 1;
+}
+
+.zwolf-purchase-roll .item-price {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.zwolf-purchase-roll .purchase-dice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.zwolf-purchase-roll .dice-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.zwolf-purchase-roll .dice-results {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.zwolf-purchase-roll .die {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85em;
+}
+
+.zwolf-purchase-roll .die.success {
+    background: rgba(74, 222, 128, 0.3);
+    border: 1px solid rgba(74, 222, 128, 0.6);
+    color: #166534;
+}
+
+.zwolf-purchase-roll .die.failure {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: #666;
+}
+
+.zwolf-purchase-roll .purchase-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.zwolf-purchase-roll .successes {
+    color: #166534;
+    font-weight: 500;
+}
+
+.zwolf-purchase-roll .cost {
+    color: #b45309;
+    font-weight: 500;
+}
+
+.zwolf-purchase-roll .outcome {
+    margin-left: auto;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 0.5px;
+}
+
+.zwolf-purchase-roll .outcome.success {
+    color: #166534;
+    background: rgba(74, 222, 128, 0.25);
+    border: 1px solid rgba(74, 222, 128, 0.5);
+}
+
+.zwolf-purchase-roll .outcome.failure {
+    color: #991b1b;
+    background: rgba(248, 113, 113, 0.25);
+    border: 1px solid rgba(248, 113, 113, 0.5);
+}

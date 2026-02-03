@@ -186,15 +186,12 @@
     {{!-- ========== TALENT ========== --}}
     {{else if (eq itemType "talent")}}
         <div class="talent-summary">
-            {{#if system.required}}
-                {{> form-field
-                    label="ZWOLF.KnacksProvided"
-                    type="number"
-                    name="system.knacksProvided"
-                    value=system.knacksProvided
-                    min=0
-                    readonly=true}}
-            {{/if}}
+                    {{> form-field
+                label="ZWOLF.KnacksProvided"
+                type="number"
+                name="system.knacksProvided"
+                value=system.knacksProvided
+                min=0}}
 
             {{> form-field
                 label="ZWOLF.Required"

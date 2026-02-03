@@ -4,3 +4,4 @@ packs/**/*.ldb
 packs/**/LOG
 packs/**/LOG.old
 packs/**/*.log
+nul
